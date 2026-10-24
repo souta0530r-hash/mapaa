@@ -19,7 +19,6 @@
         .font-orbitron {
             font-family: 'Orbitron', sans-serif;
         }
-        /* ネオンアニメーション & エフェクト */
         .neon-text-blue {
             text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 20px #00f0ff;
         }
@@ -33,7 +32,6 @@
         .core-btn:active {
             transform: scale(0.92);
         }
-        /* ポップアップテキストアニメーション */
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0) scale(1); }
             100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
@@ -46,6 +44,14 @@
             font-family: 'Orbitron', sans-serif;
             color: #00f0ff;
             text-shadow: 0 0 5px #000;
+        }
+        @keyframes popScale {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .countdown-anim {
+            animation: popScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
     </style>
 </head>
@@ -61,7 +67,6 @@
                 </h1>
             </div>
 
-            <!-- Auth Status / Login Buttons -->
             <div id="auth-container" class="flex items-center gap-3">
                 <div id="loading-spinner" class="text-gray-400 text-sm">
                     <i class="fas fa-spinner fa-spin mr-1"></i> 接続中...
@@ -90,7 +95,7 @@
             <i class="fa-solid fa-user mr-1.5"></i> シングル（ハイスコア）
         </button>
         <button id="tab-vs-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700">
-            <i class="fa-solid fa-crosshairs mr-1.5 text-red-400"></i> 1vs1 対戦モード
+            <i class="fa-solid fa-trophy mr-1.5 text-amber-400"></i> マルチ対戦モード (7分勝負)
         </button>
     </div>
 
@@ -98,137 +103,136 @@
     <main class="max-w-6xl mx-auto px-4 py-4 w-full flex-grow">
 
         <!-- ================= SINGLE PLAYER MODE ================= -->
-        <div id="single-mode-view" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            <!-- Left Panel: Clicker Game Section (7 cols) -->
-            <section class="lg:col-span-7 flex flex-col gap-6">
-                
-                <!-- Energy Display Card -->
-                <div class="bg-gray-900/60 rounded-2xl p-6 border border-gray-800 neon-box-blue flex flex-col items-center justify-center text-center relative overflow-hidden">
-                    <div class="text-xs uppercase tracking-widest text-gray-400 font-orbitron mb-1">現在の所持エナジー</div>
-                    <div id="energy-count" class="text-4xl sm:text-5xl font-extrabold font-orbitron text-cyan-400 neon-text-blue my-2">0</div>
-                    <div class="text-xs text-gray-400 flex gap-4">
-                        <span>毎秒生産: <strong id="eps-display" class="text-cyan-300 font-orbitron">0</strong> /s</span>
-                        <span>累計獲得: <strong id="total-energy-display" class="text-gray-300 font-orbitron">0</strong></span>
+        <div id="single-mode-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Center Tap & Action Screen -->
+            <div class="lg:col-span-2 flex flex-col gap-6">
+                <!-- Status Stats Display -->
+                <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800 flex flex-wrap justify-between items-center gap-4 neon-box-blue">
+                    <div>
+                        <div class="text-xs text-cyan-400 font-orbitron uppercase tracking-widest">Energy Core</div>
+                        <div class="text-3xl sm:text-4xl font-black font-orbitron text-gray-100 neon-text-blue">
+                            <span id="energy-count">0</span> <span class="text-cyan-400 text-xl">NRG</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 border-l border-gray-800 pl-6">
+                        <div>
+                            <div class="text-[10px] text-gray-400 font-orbitron">AUTO PRODUCTION</div>
+                            <div class="text-sm font-bold font-orbitron text-cyan-300"><span id="eps-display">0</span> / sec</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-gray-400 font-orbitron">TOTAL EARNED</div>
+                            <div class="text-sm font-bold font-orbitron text-gray-300" id="total-energy-display">0</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Clicker Core Interactive Area -->
-                <div class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center relative min-h-[280px] select-none" id="click-area">
-                    <button id="core-button" class="core-btn w-44 h-44 rounded-full bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-500 p-1 flex items-center justify-center shadow-2xl shadow-cyan-500/40 focus:outline-none">
+                <!-- Main Tap Core Center -->
+                <div id="click-area" class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center min-h-[280px] relative overflow-hidden select-none">
+                    <button id="core-button" class="core-btn w-44 h-44 sm:w-52 sm:h-52 rounded-full bg-gradient-to-tr from-cyan-600 via-cyan-400 to-blue-600 p-1 flex items-center justify-center shadow-2xl shadow-cyan-500/30 focus:outline-none">
                         <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-cyan-400/50 hover:bg-gray-900 transition">
-                            <i class="fa-solid fa-bolt text-5xl text-cyan-400 drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
-                            <span class="text-xs font-orbitron text-cyan-300 mt-2 font-bold tracking-wider">TAP HERE</span>
+                            <i class="fa-solid fa-atom text-5xl sm:text-6xl text-cyan-400"></i>
+                            <span class="text-xs font-orbitron text-cyan-300 mt-2 font-bold">TAP CORE</span>
+                        </div>
+                    </button>
+                    <div class="text-xs text-gray-500 mt-4 font-orbitron">※ タブがアクティブな時のみ生産が行われます</div>
+                </div>
+
+                <!-- Upgrade Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button id="upgrade-click-btn" class="p-4 bg-gray-900 hover:bg-gray-850 disabled:opacity-40 rounded-xl border border-gray-800 text-left transition flex justify-between items-center group">
+                        <div>
+                            <div class="text-xs text-cyan-400 font-orbitron font-bold">パワー・タップ [A]</div>
+                            <div class="text-xs text-gray-400 mt-0.5">1タップ生成量アップ</div>
+                            <div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="click-cost">10</span></div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="click-level">1</span></span>
+                        </div>
+                    </button>
+
+                    <button id="upgrade-auto-btn" class="p-4 bg-gray-900 hover:bg-gray-850 disabled:opacity-40 rounded-xl border border-gray-800 text-left transition flex justify-between items-center group">
+                        <div>
+                            <div class="text-xs text-cyan-400 font-orbitron font-bold">オート・ドローン [D]</div>
+                            <div class="text-xs text-gray-400 mt-0.5">毎秒自動生成量アップ</div>
+                            <div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="auto-cost">50</span></div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="auto-level">0</span></span>
                         </div>
                     </button>
                 </div>
+            </div>
 
-                <!-- Upgrade Shop -->
-                <div class="bg-gray-900/60 rounded-2xl p-5 border border-gray-800">
-                    <h3 class="text-sm font-bold font-orbitron text-cyan-400 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-microchip"></i> アップグレードショップ
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        
-                        <!-- Click Upgrade Button -->
-                        <button id="upgrade-click-btn" class="p-3 bg-gray-800 hover:bg-gray-750 disabled:opacity-40 disabled:hover:bg-gray-800 rounded-xl border border-gray-700 text-left transition flex items-center justify-between group relative">
-                            <div>
-                                <div class="text-xs font-bold text-gray-200 flex items-center gap-1.5">
-                                    パワー・タップ
-                                    <span class="bg-gray-950 border border-cyan-500/50 text-cyan-400 text-[10px] px-1.5 py-0.5 rounded font-orbitron">A</span>
-                                </div>
-                                <div class="text-[11px] text-gray-400">クリック +1</div>
-                                <div class="text-xs font-orbitron text-cyan-400 mt-1">コスト: <span id="click-cost">10</span></div>
-                            </div>
-                            <div class="bg-gray-900 px-3 py-2 rounded-lg text-xs font-orbitron text-gray-300 border border-gray-700">
-                                Lv.<span id="click-level">1</span>
-                            </div>
-                        </button>
-
-                        <!-- Auto Generator Upgrade Button -->
-                        <button id="upgrade-auto-btn" class="p-3 bg-gray-800 hover:bg-gray-750 disabled:opacity-40 disabled:hover:bg-gray-800 rounded-xl border border-gray-700 text-left transition flex items-center justify-between group relative">
-                            <div>
-                                <div class="text-xs font-bold text-gray-200 flex items-center gap-1.5">
-                                    オート・ドローン
-                                    <span class="bg-gray-950 border border-cyan-500/50 text-cyan-400 text-[10px] px-1.5 py-0.5 rounded font-orbitron">D</span>
-                                </div>
-                                <div class="text-[11px] text-gray-400">+1 エナジー/秒</div>
-                                <div class="text-xs font-orbitron text-cyan-400 mt-1">コスト: <span id="auto-cost">50</span></div>
-                            </div>
-                            <div class="bg-gray-900 px-3 py-2 rounded-lg text-xs font-orbitron text-gray-300 border border-gray-700">
-                                Lv.<span id="auto-level">0</span>
-                            </div>
-                        </button>
-
+            <!-- Leaderboard & Data Panel -->
+            <div class="flex flex-col gap-6">
+                <!-- Global Leaderboard -->
+                <div class="bg-gray-900/80 rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-400 text-sm"></i>
+                            <h2 class="text-sm font-bold font-orbitron text-gray-200">GLOBAL RANKING</h2>
+                        </div>
+                        <span class="text-[10px] text-gray-500 font-orbitron">TOP 10</span>
+                    </div>
+                    <div id="leaderboard-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                        <div class="text-center text-xs text-gray-500 py-4">読み込み中...</div>
                     </div>
                 </div>
 
-            </section>
-
-            <!-- Right Panel: Leaderboard & Data Controls (5 cols) -->
-            <section class="lg:col-span-5 flex flex-col gap-6">
-
-                <!-- Global Leaderboard Card -->
-                <div class="bg-gray-900/60 rounded-2xl p-5 border border-gray-800 flex-grow flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-sm font-bold font-orbitron text-yellow-400 flex items-center gap-2">
-                            <i class="fa-solid fa-trophy"></i> ハイスコアランキング
-                        </h3>
-                        <span class="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded border border-gray-700">TOP 10</span>
-                    </div>
-
-                    <div class="overflow-y-auto max-h-[360px] pr-1 space-y-2 flex-grow" id="leaderboard-list">
-                        <div class="text-center text-xs text-gray-500 py-8">ランキングを取得中...</div>
-                    </div>
-                </div>
-
-                <!-- Data Management (Save State / Delete Data) -->
-                <div class="bg-gray-900/60 rounded-2xl p-5 border border-gray-800">
-                    <h3 class="text-sm font-bold font-orbitron text-gray-300 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-database text-cyan-400"></i> クラウド保存状況
-                    </h3>
-                    <p id="save-status" class="text-xs text-gray-400 mb-4">
-                        ログインするとクラウドへ自動的にデータが保存されます。
-                    </p>
-                    
+                <!-- Account / Save Data Settings -->
+                <div class="bg-gray-900/80 rounded-2xl p-5 border border-gray-800 flex flex-col gap-3">
+                    <h3 class="text-xs font-bold text-gray-300 font-orbitron border-b border-gray-800 pb-2">データ管理</h3>
+                    <div id="save-status" class="text-[11px] text-gray-400">同期状態: 待機中</div>
                     <div class="flex gap-2">
-                        <button id="manual-save-btn" disabled class="flex-1 bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 disabled:opacity-30 border border-cyan-500/30 py-2 rounded-lg text-xs font-bold transition">
-                            <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 手動保存
+                        <button id="manual-save-btn" disabled class="flex-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 text-xs py-2 rounded-lg transition font-bold border border-gray-700">
+                            手動保存
                         </button>
-                        <button id="reset-data-btn" disabled class="bg-red-900/20 hover:bg-red-900/40 text-red-400 disabled:opacity-30 border border-red-500/30 px-3 py-2 rounded-lg text-xs font-bold transition">
-                            <i class="fa-solid fa-trash mr-1"></i> リセット
+                        <button id="reset-data-btn" disabled class="bg-red-950/60 hover:bg-red-900/80 disabled:opacity-40 text-red-300 text-xs px-3 py-2 rounded-lg transition border border-red-800/50">
+                            リセット
                         </button>
                     </div>
                 </div>
-
-            </section>
+            </div>
 
         </div>
 
-        <!-- ================= 1vs1 MATCH MODE ================= -->
+        <!-- ================= VS MATCH MODE ================= -->
         <div id="vs-mode-view" class="hidden flex flex-col gap-6 max-w-4xl mx-auto">
             
             <!-- VS Lobby Selection Screen -->
-            <div id="vs-lobby" class="bg-gray-900/80 rounded-2xl p-8 border border-gray-800 text-center">
-                <h2 class="text-xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-400 mb-2">
-                    <i class="fa-solid fa-swords mr-2"></i>1vs1 リアルタイム対戦
+            <div id="vs-lobby" class="bg-gray-900/80 rounded-2xl p-6 sm:p-8 border border-gray-800 text-center">
+                <h2 class="text-xl sm:text-2xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-400 to-yellow-400 mb-2">
+                    <i class="fa-solid fa-bolt-lightning mr-2"></i>7分間 リアルタイム対戦
                 </h2>
-                <p class="text-xs text-gray-400 mb-6">30秒間でより多くのエナジーを獲得したプレイヤーが勝利！</p>
+                <p class="text-xs text-gray-400 mb-6">制限時間7分（420秒）で最も多くのエナジーを獲得したプレイヤーが勝利！</p>
+
+                <div class="mb-8 p-6 bg-gradient-to-r from-red-950/50 via-gray-950 to-amber-950/50 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="text-left">
+                        <div class="text-base font-bold font-orbitron text-amber-300 flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-xl text-amber-400"></i> 1vs1 クイック対戦
+                        </div>
+                        <div class="text-xs text-gray-400 mt-1">「バトルに参加」を押すと自動で相手と即時マッチングします。</div>
+                    </div>
+                    <button id="vs-quick-match-btn" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-red-500 to-amber-500 hover:from-red-400 hover:to-amber-400 text-gray-950 font-black font-orbitron rounded-xl shadow-lg shadow-amber-500/20 text-sm tracking-wider transition transform hover:scale-105 active:scale-95 whitespace-nowrap">
+                        <i class="fa-solid fa-gamepad mr-2"></i> バトルに参加
+                    </button>
+                </div>
+
+                <div class="text-xs text-gray-500 uppercase tracking-widest font-orbitron mb-4">-- または 4人部屋ルーム対戦 --</div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto">
-                    <!-- Create Room -->
                     <div class="bg-gray-950/70 p-5 rounded-xl border border-gray-800 flex flex-col items-center justify-between gap-4">
-                        <i class="fa-solid fa-plus-circle text-3xl text-cyan-400"></i>
+                        <i class="fa-solid fa-users text-3xl text-cyan-400"></i>
                         <div>
-                            <div class="text-sm font-bold text-gray-200">対戦ルームを作成</div>
-                            <div class="text-[11px] text-gray-400 mt-1">部屋を作ってフレンドにコードを共有します</div>
+                            <div class="text-sm font-bold text-gray-200">4人部屋を作成</div>
+                            <div class="text-[11px] text-gray-400 mt-1">最大4人で7分間勝負できる部屋を作成します</div>
                         </div>
                         <button id="vs-create-btn" class="w-full bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold font-orbitron py-2.5 rounded-lg text-xs transition">
                             ルーム作成
                         </button>
                     </div>
 
-                    <!-- Join Room -->
                     <div class="bg-gray-950/70 p-5 rounded-xl border border-gray-800 flex flex-col items-center justify-between gap-3">
                         <i class="fa-solid fa-right-to-bracket text-3xl text-amber-400"></i>
                         <div>
@@ -245,70 +249,59 @@
 
             <!-- VS Room / Playing Screen -->
             <div id="vs-game-room" class="hidden flex flex-col gap-6">
-                <!-- Room Status Bar -->
-                <div class="bg-gray-900/80 rounded-2xl p-4 border border-gray-800 flex justify-between items-center">
+                <div class="bg-gray-900/80 rounded-2xl p-4 border border-gray-800 flex flex-wrap justify-between items-center gap-3">
                     <div class="flex items-center gap-3">
                         <span class="text-xs text-gray-400">ROOM:</span>
                         <span id="vs-room-id-display" class="font-orbitron font-extrabold text-cyan-400 text-lg tracking-wider">----</span>
+                        <span id="vs-mode-badge" class="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/30 font-orbitron">1vs1</span>
                     </div>
-                    <!-- Match Timer -->
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 bg-gray-950 px-4 py-1.5 rounded-xl border border-gray-800">
                         <i class="fa-solid fa-stopwatch text-amber-400"></i>
-                        <span id="vs-timer-display" class="font-orbitron font-extrabold text-xl text-amber-400">30</span>
-                        <span class="text-xs text-gray-400">s</span>
+                        <span id="vs-timer-display" class="font-orbitron font-extrabold text-xl text-amber-400">07:00</span>
                     </div>
-                    <button id="vs-leave-btn" class="text-xs text-red-400 hover:underline">退室</button>
-                </div>
-
-                <!-- Match Battle Arena (Score Board) -->
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- My Score Card -->
-                    <div class="bg-cyan-950/30 border-2 border-cyan-500/50 rounded-2xl p-4 text-center flex flex-col justify-center">
-                        <div class="text-[11px] text-cyan-400 font-bold mb-1">YOU</div>
-                        <div id="vs-my-name" class="text-xs text-gray-300 font-bold truncate">---</div>
-                        <div id="vs-my-score" class="text-3xl font-extrabold font-orbitron text-cyan-300 my-2">0</div>
-                        <div class="text-[10px] text-gray-400">CPS: <span id="vs-my-cps" class="font-orbitron">0</span></div>
-                    </div>
-
-                    <!-- Opponent Score Card -->
-                    <div class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 text-center flex flex-col justify-center">
-                        <div class="text-[11px] text-amber-400 font-bold mb-1">OPPONENT</div>
-                        <div id="vs-opp-name" class="text-xs text-gray-300 font-bold truncate">対戦相手を待機中...</div>
-                        <div id="vs-opp-score" class="text-3xl font-extrabold font-orbitron text-amber-300 my-2">0</div>
-                        <div class="text-[10px] text-gray-400">CPS: <span id="vs-opp-cps" class="font-orbitron">0</span></div>
+                    <div class="flex items-center gap-2">
+                        <button id="vs-start-room-btn" class="hidden bg-emerald-500 hover:bg-emerald-400 text-gray-950 text-xs font-bold font-orbitron px-4 py-2 rounded-lg transition shadow-lg shadow-emerald-500/20">
+                            <i class="fa-solid fa-play mr-1"></i> 対戦開始
+                        </button>
+                        <button id="vs-leave-btn" class="text-xs text-red-400 hover:underline px-2 py-1">退室</button>
                     </div>
                 </div>
 
-                <!-- Game Area in VS Mode -->
-                <div id="vs-action-area" class="bg-gray-900/60 rounded-2xl p-6 border border-gray-800 flex flex-col items-center gap-6 opacity-50 pointer-events-none">
+                <div id="vs-players-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+
+                <div id="vs-action-area" class="bg-gray-900/60 rounded-2xl p-6 border border-gray-800 flex flex-col items-center gap-6 opacity-50 pointer-events-none relative overflow-hidden">
                     <div id="vs-status-message" class="text-xs font-bold font-orbitron text-amber-400 bg-amber-950/50 px-4 py-1.5 rounded-full border border-amber-500/40">
-                        相手の参加を待っています...
+                        マッチング待機中...
                     </div>
 
-                    <!-- Tap Button in VS -->
-                    <button id="vs-core-button" class="core-btn w-36 h-36 rounded-full bg-gradient-to-tr from-amber-500 via-red-500 to-pink-500 p-1 flex items-center justify-center shadow-xl shadow-amber-500/20 focus:outline-none">
+                    <button id="vs-core-button" class="core-btn w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-tr from-amber-500 via-red-500 to-pink-500 p-1 flex items-center justify-center shadow-xl shadow-amber-500/20 focus:outline-none">
                         <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-amber-400/50 hover:bg-gray-900 transition">
                             <i class="fa-solid fa-bolt text-4xl text-amber-400"></i>
                             <span class="text-[10px] font-orbitron text-amber-300 mt-1 font-bold">VS TAP</span>
                         </div>
                     </button>
 
-                    <!-- Upgrades in VS -->
-                    <div class="grid grid-cols-2 gap-3 w-full max-w-md">
-                        <button id="vs-upgrade-click" class="p-2.5 bg-gray-800 hover:bg-gray-750 rounded-xl border border-gray-700 text-left transition flex justify-between items-center">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md">
+                        <button id="vs-upgrade-click" class="p-3 bg-gray-800 hover:bg-gray-750 disabled:opacity-40 rounded-xl border border-gray-700 text-left transition flex justify-between items-center">
                             <div>
                                 <div class="text-xs font-bold text-gray-200">パワー・タップ [A]</div>
-                                <div class="text-[10px] text-amber-400 font-orbitron">Cost: <span id="vs-click-cost">10</span></div>
+                                <div class="text-[11px] text-amber-400 font-orbitron">Cost: <span id="vs-click-cost">10</span></div>
                             </div>
                             <div class="text-xs font-orbitron text-gray-300">Lv.<span id="vs-click-lvl">1</span></div>
                         </button>
-                        <button id="vs-upgrade-auto" class="p-2.5 bg-gray-800 hover:bg-gray-750 rounded-xl border border-gray-700 text-left transition flex justify-between items-center">
+                        <button id="vs-upgrade-auto" class="p-3 bg-gray-800 hover:bg-gray-750 disabled:opacity-40 rounded-xl border border-gray-700 text-left transition flex justify-between items-center">
                             <div>
                                 <div class="text-xs font-bold text-gray-200">オート・ドローン [D]</div>
-                                <div class="text-[10px] text-amber-400 font-orbitron">Cost: <span id="vs-auto-cost">50</span></div>
+                                <div class="text-[11px] text-amber-400 font-orbitron">Cost: <span id="vs-auto-cost">50</span></div>
                             </div>
                             <div class="text-xs font-orbitron text-gray-300">Lv.<span id="vs-auto-lvl">0</span></div>
                         </button>
+                    </div>
+
+                    <div id="vs-countdown-overlay" class="absolute inset-0 bg-gray-950/90 backdrop-blur-md flex flex-col items-center justify-center hidden z-30">
+                        <div id="vs-countdown-text" class="text-6xl sm:text-8xl font-black font-orbitron text-cyan-400 neon-text-blue countdown-anim">
+                            3
+                        </div>
                     </div>
                 </div>
 
@@ -320,14 +313,13 @@
 
     <!-- Result Overlay Modal -->
     <div id="vs-result-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-gray-900 border border-amber-500/40 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col items-center gap-4">
+        <div class="bg-gray-900 border border-amber-500/40 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl flex flex-col items-center gap-4">
             <i id="vs-result-icon" class="fa-solid fa-trophy text-5xl text-yellow-400"></i>
             <h2 id="vs-result-title" class="text-2xl font-black font-orbitron text-yellow-400">VICTORY!</h2>
-            <div id="vs-result-detail" class="text-xs text-gray-300 space-y-1 font-orbitron">
-                <div>あなた: <span id="vs-res-my-score" class="text-cyan-400 font-bold">0</span></div>
-                <div>相手: <span id="vs-res-opp-score" class="text-amber-400 font-bold">0</span></div>
-            </div>
-            <button id="vs-result-close-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-gray-950 text-xs font-bold font-orbitron py-2.5 rounded-xl transition">
+            
+            <div id="vs-result-ranking-list" class="w-full space-y-2 text-xs font-orbitron my-2"></div>
+
+            <button id="vs-result-close-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-gray-950 text-xs font-bold font-orbitron py-3 rounded-xl transition">
                 ロビーに戻る
             </button>
         </div>
@@ -351,7 +343,7 @@
         <span id="toast-message">保存しました</span>
     </div>
 
-    <!-- Firebase SDK Implementation -->
+    <!-- Firebase Modular Imports -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
@@ -366,13 +358,12 @@
             doc, 
             getDoc, 
             setDoc, 
-            updateDoc,
+            updateDoc, 
             deleteDoc, 
             collection, 
             onSnapshot 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAAp88ypoypEBetx-p1Ah7P4qLls2vROGY",
             authDomain: "mapaa-a65a1.firebaseapp.com",
@@ -382,18 +373,15 @@
             appId: "1:284057359693:web:fdb9f22edfcb776fae9304"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // Game State Variables
-        let activeTab = 'single'; // 'single' | 'vs'
+        let activeTab = 'single';
         let currentUser = null;
         let displayName = "ゲスト";
         
-        // Single Player State
         let gameState = {
             energy: 0,
             totalEnergy: 0,
@@ -405,11 +393,13 @@
             autoCost: 50
         };
 
-        // 1vs1 Match State
+        const MATCH_DURATION = 420;
         let vsRoomId = null;
-        let vsRole = null; // 'host' | 'guest'
+        let vsMyPlayerId = null;
         let vsUnsubRoom = null;
         let vsMatchTimerInterval = null;
+        let vsHasStartedCountdown = false;
+
         let vsState = {
             energy: 0,
             clickPower: 1,
@@ -420,7 +410,6 @@
             autoCost: 50
         };
 
-        // DOM Elements
         const el = {
             tabSingleBtn: document.getElementById('tab-single-btn'),
             tabVsBtn: document.getElementById('tab-vs-btn'),
@@ -462,22 +451,18 @@
             toast: document.getElementById('toast'),
             toastMessage: document.getElementById('toast-message'),
 
-            // VS Elements
             vsLobby: document.getElementById('vs-lobby'),
             vsGameRoom: document.getElementById('vs-game-room'),
+            vsQuickMatchBtn: document.getElementById('vs-quick-match-btn'),
             vsCreateBtn: document.getElementById('vs-create-btn'),
             vsJoinBtn: document.getElementById('vs-join-btn'),
             vsCodeInput: document.getElementById('vs-code-input'),
             vsRoomIdDisplay: document.getElementById('vs-room-id-display'),
+            vsModeBadge: document.getElementById('vs-mode-badge'),
             vsTimerDisplay: document.getElementById('vs-timer-display'),
+            vsStartRoomBtn: document.getElementById('vs-start-room-btn'),
             vsLeaveBtn: document.getElementById('vs-leave-btn'),
-            
-            vsMyName: document.getElementById('vs-my-name'),
-            vsMyScore: document.getElementById('vs-my-score'),
-            vsMyCps: document.getElementById('vs-my-cps'),
-            vsOppName: document.getElementById('vs-opp-name'),
-            vsOppScore: document.getElementById('vs-opp-score'),
-            vsOppCps: document.getElementById('vs-opp-cps'),
+            vsPlayersGrid: document.getElementById('vs-players-grid'),
             
             vsActionArea: document.getElementById('vs-action-area'),
             vsStatusMessage: document.getElementById('vs-status-message'),
@@ -488,16 +473,16 @@
             vsClickLvl: document.getElementById('vs-click-lvl'),
             vsAutoCost: document.getElementById('vs-auto-cost'),
             vsAutoLvl: document.getElementById('vs-auto-lvl'),
+            vsCountdownOverlay: document.getElementById('vs-countdown-overlay'),
+            vsCountdownText: document.getElementById('vs-countdown-text'),
 
             vsResultModal: document.getElementById('vs-result-modal'),
             vsResultIcon: document.getElementById('vs-result-icon'),
             vsResultTitle: document.getElementById('vs-result-title'),
-            vsResMyScore: document.getElementById('vs-res-my-score'),
-            vsResOppScore: document.getElementById('vs-res-opp-score'),
+            vsResultRankingList: document.getElementById('vs-result-ranking-list'),
             vsResultCloseBtn: document.getElementById('vs-result-close-btn')
         };
 
-        // Toast Notification Helper
         function showToast(msg) {
             el.toastMessage.textContent = msg;
             el.toast.classList.remove('translate-y-20', 'opacity-0');
@@ -506,7 +491,6 @@
             }, 3000);
         }
 
-        // Tab Navigation Logic
         el.tabSingleBtn.addEventListener('click', () => switchTab('single'));
         el.tabVsBtn.addEventListener('click', () => switchTab('vs'));
 
@@ -525,9 +509,6 @@
             }
         }
 
-        // -------------------------------------------------------------
-        // Single Player Game Logic
-        // -------------------------------------------------------------
         function updateUI() {
             el.energyCount.textContent = Math.floor(gameState.energy).toLocaleString();
             el.epsDisplay.textContent = gameState.autoPower.toLocaleString();
@@ -542,7 +523,6 @@
             el.upgradeAutoBtn.disabled = gameState.energy < gameState.autoCost;
         }
 
-        // Single Loop (1 Second Tick)
         setInterval(() => {
             if (document.visibilityState === 'visible') {
                 if (activeTab === 'single' && gameState.autoPower > 0) {
@@ -557,14 +537,12 @@
             }
         }, 1000);
 
-        // Auto Save Interval (10 seconds)
         setInterval(() => {
             if (currentUser && activeTab === 'single') {
                 saveUserData(true);
             }
         }, 10000);
 
-        // Keydown Handler
         window.addEventListener('keydown', (e) => {
             if (document.activeElement.tagName === 'INPUT') return;
 
@@ -578,7 +556,6 @@
             }
         });
 
-        // Single Mode Controls
         el.coreButton.addEventListener('click', (e) => {
             gameState.energy += gameState.clickPower;
             gameState.totalEnergy += gameState.clickPower;
@@ -617,14 +594,16 @@
             }
         });
 
-        // -------------------------------------------------------------
-        // 1vs1 Realtime Match Logic
-        // -------------------------------------------------------------
         function getVsRoomRef(roomId) {
             return doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'vs_rooms', roomId);
         }
 
-        // Reset VS Match Local State
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
         function resetVsState() {
             vsState = {
                 energy: 0,
@@ -635,61 +614,156 @@
                 clickCost: 10,
                 autoCost: 50
             };
+            vsHasStartedCountdown = false;
             updateVsUI();
         }
 
         function updateVsUI() {
-            el.vsMyName.textContent = displayName;
-            el.vsMyScore.textContent = Math.floor(vsState.energy).toLocaleString();
-            el.vsMyCps.textContent = vsState.autoPower;
-
-            el.vsClickCost.textContent = vsState.clickCost;
+            el.vsClickCost.textContent = vsState.clickCost.toLocaleString();
             el.vsClickLvl.textContent = vsState.clickLevel;
             el.vsUpgradeClick.disabled = vsState.energy < vsState.clickCost;
 
-            el.vsAutoCost.textContent = vsState.autoCost;
+            el.vsAutoCost.textContent = vsState.autoCost.toLocaleString();
             el.vsAutoLvl.textContent = vsState.autoLevel;
             el.vsUpgradeAuto.disabled = vsState.energy < vsState.autoCost;
         }
 
-        // Create VS Room
+        function getMyUniqueId() {
+            if (currentUser) return currentUser.uid;
+            if (!vsMyPlayerId) vsMyPlayerId = 'p-' + Math.random().toString(36).substr(2, 6);
+            return vsMyPlayerId;
+        }
+
+        el.vsQuickMatchBtn.addEventListener('click', async () => {
+            const myUid = getMyUniqueId();
+            vsMyPlayerId = myUid;
+
+            el.vsQuickMatchBtn.disabled = true;
+            el.vsQuickMatchBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> マッチング検索中...`;
+
+            try {
+                const docRef = doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'vs_rooms', 'quick_1vs1_queue');
+                const queueSnap = await getDoc(docRef);
+
+                let targetRoomId = null;
+
+                if (queueSnap.exists() && queueSnap.data().waitingRoomId) {
+                    const candidateId = queueSnap.data().waitingRoomId;
+                    const cSnap = await getDoc(getVsRoomRef(candidateId));
+                    if (cSnap.exists() && cSnap.data().status === 'waiting') {
+                        targetRoomId = candidateId;
+                    }
+                }
+
+                if (targetRoomId) {
+                    vsRoomId = targetRoomId;
+                    resetVsState();
+
+                    const roomSnap = await getDoc(getVsRoomRef(targetRoomId));
+                    const players = roomSnap.data().players || {};
+                    players[myUid] = {
+                        uid: myUid,
+                        name: displayName,
+                        score: 0,
+                        cps: 0
+                    };
+
+                    await updateDoc(getVsRoomRef(targetRoomId), {
+                        players: players,
+                        status: 'starting',
+                        startAt: Date.now() + 3500
+                    });
+
+                    await setDoc(docRef, { waitingRoomId: null });
+
+                    enterVsRoomUI(targetRoomId, '1vs1 (クイック対戦)');
+                    subscribeVsRoom(targetRoomId);
+
+                } else {
+                    const roomId = 'QM-' + Math.floor(1000 + Math.random() * 9000);
+                    vsRoomId = roomId;
+                    resetVsState();
+
+                    const initialPlayers = {};
+                    initialPlayers[myUid] = {
+                        uid: myUid,
+                        name: displayName,
+                        score: 0,
+                        cps: 0
+                    };
+
+                    const roomData = {
+                        mode: '1vs1',
+                        maxPlayers: 2,
+                        hostUid: myUid,
+                        status: 'waiting',
+                        timer: MATCH_DURATION,
+                        players: initialPlayers,
+                        createdAt: Date.now()
+                    };
+
+                    await setDoc(getVsRoomRef(roomId), roomData);
+                    await setDoc(docRef, { waitingRoomId: roomId });
+
+                    enterVsRoomUI(roomId, '1vs1 (クイック対戦)');
+                    subscribeVsRoom(roomId);
+                }
+
+            } catch (err) {
+                console.error("Quick Match Error:", err);
+                showToast("マッチング処理に失敗しました");
+            } finally {
+                el.vsQuickMatchBtn.disabled = false;
+                el.vsQuickMatchBtn.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i> バトルに参加`;
+            }
+        });
+
         el.vsCreateBtn.addEventListener('click', async () => {
+            const myUid = getMyUniqueId();
+            vsMyPlayerId = myUid;
+
             const roomId = Math.floor(1000 + Math.random() * 9000).toString();
             vsRoomId = roomId;
-            vsRole = 'host';
             resetVsState();
 
+            const initialPlayers = {};
+            initialPlayers[myUid] = {
+                uid: myUid,
+                name: displayName,
+                score: 0,
+                cps: 0
+            };
+
             const roomData = {
-                status: 'waiting', // waiting | playing | finished
-                host: {
-                    uid: currentUser ? currentUser.uid : 'anon-' + Math.random().toString(36).substr(2, 5),
-                    name: displayName,
-                    score: 0,
-                    cps: 0
-                },
-                guest: null,
-                timer: 30,
+                mode: '4player',
+                maxPlayers: 4,
+                hostUid: myUid,
+                status: 'waiting',
+                timer: MATCH_DURATION,
+                players: initialPlayers,
                 createdAt: Date.now()
             };
 
             try {
                 await setDoc(getVsRoomRef(roomId), roomData);
-                enterVsRoomUI(roomId);
+                enterVsRoomUI(roomId, '4人部屋対戦');
                 subscribeVsRoom(roomId);
-                showToast("ルームを作成しました！コード: " + roomId);
+                showToast("4人ルームを作成しました！コード: " + roomId);
             } catch (err) {
                 console.error("Create Room Error:", err);
                 showToast("ルーム作成に失敗しました");
             }
         });
 
-        // Join VS Room
         el.vsJoinBtn.addEventListener('click', async () => {
             const code = el.vsCodeInput.value.trim();
             if (code.length !== 4) {
-                showToast("4桁のルームコードを入力してください");
+                showToast("4桁のコードを入力してください");
                 return;
             }
+
+            const myUid = getMyUniqueId();
+            vsMyPlayerId = myUid;
 
             try {
                 const roomSnap = await getDoc(getVsRoomRef(code));
@@ -699,56 +773,70 @@
                 }
                 const roomData = roomSnap.data();
                 if (roomData.status !== 'waiting') {
-                    showToast("既に満員または対戦中のルームです");
+                    showToast("既に対戦中または終了したルームです");
+                    return;
+                }
+
+                const players = roomData.players || {};
+                const currentCount = Object.keys(players).length;
+                if (currentCount >= (roomData.maxPlayers || 4)) {
+                    showToast("満員のルームです");
                     return;
                 }
 
                 vsRoomId = code;
-                vsRole = 'guest';
                 resetVsState();
 
-                const myUid = currentUser ? currentUser.uid : 'anon-' + Math.random().toString(36).substr(2, 5);
-                await updateDoc(getVsRoomRef(code), {
-                    status: 'playing',
-                    guest: {
-                        uid: myUid,
-                        name: displayName,
-                        score: 0,
-                        cps: 0
-                    }
-                });
+                players[myUid] = {
+                    uid: myUid,
+                    name: displayName,
+                    score: 0,
+                    cps: 0
+                };
 
-                enterVsRoomUI(code);
+                await updateDoc(getVsRoomRef(code), { players: players });
+                enterVsRoomUI(code, '4人部屋対戦');
                 subscribeVsRoom(code);
+
             } catch (err) {
                 console.error("Join Room Error:", err);
                 showToast("参加に失敗しました");
             }
         });
 
-        // Enter VS Room UI
-        function enterVsRoomUI(roomId) {
+        el.vsStartRoomBtn.addEventListener('click', async () => {
+            if (!vsRoomId) return;
+            try {
+                await updateDoc(getVsRoomRef(vsRoomId), {
+                    status: 'starting',
+                    startAt: Date.now() + 3500
+                });
+            } catch (err) {
+                console.error("Start Room Error:", err);
+            }
+        });
+
+        function enterVsRoomUI(roomId, modeTitle) {
             el.vsLobby.classList.add('hidden');
             el.vsGameRoom.classList.remove('hidden');
             el.vsRoomIdDisplay.textContent = roomId;
-            el.vsTimerDisplay.textContent = "30";
+            el.vsModeBadge.textContent = modeTitle;
+            el.vsTimerDisplay.textContent = formatTime(MATCH_DURATION);
         }
 
-        // Leave VS Room
         el.vsLeaveBtn.addEventListener('click', leaveVsRoom);
 
         function leaveVsRoom() {
             if (vsUnsubRoom) vsUnsubRoom();
             if (vsMatchTimerInterval) clearInterval(vsMatchTimerInterval);
             vsRoomId = null;
-            vsRole = null;
 
             el.vsLobby.classList.remove('hidden');
             el.vsGameRoom.classList.add('hidden');
             el.vsResultModal.classList.add('hidden');
+            el.vsCountdownOverlay.classList.add('hidden');
         }
 
-        // Subscribe to VS Room Updates
         function subscribeVsRoom(roomId) {
             if (vsUnsubRoom) vsUnsubRoom();
 
@@ -760,48 +848,91 @@
                 }
 
                 const data = snapshot.data();
+                const myUid = getMyUniqueId();
+                const isHost = data.hostUid === myUid;
+                const playersMap = data.players || {};
+                const playerList = Object.values(playersMap);
 
-                // Update Opponent Info
-                const opp = vsRole === 'host' ? data.guest : data.host;
-                if (opp) {
-                    el.vsOppName.textContent = opp.name;
-                    el.vsOppScore.textContent = Math.floor(opp.score).toLocaleString();
-                    el.vsOppCps.textContent = opp.cps || 0;
+                renderPlayersGrid(playerList, myUid);
+
+                if (data.mode === '4player' && isHost && data.status === 'waiting') {
+                    el.vsStartRoomBtn.classList.remove('hidden');
                 } else {
-                    el.vsOppName.textContent = "対戦相手を待機中...";
-                    el.vsOppScore.textContent = "0";
-                    el.vsOppCps.textContent = "0";
+                    el.vsStartRoomBtn.classList.add('hidden');
                 }
 
-                // Status Management
                 if (data.status === 'waiting') {
-                    el.vsStatusMessage.textContent = "相手の参加を待っています... (コード: " + roomId + ")";
+                    el.vsStatusMessage.textContent = `対戦相手を待っています... (${playerList.length}/${data.maxPlayers || 4}人)`;
                     el.vsActionArea.classList.add('opacity-50', 'pointer-events-none');
+                } else if (data.status === 'starting' && !vsHasStartedCountdown) {
+                    vsHasStartedCountdown = true;
+                    runCountdownSequence(data.startAt, () => {
+                        if (isHost && !vsMatchTimerInterval) {
+                            startMatchCountdown(roomId);
+                        }
+                    });
                 } else if (data.status === 'playing') {
-                    el.vsStatusMessage.textContent = "対戦中！キー操作 [A] [D] も有効！";
+                    el.vsStatusMessage.textContent = "7分間の白熱バトル中！キー操作 [A] [D] 有効";
                     el.vsActionArea.classList.remove('opacity-50', 'pointer-events-none');
-                    
-                    // Host manages countdown timer
-                    if (vsRole === 'host' && !vsMatchTimerInterval) {
-                        startMatchCountdown(roomId);
-                    }
                 }
 
-                el.vsTimerDisplay.textContent = data.timer;
+                el.vsTimerDisplay.textContent = formatTime(data.timer !== undefined ? data.timer : MATCH_DURATION);
 
-                // Finished Condition
                 if (data.status === 'finished') {
                     if (vsMatchTimerInterval) clearInterval(vsMatchTimerInterval);
-                    showVsResult(data);
+                    showVsResult(playerList, myUid);
                 }
             }, (err) => {
                 console.error("VS Sync Error:", err);
             });
         }
 
-        // Start Host Timer Loop
+        function renderPlayersGrid(players, myUid) {
+            el.vsPlayersGrid.innerHTML = players.map(p => {
+                const isMe = p.uid === myUid;
+                const score = isMe ? Math.floor(vsState.energy) : Math.floor(p.score || 0);
+                const cps = isMe ? vsState.autoPower : (p.cps || 0);
+
+                return `
+                    <div class="${isMe ? 'bg-cyan-950/40 border-cyan-500/60' : 'bg-gray-900/80 border-gray-800'} border-2 rounded-xl p-3 text-center flex flex-col justify-between">
+                        <div class="text-[10px] ${isMe ? 'text-cyan-400' : 'text-gray-400'} font-bold flex items-center justify-center gap-1">
+                            ${isMe ? '<i class="fa-solid fa-user text-cyan-400"></i> YOU' : '<i class="fa-solid fa-gamepad"></i> OPPONENT'}
+                        </div>
+                        <div class="text-xs font-bold text-gray-200 truncate my-1">${escapeHtml(p.name || 'ゲスト')}</div>
+                        <div class="text-2xl font-extrabold font-orbitron ${isMe ? 'text-cyan-300' : 'text-amber-300'}">${score.toLocaleString()}</div>
+                        <div class="text-[10px] text-gray-400 font-orbitron">CPS: ${cps.toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function runCountdownSequence(targetTime, onComplete) {
+            el.vsCountdownOverlay.classList.remove('hidden');
+            
+            const updateCount = () => {
+                const diff = Math.ceil((targetTime - Date.now()) / 1000);
+                if (diff > 0) {
+                    el.vsCountdownText.textContent = diff;
+                    el.vsCountdownText.className = "text-6xl sm:text-8xl font-black font-orbitron text-cyan-400 neon-text-blue countdown-anim";
+                } else if (diff === 0) {
+                    el.vsCountdownText.textContent = "START!";
+                    el.vsCountdownText.className = "text-5xl sm:text-7xl font-black font-orbitron text-yellow-400 neon-text-blue countdown-anim";
+                } else {
+                    el.vsCountdownOverlay.classList.add('hidden');
+                    if (onComplete) onComplete();
+                    return;
+                }
+                setTimeout(updateCount, 800);
+            };
+
+            updateCount();
+        }
+
         function startMatchCountdown(roomId) {
-            let timeLeft = 30;
+            let timeLeft = MATCH_DURATION;
+            
+            updateDoc(getVsRoomRef(roomId), { status: 'playing' });
+
             vsMatchTimerInterval = setInterval(async () => {
                 timeLeft -= 1;
                 if (timeLeft <= 0) {
@@ -818,20 +949,19 @@
             }, 1000);
         }
 
-        // Sync Score & CPS to Firestore
         async function syncVsScore() {
-            if (!vsRoomId || !vsRole) return;
+            if (!vsRoomId) return;
+            const myUid = getMyUniqueId();
             try {
                 const payload = {};
-                payload[`${vsRole}.score`] = vsState.energy;
-                payload[`${vsRole}.cps`] = vsState.autoPower;
+                payload[`players.${myUid}.score`] = vsState.energy;
+                payload[`players.${myUid}.cps`] = vsState.autoPower;
                 await updateDoc(getVsRoomRef(vsRoomId), payload);
             } catch (err) {
                 console.error("Sync Score Error:", err);
             }
         }
 
-        // VS Game Controls
         el.vsCoreButton.addEventListener('click', () => {
             vsState.energy += vsState.clickPower;
             updateVsUI();
@@ -860,36 +990,38 @@
             }
         });
 
-        // Show Result Modal
-        function showVsResult(roomData) {
-            const myScore = vsRole === 'host' ? roomData.host?.score || 0 : roomData.guest?.score || 0;
-            const oppScore = vsRole === 'host' ? roomData.guest?.score || 0 : roomData.host?.score || 0;
+        function showVsResult(players, myUid) {
+            const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+            const myRank = sorted.findIndex(p => p.uid === myUid) + 1;
 
-            el.vsResMyScore.textContent = Math.floor(myScore).toLocaleString();
-            el.vsResOppScore.textContent = Math.floor(oppScore).toLocaleString();
-
-            if (myScore > oppScore) {
-                el.vsResultIcon.className = "fa-solid fa-trophy text-5xl text-yellow-400";
+            if (myRank === 1) {
+                el.vsResultIcon.className = "fa-solid fa-trophy text-6xl text-yellow-400";
                 el.vsResultTitle.textContent = "VICTORY!";
-                el.vsResultTitle.className = "text-2xl font-black font-orbitron text-yellow-400";
-            } else if (myScore < oppScore) {
-                el.vsResultIcon.className = "fa-solid fa-skull text-5xl text-red-500";
-                el.vsResultTitle.textContent = "DEFEAT...";
-                el.vsResultTitle.className = "text-2xl font-black font-orbitron text-red-500";
+                el.vsResultTitle.className = "text-3xl font-black font-orbitron text-yellow-400";
             } else {
-                el.vsResultIcon.className = "fa-solid fa-handshake text-5xl text-gray-400";
-                el.vsResultTitle.textContent = "DRAW";
-                el.vsResultTitle.className = "text-2xl font-black font-orbitron text-gray-400";
+                el.vsResultIcon.className = "fa-solid fa-award text-6xl text-gray-400";
+                el.vsResultTitle.textContent = `#${myRank} PLACE`;
+                el.vsResultTitle.className = "text-3xl font-black font-orbitron text-cyan-400";
             }
+
+            el.vsResultRankingList.innerHTML = sorted.map((p, idx) => {
+                const isMe = p.uid === myUid;
+                return `
+                    <div class="flex justify-between items-center p-2 rounded-lg ${isMe ? 'bg-cyan-950 border border-cyan-500/50' : 'bg-gray-800/50'}">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-yellow-400 font-orbitron w-4">${idx + 1}</span>
+                            <span class="font-bold text-gray-200 ${isMe ? 'text-cyan-300' : ''}">${escapeHtml(p.name || 'ゲスト')}</span>
+                        </div>
+                        <div class="font-bold text-cyan-400">${Math.floor(p.score || 0).toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
 
             el.vsResultModal.classList.remove('hidden');
         }
 
         el.vsResultCloseBtn.addEventListener('click', leaveVsRoom);
 
-        // -------------------------------------------------------------
-        // Firestore Backend Sync Operations
-        // -------------------------------------------------------------
         function getLeaderboardDocRef(uid) {
             return doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'scores', uid);
         }
@@ -907,7 +1039,7 @@
 
             try {
                 await setDoc(getLeaderboardDocRef(currentUser.uid), payload);
-                if (!silent) showToast("データを正常に保存しました！");
+                if (!silent) showToast("データを保存しました！");
                 el.saveStatus.textContent = `最終同期: ${new Date().toLocaleTimeString()}`;
             } catch (error) {
                 console.error("Firestore Save Error:", error);
@@ -1012,7 +1144,6 @@
             });
         }
 
-        // Auth Logic
         el.loginBtn.addEventListener('click', async () => {
             try {
                 await signInWithPopup(auth, provider);
@@ -1054,7 +1185,6 @@
             }
         });
 
-        // Profile Name Editing
         el.editNameBtn.addEventListener('click', () => {
             el.nameInput.value = displayName;
             el.nameModal.classList.remove('hidden');
@@ -1077,7 +1207,6 @@
         el.manualSaveBtn.addEventListener('click', () => saveUserData(false));
         el.resetDataBtn.addEventListener('click', resetUserData);
 
-        // Initial Setup
         updateUI();
         subscribeLeaderboard();
     </script>
