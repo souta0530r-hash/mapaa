@@ -84,107 +84,254 @@
         </div>
     </header>
 
+    <!-- Mode Navigation Tabs -->
+    <div class="max-w-6xl mx-auto px-4 pt-4 flex gap-2">
+        <button id="tab-single-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20">
+            <i class="fa-solid fa-user mr-1.5"></i> シングル（ハイスコア）
+        </button>
+        <button id="tab-vs-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700">
+            <i class="fa-solid fa-crosshairs mr-1.5 text-red-400"></i> 1vs1 対戦モード
+        </button>
+    </div>
+
     <!-- Main Content Area -->
-    <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <main class="max-w-6xl mx-auto px-4 py-4 w-full flex-grow">
 
-        <!-- Left Panel: Clicker Game Section (7 cols) -->
-        <section class="lg:col-span-7 flex flex-col gap-6">
-            
-            <!-- Energy Display Card -->
-            <div class="bg-gray-900/60 rounded-2xl p-6 border border-gray-800 neon-box-blue flex flex-col items-center justify-center text-center relative overflow-hidden">
-                <div class="text-xs uppercase tracking-widest text-gray-400 font-orbitron mb-1">現在の所持エナジー</div>
-                <div id="energy-count" class="text-4xl sm:text-5xl font-extrabold font-orbitron text-cyan-400 neon-text-blue my-2">0</div>
-                <div class="text-xs text-gray-400 flex gap-4">
-                    <span>毎秒生産: <strong id="eps-display" class="text-cyan-300 font-orbitron">0</strong> /s</span>
-                    <span>累計獲得: <strong id="total-energy-display" class="text-gray-300 font-orbitron">0</strong></span>
-                </div>
-            </div>
+        <!-- ================= SINGLE PLAYER MODE ================= -->
+        <div id="single-mode-view" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- Clicker Core Interactive Area -->
-            <div class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center relative min-h-[300px] select-none" id="click-area">
-                <button id="core-button" class="core-btn w-44 h-44 rounded-full bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-500 p-1 flex items-center justify-center shadow-2xl shadow-cyan-500/40 focus:outline-none">
-                    <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-cyan-400/50 hover:bg-gray-900 transition">
-                        <i class="fa-solid fa-bolt text-5xl text-cyan-400 drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
-                        <span class="text-xs font-orbitron text-cyan-300 mt-2 font-bold tracking-wider">TAP HERE</span>
-                    </div>
-                </button>
-            </div>
-
-            <!-- Upgrade Shop -->
-            <div class="bg-gray-900/60 rounded-2xl p-5 border border-gray-800">
-                <h3 class="text-sm font-bold font-orbitron text-cyan-400 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-microchip"></i> アップグレードショップ
-                </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    
-                    <!-- Click Upgrade Button -->
-                    <button id="upgrade-click-btn" class="p-3 bg-gray-800 hover:bg-gray-750 disabled:opacity-40 disabled:hover:bg-gray-800 rounded-xl border border-gray-700 text-left transition flex items-center justify-between group">
-                        <div>
-                            <div class="text-xs font-bold text-gray-200">パワー・タップ</div>
-                            <div class="text-[11px] text-gray-400">クリック +1</div>
-                            <div class="text-xs font-orbitron text-cyan-400 mt-1">コスト: <span id="click-cost">10</span></div>
-                        </div>
-                        <div class="bg-gray-900 px-3 py-2 rounded-lg text-xs font-orbitron text-gray-300 border border-gray-700">
-                            Lv.<span id="click-level">1</span>
-                        </div>
-                    </button>
-
-                    <!-- Auto Generator Upgrade Button -->
-                    <button id="upgrade-auto-btn" class="p-3 bg-gray-800 hover:bg-gray-750 disabled:opacity-40 disabled:hover:bg-gray-800 rounded-xl border border-gray-700 text-left transition flex items-center justify-between group">
-                        <div>
-                            <div class="text-xs font-bold text-gray-200">オート・ドローン</div>
-                            <div class="text-[11px] text-gray-400">+1 エナジー/秒</div>
-                            <div class="text-xs font-orbitron text-cyan-400 mt-1">コスト: <span id="auto-cost">50</span></div>
-                        </div>
-                        <div class="bg-gray-900 px-3 py-2 rounded-lg text-xs font-orbitron text-gray-300 border border-gray-700">
-                            Lv.<span id="auto-level">0</span>
-                        </div>
-                    </button>
-
-                </div>
-            </div>
-
-        </section>
-
-        <!-- Right Panel: Leaderboard & Data Controls (5 cols) -->
-        <section class="lg:col-span-5 flex flex-col gap-6">
-
-            <!-- Global Leaderboard Card -->
-            <div class="bg-gray-900/60 rounded-2xl p-5 border border-gray-800 flex-grow flex flex-col">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-sm font-bold font-orbitron text-yellow-400 flex items-center gap-2">
-                        <i class="fa-solid fa-trophy"></i> ハイスコアランキング
-                    </h3>
-                    <span class="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded border border-gray-700">TOP 10</span>
-                </div>
-
-                <div class="overflow-y-auto max-h-[360px] pr-1 space-y-2 flex-grow" id="leaderboard-list">
-                    <div class="text-center text-xs text-gray-500 py-8">ランキングを取得中...</div>
-                </div>
-            </div>
-
-            <!-- Data Management (Save State / Delete Data) -->
-            <div class="bg-gray-900/60 rounded-2xl p-5 border border-gray-800">
-                <h3 class="text-sm font-bold font-orbitron text-gray-300 mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-cyan-400"></i> クラウド保存状況
-                </h3>
-                <p id="save-status" class="text-xs text-gray-400 mb-4">
-                    ログインするとクラウドへ自動的にデータが保存されます。
-                </p>
+            <!-- Left Panel: Clicker Game Section (7 cols) -->
+            <section class="lg:col-span-7 flex flex-col gap-6">
                 
-                <div class="flex gap-2">
-                    <button id="manual-save-btn" disabled class="flex-1 bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 disabled:opacity-30 border border-cyan-500/30 py-2 rounded-lg text-xs font-bold transition">
-                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 手動保存
+                <!-- Energy Display Card -->
+                <div class="bg-gray-900/60 rounded-2xl p-6 border border-gray-800 neon-box-blue flex flex-col items-center justify-center text-center relative overflow-hidden">
+                    <div class="text-xs uppercase tracking-widest text-gray-400 font-orbitron mb-1">現在の所持エナジー</div>
+                    <div id="energy-count" class="text-4xl sm:text-5xl font-extrabold font-orbitron text-cyan-400 neon-text-blue my-2">0</div>
+                    <div class="text-xs text-gray-400 flex gap-4">
+                        <span>毎秒生産: <strong id="eps-display" class="text-cyan-300 font-orbitron">0</strong> /s</span>
+                        <span>累計獲得: <strong id="total-energy-display" class="text-gray-300 font-orbitron">0</strong></span>
+                    </div>
+                </div>
+
+                <!-- Clicker Core Interactive Area -->
+                <div class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center relative min-h-[280px] select-none" id="click-area">
+                    <button id="core-button" class="core-btn w-44 h-44 rounded-full bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-500 p-1 flex items-center justify-center shadow-2xl shadow-cyan-500/40 focus:outline-none">
+                        <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-cyan-400/50 hover:bg-gray-900 transition">
+                            <i class="fa-solid fa-bolt text-5xl text-cyan-400 drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
+                            <span class="text-xs font-orbitron text-cyan-300 mt-2 font-bold tracking-wider">TAP HERE</span>
+                        </div>
                     </button>
-                    <button id="reset-data-btn" disabled class="bg-red-900/20 hover:bg-red-900/40 text-red-400 disabled:opacity-30 border border-red-500/30 px-3 py-2 rounded-lg text-xs font-bold transition">
-                        <i class="fa-solid fa-trash mr-1"></i> リセット
-                    </button>
+                </div>
+
+                <!-- Upgrade Shop -->
+                <div class="bg-gray-900/60 rounded-2xl p-5 border border-gray-800">
+                    <h3 class="text-sm font-bold font-orbitron text-cyan-400 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-microchip"></i> アップグレードショップ
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        
+                        <!-- Click Upgrade Button -->
+                        <button id="upgrade-click-btn" class="p-3 bg-gray-800 hover:bg-gray-750 disabled:opacity-40 disabled:hover:bg-gray-800 rounded-xl border border-gray-700 text-left transition flex items-center justify-between group relative">
+                            <div>
+                                <div class="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+                                    パワー・タップ
+                                    <span class="bg-gray-950 border border-cyan-500/50 text-cyan-400 text-[10px] px-1.5 py-0.5 rounded font-orbitron">A</span>
+                                </div>
+                                <div class="text-[11px] text-gray-400">クリック +1</div>
+                                <div class="text-xs font-orbitron text-cyan-400 mt-1">コスト: <span id="click-cost">10</span></div>
+                            </div>
+                            <div class="bg-gray-900 px-3 py-2 rounded-lg text-xs font-orbitron text-gray-300 border border-gray-700">
+                                Lv.<span id="click-level">1</span>
+                            </div>
+                        </button>
+
+                        <!-- Auto Generator Upgrade Button -->
+                        <button id="upgrade-auto-btn" class="p-3 bg-gray-800 hover:bg-gray-750 disabled:opacity-40 disabled:hover:bg-gray-800 rounded-xl border border-gray-700 text-left transition flex items-center justify-between group relative">
+                            <div>
+                                <div class="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+                                    オート・ドローン
+                                    <span class="bg-gray-950 border border-cyan-500/50 text-cyan-400 text-[10px] px-1.5 py-0.5 rounded font-orbitron">D</span>
+                                </div>
+                                <div class="text-[11px] text-gray-400">+1 エナジー/秒</div>
+                                <div class="text-xs font-orbitron text-cyan-400 mt-1">コスト: <span id="auto-cost">50</span></div>
+                            </div>
+                            <div class="bg-gray-900 px-3 py-2 rounded-lg text-xs font-orbitron text-gray-300 border border-gray-700">
+                                Lv.<span id="auto-level">0</span>
+                            </div>
+                        </button>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Right Panel: Leaderboard & Data Controls (5 cols) -->
+            <section class="lg:col-span-5 flex flex-col gap-6">
+
+                <!-- Global Leaderboard Card -->
+                <div class="bg-gray-900/60 rounded-2xl p-5 border border-gray-800 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-bold font-orbitron text-yellow-400 flex items-center gap-2">
+                            <i class="fa-solid fa-trophy"></i> ハイスコアランキング
+                        </h3>
+                        <span class="text-[10px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded border border-gray-700">TOP 10</span>
+                    </div>
+
+                    <div class="overflow-y-auto max-h-[360px] pr-1 space-y-2 flex-grow" id="leaderboard-list">
+                        <div class="text-center text-xs text-gray-500 py-8">ランキングを取得中...</div>
+                    </div>
+                </div>
+
+                <!-- Data Management (Save State / Delete Data) -->
+                <div class="bg-gray-900/60 rounded-2xl p-5 border border-gray-800">
+                    <h3 class="text-sm font-bold font-orbitron text-gray-300 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-database text-cyan-400"></i> クラウド保存状況
+                    </h3>
+                    <p id="save-status" class="text-xs text-gray-400 mb-4">
+                        ログインするとクラウドへ自動的にデータが保存されます。
+                    </p>
+                    
+                    <div class="flex gap-2">
+                        <button id="manual-save-btn" disabled class="flex-1 bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 disabled:opacity-30 border border-cyan-500/30 py-2 rounded-lg text-xs font-bold transition">
+                            <i class="fa-solid fa-cloud-arrow-up mr-1"></i> 手動保存
+                        </button>
+                        <button id="reset-data-btn" disabled class="bg-red-900/20 hover:bg-red-900/40 text-red-400 disabled:opacity-30 border border-red-500/30 px-3 py-2 rounded-lg text-xs font-bold transition">
+                            <i class="fa-solid fa-trash mr-1"></i> リセット
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- ================= 1vs1 MATCH MODE ================= -->
+        <div id="vs-mode-view" class="hidden flex flex-col gap-6 max-w-4xl mx-auto">
+            
+            <!-- VS Lobby Selection Screen -->
+            <div id="vs-lobby" class="bg-gray-900/80 rounded-2xl p-8 border border-gray-800 text-center">
+                <h2 class="text-xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-400 mb-2">
+                    <i class="fa-solid fa-swords mr-2"></i>1vs1 リアルタイム対戦
+                </h2>
+                <p class="text-xs text-gray-400 mb-6">30秒間でより多くのエナジーを獲得したプレイヤーが勝利！</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto">
+                    <!-- Create Room -->
+                    <div class="bg-gray-950/70 p-5 rounded-xl border border-gray-800 flex flex-col items-center justify-between gap-4">
+                        <i class="fa-solid fa-plus-circle text-3xl text-cyan-400"></i>
+                        <div>
+                            <div class="text-sm font-bold text-gray-200">対戦ルームを作成</div>
+                            <div class="text-[11px] text-gray-400 mt-1">部屋を作ってフレンドにコードを共有します</div>
+                        </div>
+                        <button id="vs-create-btn" class="w-full bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold font-orbitron py-2.5 rounded-lg text-xs transition">
+                            ルーム作成
+                        </button>
+                    </div>
+
+                    <!-- Join Room -->
+                    <div class="bg-gray-950/70 p-5 rounded-xl border border-gray-800 flex flex-col items-center justify-between gap-3">
+                        <i class="fa-solid fa-right-to-bracket text-3xl text-amber-400"></i>
+                        <div>
+                            <div class="text-sm font-bold text-gray-200">ルームに参加</div>
+                            <div class="text-[11px] text-gray-400 mt-1">4桁のコードを入力して参加します</div>
+                        </div>
+                        <input type="text" id="vs-code-input" maxlength="4" placeholder="CODE" class="w-full text-center bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm font-orbitron tracking-widest uppercase focus:outline-none focus:border-amber-400 text-amber-300">
+                        <button id="vs-join-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold font-orbitron py-2.5 rounded-lg text-xs transition">
+                            ルーム参加
+                        </button>
+                    </div>
                 </div>
             </div>
 
-        </section>
+            <!-- VS Room / Playing Screen -->
+            <div id="vs-game-room" class="hidden flex flex-col gap-6">
+                <!-- Room Status Bar -->
+                <div class="bg-gray-900/80 rounded-2xl p-4 border border-gray-800 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-gray-400">ROOM:</span>
+                        <span id="vs-room-id-display" class="font-orbitron font-extrabold text-cyan-400 text-lg tracking-wider">----</span>
+                    </div>
+                    <!-- Match Timer -->
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch text-amber-400"></i>
+                        <span id="vs-timer-display" class="font-orbitron font-extrabold text-xl text-amber-400">30</span>
+                        <span class="text-xs text-gray-400">s</span>
+                    </div>
+                    <button id="vs-leave-btn" class="text-xs text-red-400 hover:underline">退室</button>
+                </div>
+
+                <!-- Match Battle Arena (Score Board) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- My Score Card -->
+                    <div class="bg-cyan-950/30 border-2 border-cyan-500/50 rounded-2xl p-4 text-center flex flex-col justify-center">
+                        <div class="text-[11px] text-cyan-400 font-bold mb-1">YOU</div>
+                        <div id="vs-my-name" class="text-xs text-gray-300 font-bold truncate">---</div>
+                        <div id="vs-my-score" class="text-3xl font-extrabold font-orbitron text-cyan-300 my-2">0</div>
+                        <div class="text-[10px] text-gray-400">CPS: <span id="vs-my-cps" class="font-orbitron">0</span></div>
+                    </div>
+
+                    <!-- Opponent Score Card -->
+                    <div class="bg-amber-950/30 border-2 border-amber-500/50 rounded-2xl p-4 text-center flex flex-col justify-center">
+                        <div class="text-[11px] text-amber-400 font-bold mb-1">OPPONENT</div>
+                        <div id="vs-opp-name" class="text-xs text-gray-300 font-bold truncate">対戦相手を待機中...</div>
+                        <div id="vs-opp-score" class="text-3xl font-extrabold font-orbitron text-amber-300 my-2">0</div>
+                        <div class="text-[10px] text-gray-400">CPS: <span id="vs-opp-cps" class="font-orbitron">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Game Area in VS Mode -->
+                <div id="vs-action-area" class="bg-gray-900/60 rounded-2xl p-6 border border-gray-800 flex flex-col items-center gap-6 opacity-50 pointer-events-none">
+                    <div id="vs-status-message" class="text-xs font-bold font-orbitron text-amber-400 bg-amber-950/50 px-4 py-1.5 rounded-full border border-amber-500/40">
+                        相手の参加を待っています...
+                    </div>
+
+                    <!-- Tap Button in VS -->
+                    <button id="vs-core-button" class="core-btn w-36 h-36 rounded-full bg-gradient-to-tr from-amber-500 via-red-500 to-pink-500 p-1 flex items-center justify-center shadow-xl shadow-amber-500/20 focus:outline-none">
+                        <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-amber-400/50 hover:bg-gray-900 transition">
+                            <i class="fa-solid fa-bolt text-4xl text-amber-400"></i>
+                            <span class="text-[10px] font-orbitron text-amber-300 mt-1 font-bold">VS TAP</span>
+                        </div>
+                    </button>
+
+                    <!-- Upgrades in VS -->
+                    <div class="grid grid-cols-2 gap-3 w-full max-w-md">
+                        <button id="vs-upgrade-click" class="p-2.5 bg-gray-800 hover:bg-gray-750 rounded-xl border border-gray-700 text-left transition flex justify-between items-center">
+                            <div>
+                                <div class="text-xs font-bold text-gray-200">パワー・タップ [A]</div>
+                                <div class="text-[10px] text-amber-400 font-orbitron">Cost: <span id="vs-click-cost">10</span></div>
+                            </div>
+                            <div class="text-xs font-orbitron text-gray-300">Lv.<span id="vs-click-lvl">1</span></div>
+                        </button>
+                        <button id="vs-upgrade-auto" class="p-2.5 bg-gray-800 hover:bg-gray-750 rounded-xl border border-gray-700 text-left transition flex justify-between items-center">
+                            <div>
+                                <div class="text-xs font-bold text-gray-200">オート・ドローン [D]</div>
+                                <div class="text-[10px] text-amber-400 font-orbitron">Cost: <span id="vs-auto-cost">50</span></div>
+                            </div>
+                            <div class="text-xs font-orbitron text-gray-300">Lv.<span id="vs-auto-lvl">0</span></div>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
 
     </main>
+
+    <!-- Result Overlay Modal -->
+    <div id="vs-result-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-amber-500/40 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col items-center gap-4">
+            <i id="vs-result-icon" class="fa-solid fa-trophy text-5xl text-yellow-400"></i>
+            <h2 id="vs-result-title" class="text-2xl font-black font-orbitron text-yellow-400">VICTORY!</h2>
+            <div id="vs-result-detail" class="text-xs text-gray-300 space-y-1 font-orbitron">
+                <div>あなた: <span id="vs-res-my-score" class="text-cyan-400 font-bold">0</span></div>
+                <div>相手: <span id="vs-res-opp-score" class="text-amber-400 font-bold">0</span></div>
+            </div>
+            <button id="vs-result-close-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-gray-950 text-xs font-bold font-orbitron py-2.5 rounded-xl transition">
+                ロビーに戻る
+            </button>
+        </div>
+    </div>
 
     <!-- Edit Name Modal -->
     <div id="name-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -219,6 +366,7 @@
             doc, 
             getDoc, 
             setDoc, 
+            updateDoc,
             deleteDoc, 
             collection, 
             onSnapshot 
@@ -241,8 +389,11 @@
         const provider = new GoogleAuthProvider();
 
         // Game State Variables
+        let activeTab = 'single'; // 'single' | 'vs'
         let currentUser = null;
         let displayName = "ゲスト";
+        
+        // Single Player State
         let gameState = {
             energy: 0,
             totalEnergy: 0,
@@ -254,11 +405,30 @@
             autoCost: 50
         };
 
+        // 1vs1 Match State
+        let vsRoomId = null;
+        let vsRole = null; // 'host' | 'guest'
+        let vsUnsubRoom = null;
+        let vsMatchTimerInterval = null;
+        let vsState = {
+            energy: 0,
+            clickPower: 1,
+            clickLevel: 1,
+            autoPower: 0,
+            autoLevel: 0,
+            clickCost: 10,
+            autoCost: 50
+        };
+
         // DOM Elements
         const el = {
+            tabSingleBtn: document.getElementById('tab-single-btn'),
+            tabVsBtn: document.getElementById('tab-vs-btn'),
+            singleView: document.getElementById('single-mode-view'),
+            vsView: document.getElementById('vs-mode-view'),
+
             loginBtn: document.getElementById('login-btn'),
             logoutBtn: document.getElementById('logout-btn'),
-            authContainer: document.getElementById('auth-container'),
             loadingSpinner: document.getElementById('loading-spinner'),
             userProfile: document.getElementById('user-profile'),
             userAvatar: document.getElementById('user-avatar'),
@@ -290,12 +460,44 @@
             closeModalBtn: document.getElementById('close-modal-btn'),
             
             toast: document.getElementById('toast'),
-            toastMessage: document.getElementById('toast-message')
+            toastMessage: document.getElementById('toast-message'),
+
+            // VS Elements
+            vsLobby: document.getElementById('vs-lobby'),
+            vsGameRoom: document.getElementById('vs-game-room'),
+            vsCreateBtn: document.getElementById('vs-create-btn'),
+            vsJoinBtn: document.getElementById('vs-join-btn'),
+            vsCodeInput: document.getElementById('vs-code-input'),
+            vsRoomIdDisplay: document.getElementById('vs-room-id-display'),
+            vsTimerDisplay: document.getElementById('vs-timer-display'),
+            vsLeaveBtn: document.getElementById('vs-leave-btn'),
+            
+            vsMyName: document.getElementById('vs-my-name'),
+            vsMyScore: document.getElementById('vs-my-score'),
+            vsMyCps: document.getElementById('vs-my-cps'),
+            vsOppName: document.getElementById('vs-opp-name'),
+            vsOppScore: document.getElementById('vs-opp-score'),
+            vsOppCps: document.getElementById('vs-opp-cps'),
+            
+            vsActionArea: document.getElementById('vs-action-area'),
+            vsStatusMessage: document.getElementById('vs-status-message'),
+            vsCoreButton: document.getElementById('vs-core-button'),
+            vsUpgradeClick: document.getElementById('vs-upgrade-click'),
+            vsUpgradeAuto: document.getElementById('vs-upgrade-auto'),
+            vsClickCost: document.getElementById('vs-click-cost'),
+            vsClickLvl: document.getElementById('vs-click-lvl'),
+            vsAutoCost: document.getElementById('vs-auto-cost'),
+            vsAutoLvl: document.getElementById('vs-auto-lvl'),
+
+            vsResultModal: document.getElementById('vs-result-modal'),
+            vsResultIcon: document.getElementById('vs-result-icon'),
+            vsResultTitle: document.getElementById('vs-result-title'),
+            vsResMyScore: document.getElementById('vs-res-my-score'),
+            vsResOppScore: document.getElementById('vs-res-opp-score'),
+            vsResultCloseBtn: document.getElementById('vs-result-close-btn')
         };
 
-        // -------------------------------------------------------------
         // Toast Notification Helper
-        // -------------------------------------------------------------
         function showToast(msg) {
             el.toastMessage.textContent = msg;
             el.toast.classList.remove('translate-y-20', 'opacity-0');
@@ -304,50 +506,83 @@
             }, 3000);
         }
 
+        // Tab Navigation Logic
+        el.tabSingleBtn.addEventListener('click', () => switchTab('single'));
+        el.tabVsBtn.addEventListener('click', () => switchTab('vs'));
+
+        function switchTab(tab) {
+            activeTab = tab;
+            if (tab === 'single') {
+                el.tabSingleBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20";
+                el.tabVsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700";
+                el.singleView.classList.remove('hidden');
+                el.vsView.classList.add('hidden');
+            } else {
+                el.tabVsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-amber-500 text-gray-950 shadow-lg shadow-amber-500/20";
+                el.tabSingleBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700";
+                el.singleView.classList.add('hidden');
+                el.vsView.classList.remove('hidden');
+            }
+        }
+
         // -------------------------------------------------------------
-        // UI & Game Loop Updates
+        // Single Player Game Logic
         // -------------------------------------------------------------
         function updateUI() {
             el.energyCount.textContent = Math.floor(gameState.energy).toLocaleString();
+            el.epsDisplay.textContent = gameState.autoPower.toLocaleString();
             el.totalEnergyDisplay.textContent = Math.floor(gameState.totalEnergy).toLocaleString();
-            el.epsDisplay.textContent = gameState.autoPower;
 
             el.clickCost.textContent = gameState.clickCost.toLocaleString();
             el.clickLevel.textContent = gameState.clickLevel;
-            
+            el.upgradeClickBtn.disabled = gameState.energy < gameState.clickCost;
+
             el.autoCost.textContent = gameState.autoCost.toLocaleString();
             el.autoLevel.textContent = gameState.autoLevel;
-
-            // Enable/Disable Upgrade Buttons based on Energy
-            el.upgradeClickBtn.disabled = gameState.energy < gameState.clickCost;
             el.upgradeAutoBtn.disabled = gameState.energy < gameState.autoCost;
         }
 
-        // Game Tick (1 second interval)
+        // Single Loop (1 Second Tick)
         setInterval(() => {
-            if (gameState.autoPower > 0) {
-                gameState.energy += gameState.autoPower;
-                gameState.totalEnergy += gameState.autoPower;
-                updateUI();
+            if (document.visibilityState === 'visible') {
+                if (activeTab === 'single' && gameState.autoPower > 0) {
+                    gameState.energy += gameState.autoPower;
+                    gameState.totalEnergy += gameState.autoPower;
+                    updateUI();
+                } else if (activeTab === 'vs' && vsState.autoPower > 0 && vsRoomId) {
+                    vsState.energy += vsState.autoPower;
+                    updateVsUI();
+                    syncVsScore();
+                }
             }
         }, 1000);
 
         // Auto Save Interval (10 seconds)
         setInterval(() => {
-            if (currentUser) {
+            if (currentUser && activeTab === 'single') {
                 saveUserData(true);
             }
         }, 10000);
 
-        // -------------------------------------------------------------
-        // Game Actions
-        // -------------------------------------------------------------
-        // Tap Core Button
+        // Keydown Handler
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT') return;
+
+            const key = e.key.toLowerCase();
+            if (activeTab === 'single') {
+                if (key === 'a') el.upgradeClickBtn.click();
+                if (key === 'd') el.upgradeAutoBtn.click();
+            } else if (activeTab === 'vs' && vsRoomId) {
+                if (key === 'a') el.vsUpgradeClick.click();
+                if (key === 'd') el.vsUpgradeAuto.click();
+            }
+        });
+
+        // Single Mode Controls
         el.coreButton.addEventListener('click', (e) => {
             gameState.energy += gameState.clickPower;
             gameState.totalEnergy += gameState.clickPower;
             
-            // Visual Popup FX
             const pop = document.createElement('div');
             pop.className = 'click-pop';
             pop.textContent = `+${gameState.clickPower}`;
@@ -362,7 +597,6 @@
             updateUI();
         });
 
-        // Upgrade Click Power
         el.upgradeClickBtn.addEventListener('click', () => {
             if (gameState.energy >= gameState.clickCost) {
                 gameState.energy -= gameState.clickCost;
@@ -373,7 +607,6 @@
             }
         });
 
-        // Upgrade Auto Generator
         el.upgradeAutoBtn.addEventListener('click', () => {
             if (gameState.energy >= gameState.autoCost) {
                 gameState.energy -= gameState.autoCost;
@@ -385,15 +618,282 @@
         });
 
         // -------------------------------------------------------------
+        // 1vs1 Realtime Match Logic
+        // -------------------------------------------------------------
+        function getVsRoomRef(roomId) {
+            return doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'vs_rooms', roomId);
+        }
+
+        // Reset VS Match Local State
+        function resetVsState() {
+            vsState = {
+                energy: 0,
+                clickPower: 1,
+                clickLevel: 1,
+                autoPower: 0,
+                autoLevel: 0,
+                clickCost: 10,
+                autoCost: 50
+            };
+            updateVsUI();
+        }
+
+        function updateVsUI() {
+            el.vsMyName.textContent = displayName;
+            el.vsMyScore.textContent = Math.floor(vsState.energy).toLocaleString();
+            el.vsMyCps.textContent = vsState.autoPower;
+
+            el.vsClickCost.textContent = vsState.clickCost;
+            el.vsClickLvl.textContent = vsState.clickLevel;
+            el.vsUpgradeClick.disabled = vsState.energy < vsState.clickCost;
+
+            el.vsAutoCost.textContent = vsState.autoCost;
+            el.vsAutoLvl.textContent = vsState.autoLevel;
+            el.vsUpgradeAuto.disabled = vsState.energy < vsState.autoCost;
+        }
+
+        // Create VS Room
+        el.vsCreateBtn.addEventListener('click', async () => {
+            const roomId = Math.floor(1000 + Math.random() * 9000).toString();
+            vsRoomId = roomId;
+            vsRole = 'host';
+            resetVsState();
+
+            const roomData = {
+                status: 'waiting', // waiting | playing | finished
+                host: {
+                    uid: currentUser ? currentUser.uid : 'anon-' + Math.random().toString(36).substr(2, 5),
+                    name: displayName,
+                    score: 0,
+                    cps: 0
+                },
+                guest: null,
+                timer: 30,
+                createdAt: Date.now()
+            };
+
+            try {
+                await setDoc(getVsRoomRef(roomId), roomData);
+                enterVsRoomUI(roomId);
+                subscribeVsRoom(roomId);
+                showToast("ルームを作成しました！コード: " + roomId);
+            } catch (err) {
+                console.error("Create Room Error:", err);
+                showToast("ルーム作成に失敗しました");
+            }
+        });
+
+        // Join VS Room
+        el.vsJoinBtn.addEventListener('click', async () => {
+            const code = el.vsCodeInput.value.trim();
+            if (code.length !== 4) {
+                showToast("4桁のルームコードを入力してください");
+                return;
+            }
+
+            try {
+                const roomSnap = await getDoc(getVsRoomRef(code));
+                if (!roomSnap.exists()) {
+                    showToast("ルームが見つかりません");
+                    return;
+                }
+                const roomData = roomSnap.data();
+                if (roomData.status !== 'waiting') {
+                    showToast("既に満員または対戦中のルームです");
+                    return;
+                }
+
+                vsRoomId = code;
+                vsRole = 'guest';
+                resetVsState();
+
+                const myUid = currentUser ? currentUser.uid : 'anon-' + Math.random().toString(36).substr(2, 5);
+                await updateDoc(getVsRoomRef(code), {
+                    status: 'playing',
+                    guest: {
+                        uid: myUid,
+                        name: displayName,
+                        score: 0,
+                        cps: 0
+                    }
+                });
+
+                enterVsRoomUI(code);
+                subscribeVsRoom(code);
+            } catch (err) {
+                console.error("Join Room Error:", err);
+                showToast("参加に失敗しました");
+            }
+        });
+
+        // Enter VS Room UI
+        function enterVsRoomUI(roomId) {
+            el.vsLobby.classList.add('hidden');
+            el.vsGameRoom.classList.remove('hidden');
+            el.vsRoomIdDisplay.textContent = roomId;
+            el.vsTimerDisplay.textContent = "30";
+        }
+
+        // Leave VS Room
+        el.vsLeaveBtn.addEventListener('click', leaveVsRoom);
+
+        function leaveVsRoom() {
+            if (vsUnsubRoom) vsUnsubRoom();
+            if (vsMatchTimerInterval) clearInterval(vsMatchTimerInterval);
+            vsRoomId = null;
+            vsRole = null;
+
+            el.vsLobby.classList.remove('hidden');
+            el.vsGameRoom.classList.add('hidden');
+            el.vsResultModal.classList.add('hidden');
+        }
+
+        // Subscribe to VS Room Updates
+        function subscribeVsRoom(roomId) {
+            if (vsUnsubRoom) vsUnsubRoom();
+
+            vsUnsubRoom = onSnapshot(getVsRoomRef(roomId), (snapshot) => {
+                if (!snapshot.exists()) {
+                    showToast("ルームが解散されました");
+                    leaveVsRoom();
+                    return;
+                }
+
+                const data = snapshot.data();
+
+                // Update Opponent Info
+                const opp = vsRole === 'host' ? data.guest : data.host;
+                if (opp) {
+                    el.vsOppName.textContent = opp.name;
+                    el.vsOppScore.textContent = Math.floor(opp.score).toLocaleString();
+                    el.vsOppCps.textContent = opp.cps || 0;
+                } else {
+                    el.vsOppName.textContent = "対戦相手を待機中...";
+                    el.vsOppScore.textContent = "0";
+                    el.vsOppCps.textContent = "0";
+                }
+
+                // Status Management
+                if (data.status === 'waiting') {
+                    el.vsStatusMessage.textContent = "相手の参加を待っています... (コード: " + roomId + ")";
+                    el.vsActionArea.classList.add('opacity-50', 'pointer-events-none');
+                } else if (data.status === 'playing') {
+                    el.vsStatusMessage.textContent = "対戦中！キー操作 [A] [D] も有効！";
+                    el.vsActionArea.classList.remove('opacity-50', 'pointer-events-none');
+                    
+                    // Host manages countdown timer
+                    if (vsRole === 'host' && !vsMatchTimerInterval) {
+                        startMatchCountdown(roomId);
+                    }
+                }
+
+                el.vsTimerDisplay.textContent = data.timer;
+
+                // Finished Condition
+                if (data.status === 'finished') {
+                    if (vsMatchTimerInterval) clearInterval(vsMatchTimerInterval);
+                    showVsResult(data);
+                }
+            }, (err) => {
+                console.error("VS Sync Error:", err);
+            });
+        }
+
+        // Start Host Timer Loop
+        function startMatchCountdown(roomId) {
+            let timeLeft = 30;
+            vsMatchTimerInterval = setInterval(async () => {
+                timeLeft -= 1;
+                if (timeLeft <= 0) {
+                    clearInterval(vsMatchTimerInterval);
+                    await updateDoc(getVsRoomRef(roomId), {
+                        timer: 0,
+                        status: 'finished'
+                    });
+                } else {
+                    await updateDoc(getVsRoomRef(roomId), {
+                        timer: timeLeft
+                    });
+                }
+            }, 1000);
+        }
+
+        // Sync Score & CPS to Firestore
+        async function syncVsScore() {
+            if (!vsRoomId || !vsRole) return;
+            try {
+                const payload = {};
+                payload[`${vsRole}.score`] = vsState.energy;
+                payload[`${vsRole}.cps`] = vsState.autoPower;
+                await updateDoc(getVsRoomRef(vsRoomId), payload);
+            } catch (err) {
+                console.error("Sync Score Error:", err);
+            }
+        }
+
+        // VS Game Controls
+        el.vsCoreButton.addEventListener('click', () => {
+            vsState.energy += vsState.clickPower;
+            updateVsUI();
+            syncVsScore();
+        });
+
+        el.vsUpgradeClick.addEventListener('click', () => {
+            if (vsState.energy >= vsState.clickCost) {
+                vsState.energy -= vsState.clickCost;
+                vsState.clickLevel += 1;
+                vsState.clickPower += 1;
+                vsState.clickCost = Math.floor(vsState.clickCost * 1.5);
+                updateVsUI();
+                syncVsScore();
+            }
+        });
+
+        el.vsUpgradeAuto.addEventListener('click', () => {
+            if (vsState.energy >= vsState.autoCost) {
+                vsState.energy -= vsState.autoCost;
+                vsState.autoLevel += 1;
+                vsState.autoPower += 1;
+                vsState.autoCost = Math.floor(vsState.autoCost * 1.6);
+                updateVsUI();
+                syncVsScore();
+            }
+        });
+
+        // Show Result Modal
+        function showVsResult(roomData) {
+            const myScore = vsRole === 'host' ? roomData.host?.score || 0 : roomData.guest?.score || 0;
+            const oppScore = vsRole === 'host' ? roomData.guest?.score || 0 : roomData.host?.score || 0;
+
+            el.vsResMyScore.textContent = Math.floor(myScore).toLocaleString();
+            el.vsResOppScore.textContent = Math.floor(oppScore).toLocaleString();
+
+            if (myScore > oppScore) {
+                el.vsResultIcon.className = "fa-solid fa-trophy text-5xl text-yellow-400";
+                el.vsResultTitle.textContent = "VICTORY!";
+                el.vsResultTitle.className = "text-2xl font-black font-orbitron text-yellow-400";
+            } else if (myScore < oppScore) {
+                el.vsResultIcon.className = "fa-solid fa-skull text-5xl text-red-500";
+                el.vsResultTitle.textContent = "DEFEAT...";
+                el.vsResultTitle.className = "text-2xl font-black font-orbitron text-red-500";
+            } else {
+                el.vsResultIcon.className = "fa-solid fa-handshake text-5xl text-gray-400";
+                el.vsResultTitle.textContent = "DRAW";
+                el.vsResultTitle.className = "text-2xl font-black font-orbitron text-gray-400";
+            }
+
+            el.vsResultModal.classList.remove('hidden');
+        }
+
+        el.vsResultCloseBtn.addEventListener('click', leaveVsRoom);
+
+        // -------------------------------------------------------------
         // Firestore Backend Sync Operations
         // -------------------------------------------------------------
-        
-        // Helper: Get Firestore path for public scores
         function getLeaderboardDocRef(uid) {
             return doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'scores', uid);
         }
 
-        // Save User Data to Firestore
         async function saveUserData(silent = false) {
             if (!currentUser) return;
 
@@ -415,7 +915,6 @@
             }
         }
 
-        // Load User Data from Firestore
         async function loadUserData(uid) {
             try {
                 const docSnap = await getDoc(getLeaderboardDocRef(uid));
@@ -430,7 +929,6 @@
                     }
                     showToast("データを読み込みました！");
                 } else {
-                    // New User Setup
                     await saveUserData(true);
                 }
                 updateUI();
@@ -439,7 +937,6 @@
             }
         }
 
-        // Delete / Reset Game Data
         async function resetUserData() {
             if (!currentUser) return;
             if (!confirm("本当に全データをリセットしますか？この操作は取り消せません。")) return;
@@ -464,7 +961,6 @@
             }
         }
 
-        // Listen for Realtime Leaderboard Updates
         function subscribeLeaderboard() {
             const scoresCollection = collection(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'scores');
             
@@ -474,9 +970,7 @@
                     list.push(doc.data());
                 });
 
-                // Client-side Sort (Rule: No complex query indexes required)
                 list.sort((a, b) => (b.gameState?.totalEnergy || 0) - (a.gameState?.totalEnergy || 0));
-
                 renderLeaderboard(list.slice(0, 10));
             }, (error) => {
                 console.error("Leaderboard Snapshot Error:", error);
@@ -484,7 +978,6 @@
             });
         }
 
-        // Render Leaderboard HTML
         function renderLeaderboard(topUsers) {
             if (topUsers.length === 0) {
                 el.leaderboardList.innerHTML = `<div class="text-center text-xs text-gray-500 py-8">データが存在しません</div>`;
@@ -519,9 +1012,7 @@
             });
         }
 
-        // -------------------------------------------------------------
-        // Authentication Logic
-        // -------------------------------------------------------------
+        // Auth Logic
         el.loginBtn.addEventListener('click', async () => {
             try {
                 await signInWithPopup(auth, provider);
@@ -540,7 +1031,6 @@
             }
         });
 
-        // Auth Observer
         onAuthStateChanged(auth, async (user) => {
             el.loadingSpinner.classList.add('hidden');
             if (user) {
@@ -555,7 +1045,6 @@
                 el.manualSaveBtn.disabled = false;
                 el.resetDataBtn.disabled = false;
 
-                // Load User Data
                 await loadUserData(user.uid);
             } else {
                 currentUser = null;
@@ -565,9 +1054,7 @@
             }
         });
 
-        // -------------------------------------------------------------
         // Profile Name Editing
-        // -------------------------------------------------------------
         el.editNameBtn.addEventListener('click', () => {
             el.nameInput.value = displayName;
             el.nameModal.classList.remove('hidden');
@@ -579,19 +1066,18 @@
 
         el.saveNameBtn.addEventListener('click', async () => {
             const newName = el.nameInput.value.trim();
-            if (newName && currentUser) {
+            if (newName) {
                 displayName = newName;
                 el.userName.textContent = displayName;
                 el.nameModal.classList.add('hidden');
-                await saveUserData();
+                if (currentUser) await saveUserData();
             }
         });
 
-        // Manual Save / Reset Buttons Event Listeners
         el.manualSaveBtn.addEventListener('click', () => saveUserData(false));
         el.resetDataBtn.addEventListener('click', resetUserData);
 
-        // Initial Load
+        // Initial Setup
         updateUI();
         subscribeLeaderboard();
     </script>
