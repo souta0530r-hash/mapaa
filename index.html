@@ -147,18 +147,18 @@
                             <div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="click-cost">10</span></div>
                         </div>
                         <div class="text-right">
-                            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="click-level">1</span></span>
+                            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="click-level">1</span>/100</span>
                         </div>
                     </button>
 
                     <button id="upgrade-auto-btn" class="p-4 bg-gray-900 hover:bg-gray-850 disabled:opacity-40 rounded-xl border border-gray-800 text-left transition flex justify-between items-center group">
                         <div>
                             <div class="text-xs text-cyan-400 font-orbitron font-bold">オート・ドローン [D]</div>
-                            <div class="text-xs text-gray-400 mt-0.5">毎秒自動生成量アップ</div>
-                            <div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="auto-cost">50</span></div>
+                            <div class="text-xs text-gray-400 mt-0.5">自動生成の間隔を短縮 (最大10)</div>
+                            <div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="auto-cost">2000</span></div>
                         </div>
                         <div class="text-right">
-                            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="auto-level">0</span></span>
+                            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="auto-level">0</span>/10</span>
                         </div>
                     </button>
                 </div>
@@ -287,14 +287,14 @@
                                 <div class="text-xs font-bold text-gray-200">パワー・タップ [A]</div>
                                 <div class="text-[11px] text-amber-400 font-orbitron">Cost: <span id="vs-click-cost">10</span></div>
                             </div>
-                            <div class="text-xs font-orbitron text-gray-300">Lv.<span id="vs-click-lvl">1</span></div>
+                            <div class="text-xs font-orbitron text-gray-300">Lv.<span id="vs-click-lvl">1</span>/100</div>
                         </button>
                         <button id="vs-upgrade-auto" class="p-3 bg-gray-800 hover:bg-gray-750 disabled:opacity-40 rounded-xl border border-gray-700 text-left transition flex justify-between items-center">
                             <div>
                                 <div class="text-xs font-bold text-gray-200">オート・ドローン [D]</div>
-                                <div class="text-[11px] text-amber-400 font-orbitron">Cost: <span id="vs-auto-cost">50</span></div>
+                                <div class="text-[11px] text-amber-400 font-orbitron">Cost: <span id="vs-auto-cost">2000</span></div>
                             </div>
-                            <div class="text-xs font-orbitron text-gray-300">Lv.<span id="vs-auto-lvl">0</span></div>
+                            <div class="text-xs font-orbitron text-gray-300">Lv.<span id="vs-auto-lvl">0</span>/10</div>
                         </button>
                     </div>
 
@@ -387,10 +387,9 @@
             totalEnergy: 0,
             clickPower: 1,
             clickLevel: 1,
-            autoPower: 0,
             autoLevel: 0,
             clickCost: 10,
-            autoCost: 50
+            autoCost: 2000
         };
 
         const MATCH_DURATION = 420;
@@ -404,11 +403,14 @@
             energy: 0,
             clickPower: 1,
             clickLevel: 1,
-            autoPower: 0,
             autoLevel: 0,
             clickCost: 10,
-            autoCost: 50
+            autoCost: 2000
         };
+
+        // タイマー用の累計経過時間管理
+        let singleAutoTimer = 0;
+        let vsAutoTimer = 0;
 
         const el = {
             tabSingleBtn: document.getElementById('tab-single-btn'),
@@ -483,6 +485,28 @@
             vsResultCloseBtn: document.getElementById('vs-result-close-btn')
         };
 
+        // レベル別パワータップの上昇幅を判定する関数
+        function getClickPowerGain(nextLevel) {
+            if (nextLevel <= 10) return 2;
+            if (nextLevel <= 20) return 5;
+            if (nextLevel <= 30) return 10;
+            if (nextLevel <= 40) return 15;
+            if (nextLevel <= 50) return 20;
+            if (nextLevel <= 60) return 25;
+            if (nextLevel <= 70) return 30;
+            if (nextLevel <= 80) return 35;
+            if (nextLevel <= 90) return 40;
+            if (nextLevel <= 100) return 50;
+            return 0;
+        }
+
+        // オート・ドローンの生成間隔 (秒) を計算する関数 (Lv1=1.0s, Lv2=0.9s ... Lv10=0.1s)
+        function getAutoInterval(level) {
+            if (level <= 0) return 0;
+            const interval = 1.1 - (level * 0.1);
+            return Math.max(0.1, Math.round(interval * 10) / 10);
+        }
+
         function showToast(msg) {
             el.toastMessage.textContent = msg;
             el.toast.classList.remove('translate-y-20', 'opacity-0');
@@ -511,31 +535,65 @@
 
         function updateUI() {
             el.energyCount.textContent = Math.floor(gameState.energy).toLocaleString();
-            el.epsDisplay.textContent = gameState.autoPower.toLocaleString();
+            
+            const autoInterval = getAutoInterval(gameState.autoLevel);
+            if (gameState.autoLevel > 0) {
+                el.epsDisplay.textContent = (1 / autoInterval).toFixed(1);
+            } else {
+                el.epsDisplay.textContent = "0";
+            }
+            
             el.totalEnergyDisplay.textContent = Math.floor(gameState.totalEnergy).toLocaleString();
 
-            el.clickCost.textContent = gameState.clickCost.toLocaleString();
-            el.clickLevel.textContent = gameState.clickLevel;
-            el.upgradeClickBtn.disabled = gameState.energy < gameState.clickCost;
+            if (gameState.clickLevel >= 100) {
+                el.clickCost.textContent = "MAX";
+                el.clickLevel.textContent = "100";
+                el.upgradeClickBtn.disabled = true;
+            } else {
+                el.clickCost.textContent = gameState.clickCost.toLocaleString();
+                el.clickLevel.textContent = gameState.clickLevel;
+                el.upgradeClickBtn.disabled = gameState.energy < gameState.clickCost;
+            }
 
-            el.autoCost.textContent = gameState.autoCost.toLocaleString();
-            el.autoLevel.textContent = gameState.autoLevel;
-            el.upgradeAutoBtn.disabled = gameState.energy < gameState.autoCost;
+            if (gameState.autoLevel >= 10) {
+                el.autoCost.textContent = "MAX";
+                el.autoLevel.textContent = "10";
+                el.upgradeAutoBtn.disabled = true;
+            } else {
+                el.autoCost.textContent = gameState.autoCost.toLocaleString();
+                el.autoLevel.textContent = gameState.autoLevel;
+                el.upgradeAutoBtn.disabled = gameState.energy < gameState.autoCost;
+            }
         }
 
+        // 100msごとに自動生成タイマーの更新チェック
         setInterval(() => {
             if (document.visibilityState === 'visible') {
-                if (activeTab === 'single' && gameState.autoPower > 0) {
-                    gameState.energy += gameState.autoPower;
-                    gameState.totalEnergy += gameState.autoPower;
-                    updateUI();
-                } else if (activeTab === 'vs' && vsState.autoPower > 0 && vsRoomId) {
-                    vsState.energy += vsState.autoPower;
-                    updateVsUI();
-                    syncVsScore();
+                // シングルモード自動生産
+                if (activeTab === 'single' && gameState.autoLevel > 0) {
+                    singleAutoTimer += 0.1;
+                    const interval = getAutoInterval(gameState.autoLevel);
+                    if (singleAutoTimer >= interval) {
+                        singleAutoTimer -= interval;
+                        gameState.energy += 1;
+                        gameState.totalEnergy += 1;
+                        updateUI();
+                    }
+                }
+
+                // VSモード自動生産
+                if (activeTab === 'vs' && vsState.autoLevel > 0 && vsRoomId) {
+                    vsAutoTimer += 0.1;
+                    const interval = getAutoInterval(vsState.autoLevel);
+                    if (vsAutoTimer >= interval) {
+                        vsAutoTimer -= interval;
+                        vsState.energy += 1;
+                        updateVsUI();
+                        syncVsScore();
+                    }
                 }
             }
-        }, 1000);
+        }, 100);
 
         setInterval(() => {
             if (currentUser && activeTab === 'single') {
@@ -556,40 +614,61 @@
             }
         });
 
-        el.coreButton.addEventListener('click', (e) => {
-            gameState.energy += gameState.clickPower;
-            gameState.totalEnergy += gameState.clickPower;
+        // タップ処理を行う共通関数
+        function handleCoreTap(e, targetState, targetArea, isVs = false) {
+            targetState.energy += targetState.clickPower;
+            if (!isVs) {
+                targetState.totalEnergy += targetState.clickPower;
+            }
             
             const pop = document.createElement('div');
             pop.className = 'click-pop';
-            pop.textContent = `+${gameState.clickPower}`;
-            const rect = el.clickArea.getBoundingClientRect();
-            const x = e.clientX - rect.left - 10;
-            const y = e.clientY - rect.top - 20;
+            pop.textContent = `+${targetState.clickPower}`;
+            const rect = targetArea.getBoundingClientRect();
+            const clientX = e.clientX || (rect.left + rect.width / 2);
+            const clientY = e.clientY || (rect.top + rect.height / 2);
+            const x = clientX - rect.left - 10;
+            const y = clientY - rect.top - 20;
             pop.style.left = `${x}px`;
             pop.style.top = `${y}px`;
-            el.clickArea.appendChild(pop);
+            targetArea.appendChild(pop);
 
             setTimeout(() => pop.remove(), 800);
-            updateUI();
-        });
 
+            if (isVs) {
+                updateVsUI();
+                syncVsScore();
+            } else {
+                updateUI();
+            }
+        }
+
+        // シングル用コアボタン（左クリック／右クリック対応）
+        el.coreButton.addEventListener('pointerdown', (e) => {
+            if (e.button === 0 || e.button === 2) {
+                e.preventDefault();
+                handleCoreTap(e, gameState, el.clickArea, false);
+            }
+        });
+        el.coreButton.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // パワータップ強化 (シングル)
         el.upgradeClickBtn.addEventListener('click', () => {
-            if (gameState.energy >= gameState.clickCost) {
+            if (gameState.clickLevel < 100 && gameState.energy >= gameState.clickCost) {
                 gameState.energy -= gameState.clickCost;
                 gameState.clickLevel += 1;
-                gameState.clickPower += 1;
+                gameState.clickPower += getClickPowerGain(gameState.clickLevel);
                 gameState.clickCost = Math.floor(gameState.clickCost * 1.5);
                 updateUI();
             }
         });
 
+        // オートドローン強化 (シングル)
         el.upgradeAutoBtn.addEventListener('click', () => {
-            if (gameState.energy >= gameState.autoCost) {
+            if (gameState.autoLevel < 10 && gameState.energy >= gameState.autoCost) {
                 gameState.energy -= gameState.autoCost;
                 gameState.autoLevel += 1;
-                gameState.autoPower += 1;
-                gameState.autoCost = Math.floor(gameState.autoCost * 1.6);
+                gameState.autoCost += 2000;
                 updateUI();
             }
         });
@@ -609,23 +688,35 @@
                 energy: 0,
                 clickPower: 1,
                 clickLevel: 1,
-                autoPower: 0,
                 autoLevel: 0,
                 clickCost: 10,
-                autoCost: 50
+                autoCost: 2000
             };
+            vsAutoTimer = 0;
             vsHasStartedCountdown = false;
             updateVsUI();
         }
 
         function updateVsUI() {
-            el.vsClickCost.textContent = vsState.clickCost.toLocaleString();
-            el.vsClickLvl.textContent = vsState.clickLevel;
-            el.vsUpgradeClick.disabled = vsState.energy < vsState.clickCost;
+            if (vsState.clickLevel >= 100) {
+                el.vsClickCost.textContent = "MAX";
+                el.vsClickLvl.textContent = "100";
+                el.vsUpgradeClick.disabled = true;
+            } else {
+                el.vsClickCost.textContent = vsState.clickCost.toLocaleString();
+                el.vsClickLvl.textContent = vsState.clickLevel;
+                el.vsUpgradeClick.disabled = vsState.energy < vsState.clickCost;
+            }
 
-            el.vsAutoCost.textContent = vsState.autoCost.toLocaleString();
-            el.vsAutoLvl.textContent = vsState.autoLevel;
-            el.vsUpgradeAuto.disabled = vsState.energy < vsState.autoCost;
+            if (vsState.autoLevel >= 10) {
+                el.vsAutoCost.textContent = "MAX";
+                el.vsAutoLvl.textContent = "10";
+                el.vsUpgradeAuto.disabled = true;
+            } else {
+                el.vsAutoCost.textContent = vsState.autoCost.toLocaleString();
+                el.vsAutoLvl.textContent = vsState.autoLevel;
+                el.vsUpgradeAuto.disabled = vsState.energy < vsState.autoCost;
+            }
         }
 
         function getMyUniqueId() {
@@ -891,7 +982,8 @@
             el.vsPlayersGrid.innerHTML = players.map(p => {
                 const isMe = p.uid === myUid;
                 const score = isMe ? Math.floor(vsState.energy) : Math.floor(p.score || 0);
-                const cps = isMe ? vsState.autoPower : (p.cps || 0);
+                const autoInterval = isMe ? getAutoInterval(vsState.autoLevel) : (p.cps ? getAutoInterval(p.cps) : 0);
+                const cpsDisplay = autoInterval > 0 ? (1 / autoInterval).toFixed(1) : "0";
 
                 return `
                     <div class="${isMe ? 'bg-cyan-950/40 border-cyan-500/60' : 'bg-gray-900/80 border-gray-800'} border-2 rounded-xl p-3 text-center flex flex-col justify-between">
@@ -900,7 +992,7 @@
                         </div>
                         <div class="text-xs font-bold text-gray-200 truncate my-1">${escapeHtml(p.name || 'ゲスト')}</div>
                         <div class="text-2xl font-extrabold font-orbitron ${isMe ? 'text-cyan-300' : 'text-amber-300'}">${score.toLocaleString()}</div>
-                        <div class="text-[10px] text-gray-400 font-orbitron">CPS: ${cps.toLocaleString()}</div>
+                        <div class="text-[10px] text-gray-400 font-orbitron">RATE: ${cpsDisplay}/s</div>
                     </div>
                 `;
             }).join('');
@@ -955,36 +1047,40 @@
             try {
                 const payload = {};
                 payload[`players.${myUid}.score`] = vsState.energy;
-                payload[`players.${myUid}.cps`] = vsState.autoPower;
+                payload[`players.${myUid}.cps`] = vsState.autoLevel;
                 await updateDoc(getVsRoomRef(vsRoomId), payload);
             } catch (err) {
                 console.error("Sync Score Error:", err);
             }
         }
 
-        el.vsCoreButton.addEventListener('click', () => {
-            vsState.energy += vsState.clickPower;
-            updateVsUI();
-            syncVsScore();
+        // VS用コアボタン（左クリック／右クリック対応）
+        el.vsCoreButton.addEventListener('pointerdown', (e) => {
+            if (e.button === 0 || e.button === 2) {
+                e.preventDefault();
+                handleCoreTap(e, vsState, el.vsActionArea, true);
+            }
         });
+        el.vsCoreButton.addEventListener('contextmenu', (e) => e.preventDefault());
 
+        // パワータップ強化 (VS)
         el.vsUpgradeClick.addEventListener('click', () => {
-            if (vsState.energy >= vsState.clickCost) {
+            if (vsState.clickLevel < 100 && vsState.energy >= vsState.clickCost) {
                 vsState.energy -= vsState.clickCost;
                 vsState.clickLevel += 1;
-                vsState.clickPower += 1;
+                vsState.clickPower += getClickPowerGain(vsState.clickLevel);
                 vsState.clickCost = Math.floor(vsState.clickCost * 1.5);
                 updateVsUI();
                 syncVsScore();
             }
         });
 
+        // オートドローン強化 (VS)
         el.vsUpgradeAuto.addEventListener('click', () => {
-            if (vsState.energy >= vsState.autoCost) {
+            if (vsState.autoLevel < 10 && vsState.energy >= vsState.autoCost) {
                 vsState.energy -= vsState.autoCost;
                 vsState.autoLevel += 1;
-                vsState.autoPower += 1;
-                vsState.autoCost = Math.floor(vsState.autoCost * 1.6);
+                vsState.autoCost += 2000;
                 updateVsUI();
                 syncVsScore();
             }
@@ -1080,10 +1176,9 @@
                     totalEnergy: 0,
                     clickPower: 1,
                     clickLevel: 1,
-                    autoPower: 0,
                     autoLevel: 0,
                     clickCost: 10,
-                    autoCost: 50
+                    autoCost: 2000
                 };
                 updateUI();
                 showToast("データが削除・リセットされました");
