@@ -15,6 +15,10 @@
             font-family: 'Noto Sans JP', sans-serif;
             background-color: #0d1117;
             color: #c9d1d9;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         .font-orbitron {
             font-family: 'Orbitron', sans-serif;
@@ -399,7 +403,7 @@
             clickLevel: 1,
             autoLevel: 0,
             clickCost: 10,
-            autoCost: 2000
+            autoCost: 5000
         };
 
         const MATCH_DURATION = 420;
@@ -415,7 +419,7 @@
             clickLevel: 1,
             autoLevel: 0,
             clickCost: 10,
-            autoCost: 2000
+            autoCost: 5000
         };
 
         // タイマー用の累計経過時間管理
@@ -585,31 +589,36 @@
 
         // 100msごとに自動生成タイマーの更新チェック
         setInterval(() => {
-            if (document.visibilityState === 'visible') {
-                // シングルモード自動生産
-                if (activeTab === 'single' && gameState.autoLevel > 0) {
-                    singleAutoTimer += 0.1;
-                    const interval = getAutoInterval(gameState.autoLevel);
-                    if (singleAutoTimer >= interval) {
-                        singleAutoTimer -= interval;
-                        const autoPower = getAutoPower(gameState.autoLevel);
-                        gameState.energy += autoPower;
-                        gameState.totalEnergy += autoPower;
-                        updateUI();
-                    }
-                }
+            // アクティブなタブでない場合は完全に処理を停止し、経過時間も加算しない
+            if (document.visibilityState !== 'visible') {
+                singleAutoTimer = 0;
+                vsAutoTimer = 0;
+                return;
+            }
 
-                // VSモード自動生産
-                if (activeTab === 'vs' && vsState.autoLevel > 0 && vsRoomId) {
-                    vsAutoTimer += 0.1;
-                    const interval = getAutoInterval(vsState.autoLevel);
-                    if (vsAutoTimer >= interval) {
-                        vsAutoTimer -= interval;
-                        const autoPower = getAutoPower(vsState.autoLevel);
-                        vsState.energy += autoPower;
-                        updateVsUI();
-                        syncVsScore();
-                    }
+            // シングルモード自動生産
+            if (activeTab === 'single' && gameState.autoLevel > 0) {
+                singleAutoTimer += 0.1;
+                const interval = getAutoInterval(gameState.autoLevel);
+                if (singleAutoTimer >= interval) {
+                    singleAutoTimer -= interval;
+                    const autoPower = getAutoPower(gameState.autoLevel);
+                    gameState.energy += autoPower;
+                    gameState.totalEnergy += autoPower;
+                    updateUI();
+                }
+            }
+
+            // VSモード自動生産
+            if (activeTab === 'vs' && vsState.autoLevel > 0 && vsRoomId) {
+                vsAutoTimer += 0.1;
+                const interval = getAutoInterval(vsState.autoLevel);
+                if (vsAutoTimer >= interval) {
+                    vsAutoTimer -= interval;
+                    const autoPower = getAutoPower(vsState.autoLevel);
+                    vsState.energy += autoPower;
+                    updateVsUI();
+                    syncVsScore();
                 }
             }
         }, 100);
@@ -635,8 +644,8 @@
 
         // タップ処理を行う共通関数
         function handleCoreTap(e, targetState, targetArea, isVs = false) {
-            // 0.1%の確率でボーナス判定 (Math.random() < 0.001)
-            const isCritical = Math.random() < 0.001;
+            // 1%の確率でボーナス判定 (Math.random() < 0.01)
+            const isCritical = Math.random() < 0.01;
             const earnedEnergy = isCritical ? (targetState.clickPower * 2) : targetState.clickPower;
 
             targetState.energy += earnedEnergy;
@@ -691,7 +700,7 @@
             if (gameState.autoLevel < 10 && gameState.energy >= gameState.autoCost) {
                 gameState.energy -= gameState.autoCost;
                 gameState.autoLevel += 1;
-                gameState.autoCost += 2000;
+                gameState.autoCost += 5000;
                 updateUI();
             }
         });
@@ -713,7 +722,7 @@
                 clickLevel: 1,
                 autoLevel: 0,
                 clickCost: 10,
-                autoCost: 2000
+                autoCost: 5000
             };
             vsAutoTimer = 0;
             vsHasStartedCountdown = false;
@@ -1105,7 +1114,7 @@
             if (vsState.autoLevel < 10 && vsState.energy >= vsState.autoCost) {
                 vsState.energy -= vsState.autoCost;
                 vsState.autoLevel += 1;
-                vsState.autoCost += 2000;
+                vsState.autoCost += 5000;
                 updateVsUI();
                 syncVsScore();
             }
@@ -1203,7 +1212,7 @@
                     clickLevel: 1,
                     autoLevel: 0,
                     clickCost: 10,
-                    autoCost: 2000
+                    autoCost: 5000
                 };
                 updateUI();
                 showToast("データが削除・リセットされました");
