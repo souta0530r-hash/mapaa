@@ -1,2204 +1,1461 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Energy Clicker - Expanded Edition</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
-    <!-- ES Module Import Map for External Libraries -->
-    <script type="importmap">
-    {
-        "imports": {
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
-            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
-        }
-    }
-    </script>
-
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: #0b0f17;
-            color: #c9d1d9;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        .font-orbitron {
-            font-family: 'Orbitron', sans-serif;
-        }
-        .neon-text-blue {
-            text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 20px #00f0ff;
-        }
-        .neon-text-amber {
-            text-shadow: 0 0 5px #f59e0b, 0 0 10px #f59e0b, 0 0 20px #f59e0b;
-        }
-        .neon-text-purple {
-            text-shadow: 0 0 5px #a855f7, 0 0 10px #a855f7, 0 0 20px #a855f7;
-        }
-        .neon-box-blue {
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
-            border: 1px solid rgba(0, 240, 255, 0.4);
-        }
-        .core-btn {
-            transition: transform 0.05s ease, box-shadow 0.1s ease;
-        }
-        .core-btn:active {
-            transform: scale(0.92);
-        }
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-55px) scale(1.25); }
-        }
-        .click-pop {
-            position: absolute;
-            pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
-            font-weight: bold;
-            font-family: 'Orbitron', sans-serif;
-            color: #00f0ff;
-            text-shadow: 0 0 5px #000;
-            z-index: 10;
-        }
-        .crit-pop {
-            position: absolute;
-            pointer-events: none;
-            animation: floatUp 1s ease-out forwards;
-            font-weight: 900;
-            font-family: 'Orbitron', sans-serif;
-            color: #facc15;
-            text-shadow: 0 0 10px #eab308, 0 0 20px #000;
-            z-index: 20;
-        }
-        @keyframes popScale {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .countdown-anim {
-            animation: popScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
-            50% { box-shadow: 0 0 35px rgba(234, 179, 8, 0.8); }
-        }
-        .overcharge-active {
-            animation: pulseGlow 1s infinite alternate;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0d1117;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1f2937;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00f0ff;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Energy Clicker - Expanded Edition</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script type="importmap">
+{ "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+} }
+</script>
+<style>
+body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d9;user-select:none;-webkit-user-select:none}
+.font-orbitron{font-family:'Orbitron',sans-serif}
+.neon-text-blue{text-shadow:0 0 5px #00f0ff,0 0 10px #00f0ff,0 0 20px #00f0ff}
+.neon-box-blue{box-shadow:0 0 15px rgba(0,240,255,.25);border:1px solid rgba(0,240,255,.4)}
+.core-btn{transition:transform .05s ease,box-shadow .1s ease;touch-action:manipulation}
+.core-btn:active{transform:scale(.92)}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-55px) scale(1.25)}}
+.click-pop{position:absolute;pointer-events:none;animation:floatUp .8s ease-out forwards;font-weight:bold;font-family:'Orbitron',sans-serif;color:#00f0ff;text-shadow:0 0 5px #000;z-index:10}
+.crit-pop{position:absolute;pointer-events:none;animation:floatUp 1s ease-out forwards;font-weight:900;font-family:'Orbitron',sans-serif;color:#facc15;text-shadow:0 0 10px #eab308,0 0 20px #000;z-index:20}
+@keyframes popScale{0%{transform:scale(.3);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+.countdown-anim{animation:popScale .4s cubic-bezier(.175,.885,.32,1.275) forwards}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 15px rgba(234,179,8,.4)}50%{box-shadow:0 0 35px rgba(234,179,8,.8)}}
+.overcharge-active{animation:pulseGlow 1s infinite alternate}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0d1117}
+::-webkit-scrollbar-thumb{background:#1f2937;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#00f0ff}
+</style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
 
-    <!-- Header Navigation -->
-    <header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <i class="fa-solid font-orbitron fa-atom text-cyan-400 text-2xl animate-spin" style="animation-duration: 10s;"></i>
-                <h1 class="text-xl font-black font-orbitron tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-blue-500">
-                    CYBER ENERGY <span class="text-xs text-amber-400 border border-amber-500/40 px-1.5 py-0.5 rounded font-mono ml-1">EXPANDED</span>
-                </h1>
-            </div>
-
-            <div id="auth-container" class="flex items-center gap-3">
-                <div id="loading-spinner" class="text-gray-400 text-sm">
-                    <i class="fas fa-spinner fa-spin mr-1"></i> 接続中...
-                </div>
-                <button id="login-btn" class="hidden bg-white text-gray-900 hover:bg-gray-100 font-bold px-4 py-2 rounded-lg text-sm transition flex items-center gap-2 shadow-lg hover:shadow-cyan-500/20">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4" alt="Google">
-                    Googleでログイン
-                </button>
-                <div id="user-profile" class="hidden flex items-center gap-3">
-                    <img id="user-avatar" class="w-8 h-8 rounded-full border border-cyan-400" src="" alt="User Avatar">
-                    <div class="hidden sm:block text-left">
-                        <div id="user-name" class="text-xs font-bold text-gray-200">User</div>
-                        <button id="edit-name-btn" class="text-[10px] text-cyan-400 hover:underline">名前を変更</button>
-                    </div>
-                    <button id="logout-btn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-md text-xs transition border border-gray-700">
-                        ログアウト
-                    </button>
-                </div>
-            </div>
+<header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <i class="fa-solid fa-atom text-cyan-400 text-2xl animate-spin" style="animation-duration:10s;"></i>
+      <h1 class="text-xl font-black font-orbitron tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-blue-500">
+        CYBER ENERGY <span class="text-xs text-amber-400 border border-amber-500/40 px-1.5 py-0.5 rounded font-mono ml-1">EXPANDED</span>
+      </h1>
+    </div>
+    <div id="auth-container" class="flex items-center gap-3">
+      <div id="loading-spinner" class="text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i> 接続中...</div>
+      <button id="login-btn" class="hidden bg-white text-gray-900 hover:bg-gray-100 font-bold px-4 py-2 rounded-lg text-sm transition flex items-center gap-2 shadow-lg hover:shadow-cyan-500/20">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4" alt="Google"> Googleでログイン
+      </button>
+      <div id="user-profile" class="hidden flex items-center gap-3">
+        <img id="user-avatar" class="w-8 h-8 rounded-full border border-cyan-400" src="" alt="User Avatar">
+        <div class="hidden sm:block text-left">
+          <div id="user-name" class="text-xs font-bold text-gray-200">User</div>
+          <button id="edit-name-btn" class="text-[10px] text-cyan-400 hover:underline">名前を変更</button>
         </div>
-    </header>
+        <button id="logout-btn" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-md text-xs transition border border-gray-700">ログアウト</button>
+      </div>
+    </div>
+  </div>
+</header>
 
-    <!-- Mode Navigation Tabs -->
-    <div class="max-w-7xl mx-auto px-4 pt-4 flex flex-wrap gap-2">
-        <button id="tab-single-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20">
-            <i class="fa-solid fa-user mr-1.5"></i> シングル（ハイスコア）
+<div class="max-w-7xl mx-auto px-4 pt-4 flex flex-wrap gap-2 w-full">
+  <button id="tab-single-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20"><i class="fa-solid fa-user mr-1.5"></i> シングル（ハイスコア）</button>
+  <button id="tab-vs-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700"><i class="fa-solid fa-trophy mr-1.5 text-amber-400"></i> マルチ＆CPU対戦モード (7分勝負)</button>
+  <button id="tab-mission-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700"><i class="fa-solid fa-list-check mr-1.5 text-emerald-400"></i> ミッション</button>
+  <button id="tab-achieve-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 ml-auto"><i class="fa-solid fa-award mr-1.5 text-purple-400"></i> 実績 <span id="achieve-badge" class="bg-purple-900 text-purple-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0/12</span></button>
+</div>
+
+<main class="max-w-7xl mx-auto px-4 py-4 w-full flex-grow">
+
+  <!-- ===== SINGLE ===== -->
+  <div id="single-mode-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 flex flex-col gap-6">
+      <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800 flex flex-wrap justify-between items-center gap-4 neon-box-blue relative overflow-hidden">
+        <div>
+          <div class="text-xs text-cyan-400 font-orbitron uppercase tracking-widest flex items-center gap-2">
+            Energy Core
+            <span id="rebirth-tag" class="hidden text-[10px] bg-purple-950 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded font-bold"><i class="fa-solid fa-rotate-right mr-1"></i>転生 x<span id="rebirth-count">0</span> (+<span id="rebirth-bonus">0</span>%)</span>
+          </div>
+          <div class="text-3xl sm:text-4xl font-black font-orbitron text-gray-100 neon-text-blue"><span id="energy-count">0</span> <span class="text-cyan-400 text-xl">NRG</span></div>
+        </div>
+        <div class="flex gap-6 border-l border-gray-800 pl-6">
+          <div><div class="text-[10px] text-gray-400 font-orbitron">AUTO PRODUCTION</div><div class="text-sm font-bold font-orbitron text-cyan-300"><span id="eps-display">0</span> / sec</div></div>
+          <div><div class="text-[10px] text-gray-400 font-orbitron">TOTAL EARNED</div><div class="text-sm font-bold font-orbitron text-gray-300" id="total-energy-display">0</div></div>
+        </div>
+      </div>
+
+      <div class="bg-gray-900/80 rounded-2xl p-4 border border-gray-800">
+        <div class="text-xs font-bold font-orbitron text-cyan-400 mb-3 flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-400"></i> CYBER SKILLS (アクティブスキル)</div>
+        <div class="grid grid-cols-3 gap-3">
+          <button id="skill-1-btn" class="bg-gray-950 hover:bg-gray-800 border border-cyan-500/30 rounded-xl p-2.5 flex flex-col items-center justify-center transition relative overflow-hidden">
+            <i class="fa-solid fa-fire text-amber-400 text-lg mb-1"></i><span class="text-[11px] font-bold text-gray-200">オーバーロード</span><span class="text-[9px] text-gray-400 mt-0.5">タップ5倍(10s)</span>
+            <div id="skill-1-cd" class="absolute inset-0 bg-gray-950/80 flex items-center justify-center font-orbitron font-bold text-amber-400 text-xs hidden">30s</div>
+          </button>
+          <button id="skill-2-btn" class="bg-gray-950 hover:bg-gray-800 border border-cyan-500/30 rounded-xl p-2.5 flex flex-col items-center justify-center transition relative overflow-hidden">
+            <i class="fa-solid fa-microchip text-cyan-400 text-lg mb-1"></i><span class="text-[11px] font-bold text-gray-200">ナノボットバースト</span><span class="text-[9px] text-gray-400 mt-0.5">即時20s分生産</span>
+            <div id="skill-2-cd" class="absolute inset-0 bg-gray-950/80 flex items-center justify-center font-orbitron font-bold text-cyan-400 text-xs hidden">45s</div>
+          </button>
+          <button id="skill-3-btn" class="bg-gray-950 hover:bg-gray-800 border border-cyan-500/30 rounded-xl p-2.5 flex flex-col items-center justify-center transition relative overflow-hidden">
+            <i class="fa-solid fa-crosshairs text-purple-400 text-lg mb-1"></i><span class="text-[11px] font-bold text-gray-200">フレンジー</span><span class="text-[9px] text-gray-400 mt-0.5">クリティカル50%(15s)</span>
+            <div id="skill-3-cd" class="absolute inset-0 bg-gray-950/80 flex items-center justify-center font-orbitron font-bold text-purple-400 text-xs hidden">60s</div>
+          </button>
+        </div>
+      </div>
+
+      <div id="click-area" class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center min-h-[300px] relative overflow-hidden select-none">
+        <div id="hack-node" class="hidden absolute z-30 cursor-pointer bg-red-950/90 border-2 border-red-500 text-red-400 hover:scale-110 active:scale-95 transition-transform p-3 rounded-xl flex items-center gap-2 animate-bounce shadow-lg shadow-red-500/50">
+          <i class="fa-solid fa-terminal text-lg"></i>
+          <div class="text-[10px] font-orbitron font-bold leading-tight">HACK NODE!<br><span class="text-white text-xs">TAP TO BREAK</span></div>
+        </div>
+        <div id="supply-drone" class="hidden absolute z-30 cursor-pointer bg-amber-500 text-gray-950 p-2.5 rounded-full shadow-lg shadow-amber-500/50 hover:scale-125 transition-transform flex items-center justify-center">
+          <i class="fa-solid fa-helicopter text-lg"></i>
+        </div>
+        <div class="w-full max-w-md mb-4 bg-gray-950 border border-gray-800 rounded-full h-3 p-0.5 relative overflow-hidden">
+          <div id="overcharge-bar" class="bg-gradient-to-r from-cyan-500 to-amber-400 h-full rounded-full transition-all duration-100" style="width:0%;"></div>
+        </div>
+        <div id="overcharge-status" class="text-[11px] font-orbitron font-bold text-gray-400 mb-3">OVERCHARGE GAUGE: <span id="overcharge-percent">0</span>%</div>
+        <button id="core-button" class="core-btn w-44 h-44 sm:w-52 sm:h-52 rounded-full bg-gradient-to-tr from-cyan-600 via-cyan-400 to-blue-600 p-1 flex items-center justify-center shadow-2xl shadow-cyan-500/30 focus:outline-none">
+          <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-cyan-400/50 hover:bg-gray-900 transition">
+            <i id="core-icon" class="fa-solid fa-atom text-5xl sm:text-6xl text-cyan-400"></i>
+            <span class="text-xs font-orbitron text-cyan-300 mt-2 font-bold">TAP CORE</span>
+          </div>
         </button>
-        <button id="tab-vs-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700">
-            <i class="fa-solid fa-trophy mr-1.5 text-amber-400"></i> マルチ＆CPU対戦モード (7分勝負)
+        <div class="text-[11px] text-gray-500 mt-4 font-orbitron">※ 左右クリック対応 / スキル＆ハッキングノードを活用しよう</div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button id="upgrade-click-btn" class="p-4 bg-gray-900 hover:bg-gray-800 disabled:opacity-40 rounded-xl border border-gray-800 text-left transition flex justify-between items-center">
+          <div><div class="text-xs text-cyan-400 font-orbitron font-bold">パワー・タップ [A]</div><div class="text-xs text-gray-400 mt-0.5">1タップ生成量アップ</div><div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="click-cost">10</span></div></div>
+          <div class="text-right"><span class="text-xs font-orbitron text-gray-400">Lv.<span id="click-level">1</span>/100</span></div>
         </button>
-        <button id="tab-mission-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700">
-            <i class="fa-solid fa-list-check mr-1.5 text-emerald-400"></i> ミッション
+        <button id="upgrade-auto-btn" class="p-4 bg-gray-900 hover:bg-gray-800 disabled:opacity-40 rounded-xl border border-gray-800 text-left transition flex justify-between items-center">
+          <div><div class="text-xs text-cyan-400 font-orbitron font-bold">オート・ドローン [D]</div><div class="text-xs text-gray-400 mt-0.5">短縮 & 1Lv毎にパワー+5</div><div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="auto-cost">5000</span></div></div>
+          <div class="text-right"><span class="text-xs font-orbitron text-gray-400">Lv.<span id="auto-level">0</span>/10</span></div>
         </button>
-        <button id="tab-achieve-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 ml-auto">
-            <i class="fa-solid fa-award mr-1.5 text-purple-400"></i> 実績 <span id="achieve-badge" class="bg-purple-900 text-purple-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0/12</span>
-        </button>
+      </div>
+
+      <div class="bg-gradient-to-r from-purple-950/60 via-gray-900 to-indigo-950/60 border border-purple-500/30 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div>
+          <div class="text-xs font-bold font-orbitron text-purple-300 flex items-center gap-2"><i class="fa-solid fa-rotate-right text-purple-400"></i> システム転生 (Rebirth)</div>
+          <div class="text-[11px] text-gray-400 mt-1">現在のエナジーと設備を初期化し、全生産量に永続ブースト(+20%/回)を獲得します。<br>
+            <span class="text-purple-400 font-orbitron">必要: 今回の獲得 <span id="rebirth-progress">0</span> / <span id="rebirth-cost-display">500,000</span> NRG</span></div>
+        </div>
+        <button id="rebirth-btn" disabled class="w-full sm:w-auto px-5 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-30 disabled:hover:bg-purple-600 text-white font-bold font-orbitron rounded-xl text-xs transition whitespace-nowrap shadow-lg shadow-purple-500/20">転生を実行する</button>
+      </div>
     </div>
 
-    <!-- Main Content Area -->
-    <main class="max-w-7xl mx-auto px-4 py-4 w-full flex-grow">
-
-        <!-- ================= SINGLE PLAYER MODE ================= -->
-        <div id="single-mode-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Center Tap & Action Screen -->
-            <div class="lg:col-span-2 flex flex-col gap-6">
-                <!-- Status Stats Display -->
-                <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800 flex flex-wrap justify-between items-center gap-4 neon-box-blue relative overflow-hidden">
-                    <div>
-                        <div class="text-xs text-cyan-400 font-orbitron uppercase tracking-widest flex items-center gap-2">
-                            Energy Core 
-                            <span id="rebirth-tag" class="hidden text-[10px] bg-purple-950 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded font-bold">
-                                <i class="fa-solid fa-rotate-right mr-1"></i>転生 x<span id="rebirth-count">0</span> (+<span id="rebirth-bonus">0</span>%)
-                            </span>
-                        </div>
-                        <div class="text-3xl sm:text-4xl font-black font-orbitron text-gray-100 neon-text-blue">
-                            <span id="energy-count">0</span> <span class="text-cyan-400 text-xl">NRG</span>
-                        </div>
-                    </div>
-                    <div class="flex gap-6 border-l border-gray-800 pl-6">
-                        <div>
-                            <div class="text-[10px] text-gray-400 font-orbitron">AUTO PRODUCTION</div>
-                            <div class="text-sm font-bold font-orbitron text-cyan-300"><span id="eps-display">0</span> / sec</div>
-                        </div>
-                        <div>
-                            <div class="text-[10px] text-gray-400 font-orbitron">TOTAL EARNED</div>
-                            <div class="text-sm font-bold font-orbitron text-gray-300" id="total-energy-display">0</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Active Skills Control Panel -->
-                <div class="bg-gray-900/80 rounded-2xl p-4 border border-gray-800">
-                    <div class="text-xs font-bold font-orbitron text-cyan-400 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-bolt text-amber-400"></i> CYBER SKILLS (アクティブスキル)
-                    </div>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button id="skill-1-btn" class="bg-gray-950 hover:bg-gray-800 border border-cyan-500/30 rounded-xl p-2.5 flex flex-col items-center justify-center transition disabled:opacity-40 group relative overflow-hidden">
-                            <i class="fa-solid fa-fire text-amber-400 text-lg mb-1"></i>
-                            <span class="text-[11px] font-bold text-gray-200">オーバーロード</span>
-                            <span class="text-[9px] text-gray-400 mt-0.5">タップ5倍(10s)</span>
-                            <div id="skill-1-cd" class="absolute inset-0 bg-gray-950/80 flex items-center justify-center font-orbitron font-bold text-amber-400 text-xs hidden">30s</div>
-                        </button>
-                        <button id="skill-2-btn" class="bg-gray-950 hover:bg-gray-800 border border-cyan-500/30 rounded-xl p-2.5 flex flex-col items-center justify-center transition disabled:opacity-40 group relative overflow-hidden">
-                            <i class="fa-solid fa-microchip text-cyan-400 text-lg mb-1"></i>
-                            <span class="text-[11px] font-bold text-gray-200">ナノボットバースト</span>
-                            <span class="text-[9px] text-gray-400 mt-0.5">即時20s分生産</span>
-                            <div id="skill-2-cd" class="absolute inset-0 bg-gray-950/80 flex items-center justify-center font-orbitron font-bold text-cyan-400 text-xs hidden">45s</div>
-                        </button>
-                        <button id="skill-3-btn" class="bg-gray-950 hover:bg-gray-800 border border-cyan-500/30 rounded-xl p-2.5 flex flex-col items-center justify-center transition disabled:opacity-40 group relative overflow-hidden">
-                            <i class="fa-solid fa-crosshair text-purple-400 text-lg mb-1"></i>
-                            <span class="text-[11px] font-bold text-gray-200">フレンジー</span>
-                            <span class="text-[9px] text-gray-400 mt-0.5">クリティカル50%(15s)</span>
-                            <div id="skill-3-cd" class="absolute inset-0 bg-gray-950/80 flex items-center justify-center font-orbitron font-bold text-purple-400 text-xs hidden">60s</div>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Main Tap Core Center -->
-                <div id="click-area" class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center min-h-[300px] relative overflow-hidden select-none">
-                    
-                    <!-- Interactive Mini-Game Hack Node -->
-                    <div id="hack-node" class="hidden absolute z-30 cursor-pointer bg-red-950/90 border-2 border-red-500 text-red-400 hover:scale-110 active:scale-95 transition-transform p-3 rounded-xl flex items-center gap-2 animate-bounce shadow-lg shadow-red-500/50">
-                        <i class="fa-solid fa-terminal text-lg"></i>
-                        <div class="text-[10px] font-orbitron font-bold leading-tight">
-                            HACK NODE!<br><span class="text-white text-xs">TAP TO BREAK</span>
-                        </div>
-                    </div>
-
-                    <!-- Flying Supply Drone -->
-                    <div id="supply-drone" class="hidden absolute z-30 cursor-pointer bg-amber-500 text-gray-950 p-2.5 rounded-full shadow-lg shadow-amber-500/50 hover:scale-125 transition-transform flex items-center justify-center">
-                        <i class="fa-solid fa-drone-front text-lg animate-spin" style="animation-duration: 3s;"></i>
-                    </div>
-
-                    <!-- Overcharge Gauge Bar -->
-                    <div class="w-full max-w-md mb-4 bg-gray-950 border border-gray-800 rounded-full h-3 p-0.5 relative overflow-hidden">
-                        <div id="overcharge-bar" class="bg-gradient-to-r from-cyan-500 to-amber-400 h-full rounded-full transition-all duration-100" style="width: 0%;"></div>
-                    </div>
-                    <div id="overcharge-status" class="text-[11px] font-orbitron font-bold text-gray-400 mb-3">
-                        OVERCHARGE GAUGE: <span id="overcharge-percent">0</span>%
-                    </div>
-
-                    <button id="core-button" class="core-btn w-44 h-44 sm:w-52 sm:h-52 rounded-full bg-gradient-to-tr from-cyan-600 via-cyan-400 to-blue-600 p-1 flex items-center justify-center shadow-2xl shadow-cyan-500/30 focus:outline-none">
-                        <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-cyan-400/50 hover:bg-gray-900 transition">
-                            <i id="core-icon" class="fa-solid fa-atom text-5xl sm:text-6xl text-cyan-400"></i>
-                            <span class="text-xs font-orbitron text-cyan-300 mt-2 font-bold">TAP CORE</span>
-                        </div>
-                    </button>
-                    <div class="text-[11px] text-gray-500 mt-4 font-orbitron">※ 左右クリック対応 / スキル＆ハッキングノードを活用しよう</div>
-                </div>
-
-                <!-- Upgrade Buttons -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button id="upgrade-click-btn" class="p-4 bg-gray-900 hover:bg-gray-850 disabled:opacity-40 rounded-xl border border-gray-800 text-left transition flex justify-between items-center group">
-                        <div>
-                            <div class="text-xs text-cyan-400 font-orbitron font-bold">パワー・タップ [A]</div>
-                            <div class="text-xs text-gray-400 mt-0.5">1タップ生成量アップ</div>
-                            <div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="click-cost">10</span></div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="click-level">1</span>/100</span>
-                        </div>
-                    </button>
-
-                    <button id="upgrade-auto-btn" class="p-4 bg-gray-900 hover:bg-gray-850 disabled:opacity-40 rounded-xl border border-gray-800 text-left transition flex justify-between items-center group">
-                        <div>
-                            <div class="text-xs text-cyan-400 font-orbitron font-bold">オート・ドローン [D]</div>
-                            <div class="text-xs text-gray-400 mt-0.5">短縮 & 1Lv毎にパワー+5</div>
-                            <div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="auto-cost">2000</span></div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="auto-level">0</span>/10</span>
-                        </div>
-                    </button>
-                </div>
-
-                <!-- Rebirth System Button -->
-                <div class="bg-gradient-to-r from-purple-950/60 via-gray-900 to-indigo-950/60 border border-purple-500/30 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div>
-                        <div class="text-xs font-bold font-orbitron text-purple-300 flex items-center gap-2">
-                            <i class="fa-solid fa-rotate-right text-purple-400"></i> システム転生 (Rebirth)
-                        </div>
-                        <div class="text-[11px] text-gray-400 mt-1">
-                            現在のエナジーを初期化し、全生産量に永続ブースト(+20%/回)を獲得します。<br>
-                            <span class="text-purple-400 font-orbitron">必要: <span id="rebirth-cost-display">500,000</span> NRG</span>
-                        </div>
-                    </div>
-                    <button id="rebirth-btn" disabled class="w-full sm:w-auto px-5 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-30 disabled:hover:bg-purple-600 text-white font-bold font-orbitron rounded-xl text-xs transition whitespace-nowrap shadow-lg shadow-purple-500/20">
-                        転生を実行する
-                    </button>
-                </div>
-            </div>
-
-            <!-- Leaderboard & Data Panel -->
-            <div class="flex flex-col gap-6">
-                <!-- Global Leaderboard -->
-                <div class="bg-gray-900/80 rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
-                    <div class="flex items-center justify-between border-b border-gray-800 pb-3">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-trophy text-amber-400 text-sm"></i>
-                            <h2 class="text-sm font-bold font-orbitron text-gray-200">GLOBAL RANKING</h2>
-                        </div>
-                        <span class="text-[10px] text-gray-500 font-orbitron">TOP 10</span>
-                    </div>
-                    <div id="leaderboard-list" class="space-y-2 max-h-[280px] overflow-y-auto pr-1">
-                        <div class="text-center text-xs text-gray-500 py-4">読み込み中...</div>
-                    </div>
-                </div>
-
-                <!-- Offline Bonus Notification Box -->
-                <div id="offline-bonus-card" class="hidden bg-cyan-950/40 border border-cyan-500/40 rounded-2xl p-4 text-xs">
-                    <div class="text-cyan-300 font-bold font-orbitron flex items-center gap-2 mb-1">
-                        <i class="fa-solid fa-moon"></i> オフライン報酬獲得！
-                    </div>
-                    <div class="text-gray-300">不在中に <span id="offline-energy-amount" class="font-bold text-amber-300 font-orbitron">0</span> NRG 生産しました</div>
-                </div>
-
-                <!-- Account / Save Data Settings -->
-                <div class="bg-gray-900/80 rounded-2xl p-5 border border-gray-800 flex flex-col gap-3">
-                    <h3 class="text-xs font-bold text-gray-300 font-orbitron border-b border-gray-800 pb-2">データ管理</h3>
-                    <div id="save-status" class="text-[11px] text-gray-400">同期状態: 待機中</div>
-                    <div class="flex gap-2">
-                        <button id="manual-save-btn" disabled class="flex-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 text-xs py-2 rounded-lg transition font-bold border border-gray-700">
-                            手動保存
-                        </button>
-                        <button id="reset-data-btn" disabled class="bg-red-950/60 hover:bg-red-900/80 disabled:opacity-40 text-red-300 text-xs px-3 py-2 rounded-lg transition border border-red-800/50">
-                            リセット
-                        </button>
-                    </div>
-                </div>
-            </div>
-
+    <div class="flex flex-col gap-6">
+      <div class="bg-gray-900/80 rounded-2xl p-5 border border-gray-800 flex flex-col gap-4">
+        <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+          <div class="flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400 text-sm"></i><h2 class="text-sm font-bold font-orbitron text-gray-200">GLOBAL RANKING</h2></div>
+          <span class="text-[10px] text-gray-500 font-orbitron">TOP 10</span>
         </div>
-
-        <!-- ================= VS MATCH MODE ================= -->
-        <div id="vs-mode-view" class="hidden flex flex-col gap-6 max-w-4xl mx-auto">
-            
-            <!-- VS Lobby Selection Screen -->
-            <div id="vs-lobby" class="bg-gray-900/80 rounded-2xl p-6 sm:p-8 border border-gray-800 text-center">
-                <h2 class="text-xl sm:text-2xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-400 to-yellow-400 mb-2">
-                    <i class="fa-solid fa-bolt-lightning mr-2"></i>7分間 リアルタイム対戦
-                </h2>
-                <p class="text-xs text-gray-400 mb-6">制限時間7分（420秒）で最も多くのエナジーを獲得したプレイヤーが勝利！</p>
-
-                <!-- CPU Match Box -->
-                <div class="mb-8 p-6 bg-gradient-to-r from-blue-950/50 via-gray-950 to-indigo-950/50 border border-cyan-500/30 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div class="text-left">
-                        <div class="text-base font-bold font-orbitron text-cyan-300 flex items-center gap-2">
-                            <i class="fa-solid fa-robot text-xl text-cyan-400"></i> CPU対戦モード
-                        </div>
-                        <div class="text-xs text-gray-400 mt-1">CPUと1vs1で勝負！レベル1（初心者）〜 レベル9（超上級）まで選択可能。</div>
-                    </div>
-                    <div class="flex items-center gap-3 w-full sm:w-auto">
-                        <select id="cpu-level-select" class="bg-gray-900 border border-cyan-500/50 text-cyan-300 font-orbitron text-xs rounded-xl px-3 py-3 focus:outline-none">
-                            <option value="1">CPU Lv.1 (Easy)</option>
-                            <option value="2">CPU Lv.2</option>
-                            <option value="3">CPU Lv.3 (Normal)</option>
-                            <option value="4">CPU Lv.4</option>
-                            <option value="5">CPU Lv.5 (Hard)</option>
-                            <option value="6">CPU Lv.6</option>
-                            <option value="7">CPU Lv.7 (Expert)</option>
-                            <option value="8">CPU Lv.8</option>
-                            <option value="9">CPU Lv.9 (Nightmare)</option>
-                        </select>
-                        <button id="start-cpu-match-btn" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold font-orbitron rounded-xl shadow-lg shadow-cyan-500/20 text-xs transition whitespace-nowrap">
-                            CPU戦開始
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mb-8 p-6 bg-gradient-to-r from-red-950/50 via-gray-950 to-amber-950/50 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div class="text-left">
-                        <div class="text-base font-bold font-orbitron text-amber-300 flex items-center gap-2">
-                            <i class="fa-solid fa-bolt text-xl text-amber-400"></i> 1vs1 クイックオンライン対戦
-                        </div>
-                        <div class="text-xs text-gray-400 mt-1">「バトルに参加」を押すと自動で相手と即時マッチングします。</div>
-                    </div>
-                    <button id="vs-quick-match-btn" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-red-500 to-amber-500 hover:from-red-400 hover:to-amber-400 text-gray-950 font-black font-orbitron rounded-xl shadow-lg shadow-amber-500/20 text-sm tracking-wider transition transform hover:scale-105 active:scale-95 whitespace-nowrap">
-                        <i class="fa-solid fa-gamepad mr-2"></i> バトルに参加
-                    </button>
-                </div>
-
-                <div class="text-xs text-gray-500 uppercase tracking-widest font-orbitron mb-4">-- または 4人部屋ルーム対戦 --</div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto">
-                    <div class="bg-gray-950/70 p-5 rounded-xl border border-gray-800 flex flex-col items-center justify-between gap-4">
-                        <i class="fa-solid fa-users text-3xl text-cyan-400"></i>
-                        <div>
-                            <div class="text-sm font-bold text-gray-200">4人部屋を作成</div>
-                            <div class="text-[11px] text-gray-400 mt-1">最大4人で7分間勝負できる部屋を作成します</div>
-                        </div>
-                        <button id="vs-create-btn" class="w-full bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold font-orbitron py-2.5 rounded-lg text-xs transition">
-                            ルーム作成
-                        </button>
-                    </div>
-
-                    <div class="bg-gray-950/70 p-5 rounded-xl border border-gray-800 flex flex-col items-center justify-between gap-3">
-                        <i class="fa-solid fa-right-to-bracket text-3xl text-amber-400"></i>
-                        <div>
-                            <div class="text-sm font-bold text-gray-200">ルームに参加</div>
-                            <div class="text-[11px] text-gray-400 mt-1">4桁のコードを入力して参加します</div>
-                        </div>
-                        <input type="text" id="vs-code-input" maxlength="4" placeholder="CODE" class="w-full text-center bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm font-orbitron tracking-widest uppercase focus:outline-none focus:border-amber-400 text-amber-300">
-                        <button id="vs-join-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold font-orbitron py-2.5 rounded-lg text-xs transition">
-                            ルーム参加
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VS Room / Playing Screen -->
-            <div id="vs-game-room" class="hidden flex flex-col gap-6">
-                <div class="bg-gray-900/80 rounded-2xl p-4 border border-gray-800 flex flex-wrap justify-between items-center gap-3">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs text-gray-400">ROOM:</span>
-                        <span id="vs-room-id-display" class="font-orbitron font-extrabold text-cyan-400 text-lg tracking-wider">----</span>
-                        <span id="vs-mode-badge" class="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/30 font-orbitron">1vs1</span>
-                    </div>
-                    <div class="flex items-center gap-2 bg-gray-950 px-4 py-1.5 rounded-xl border border-gray-800">
-                        <i class="fa-solid fa-stopwatch text-amber-400"></i>
-                        <span id="vs-timer-display" class="font-orbitron font-extrabold text-xl text-amber-400">07:00</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button id="vs-start-room-btn" class="hidden bg-emerald-500 hover:bg-emerald-400 text-gray-950 text-xs font-bold font-orbitron px-4 py-2 rounded-lg transition shadow-lg shadow-emerald-500/20">
-                            <i class="fa-solid fa-play mr-1"></i> 対戦開始
-                        </button>
-                        <button id="vs-leave-btn" class="text-xs text-red-400 hover:underline px-2 py-1">退室</button>
-                    </div>
-                </div>
-
-                <div id="vs-players-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-
-                <div id="vs-action-area" class="bg-gray-900/60 rounded-2xl p-6 border border-gray-800 flex flex-col items-center gap-6 opacity-50 pointer-events-none relative overflow-hidden">
-        <!-- ================= MISSIONS VIEW ================= -->
-        <div id="mission-mode-view" class="hidden max-w-4xl mx-auto flex flex-col gap-6">
-            <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800">
-                <!-- Daily Missions Block -->
-                <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-800">
-                    <div>
-                        <h2 class="text-lg font-bold font-orbitron text-cyan-300 flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-day text-cyan-400"></i> デイリーミッション (Daily)
-                        </h2>
-                        <p class="text-xs text-gray-400 mt-0.5">毎日AM0:00に自動で切り替わります</p>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-[10px] text-gray-500 font-orbitron">RESET IN</div>
-                        <div id="daily-timer-display" class="text-xs font-bold font-orbitron text-cyan-400">--:--:--</div>
-                    </div>
-                </div>
-                <div id="daily-missions-list" class="space-y-3 mb-8">
-                    <!-- Dynamic Daily List -->
-                </div>
-
-                <!-- Weekly Missions Block -->
-                <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-800">
-                    <div>
-                        <h2 class="text-lg font-bold font-orbitron text-amber-300 flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-week text-amber-400"></i> 週間ミッション (Weekly)
-                        </h2>
-                        <p class="text-xs text-gray-400 mt-0.5">毎週月曜日に目標内容と数値が変わります</p>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-[10px] text-gray-500 font-orbitron">RESET IN</div>
-                        <div id="weekly-timer-display" class="text-xs font-bold font-orbitron text-amber-400">--日 --:--:--</div>
-                    </div>
-                </div>
-                <div id="weekly-missions-list" class="space-y-3">
-                    <!-- Dynamic Weekly List -->
-                </div>
-            </div>
+        <div id="leaderboard-list" class="space-y-2 max-h-[280px] overflow-y-auto pr-1"><div class="text-center text-xs text-gray-500 py-4">読み込み中...</div></div>
+      </div>
+      <div id="offline-bonus-card" class="hidden bg-cyan-950/40 border border-cyan-500/40 rounded-2xl p-4 text-xs">
+        <div class="text-cyan-300 font-bold font-orbitron flex items-center gap-2 mb-1"><i class="fa-solid fa-moon"></i> オフライン報酬獲得！</div>
+        <div class="text-gray-300">不在中に <span id="offline-energy-amount" class="font-bold text-amber-300 font-orbitron">0</span> NRG 生産しました</div>
+      </div>
+      <div class="bg-gray-900/80 rounded-2xl p-5 border border-gray-800 flex flex-col gap-3">
+        <h3 class="text-xs font-bold text-gray-300 font-orbitron border-b border-gray-800 pb-2">データ管理</h3>
+        <div id="save-status" class="text-[11px] text-gray-400">同期状態: 待機中</div>
+        <div class="flex gap-2">
+          <button id="manual-save-btn" disabled class="flex-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-200 text-xs py-2 rounded-lg transition font-bold border border-gray-700">手動保存</button>
+          <button id="reset-data-btn" disabled class="bg-red-950/60 hover:bg-red-900/80 disabled:opacity-40 text-red-300 text-xs px-3 py-2 rounded-lg transition border border-red-800/50">リセット</button>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- ================= ACHIEVEMENTS VIEW ================= -->
-        <div id="achieve-mode-view" class="hidden max-w-4xl mx-auto flex flex-col gap-6">
-            <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800">
-                <h2 class="text-xl font-bold font-orbitron text-purple-300 mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-award text-purple-400"></i> 実績一覧 (Achievements)
-                </h2>
-                <p class="text-xs text-gray-400 mb-6">特定の条件を達成して実績を解除しよう！</p>
+  <!-- ===== VS ===== -->
+  <div id="vs-mode-view" class="hidden flex flex-col gap-6 max-w-4xl mx-auto">
+    <div id="vs-lobby" class="bg-gray-900/80 rounded-2xl p-6 sm:p-8 border border-gray-800 text-center">
+      <h2 class="text-xl sm:text-2xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-400 to-yellow-400 mb-2"><i class="fa-solid fa-bolt-lightning mr-2"></i>7分間 リアルタイム対戦</h2>
+      <p class="text-xs text-gray-400 mb-6">制限時間7分（420秒）で最も多くのエナジーを獲得したプレイヤーが勝利！</p>
 
-                <div id="achievements-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Dynamic Rendering -->
-                </div>
-            </div>
+      <div class="mb-8 p-6 bg-gradient-to-r from-blue-950/50 via-gray-950 to-indigo-950/50 border border-cyan-500/30 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-left">
+          <div class="text-base font-bold font-orbitron text-cyan-300 flex items-center gap-2"><i class="fa-solid fa-robot text-xl text-cyan-400"></i> CPU対戦モード</div>
+          <div class="text-xs text-gray-400 mt-1">CPUと1vs1で勝負！レベル1（初心者）〜 レベル9（超上級）まで選択可能。</div>
         </div>
-
-    </main>
-
-    <!-- Result Overlay Modal -->
-    <div id="vs-result-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-gray-900 border border-amber-500/40 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl flex flex-col items-center gap-4">
-            <i id="vs-result-icon" class="fa-solid fa-trophy text-5xl text-yellow-400"></i>
-            <h2 id="vs-result-title" class="text-2xl font-black font-orbitron text-yellow-400">VICTORY!</h2>
-            
-            <div id="vs-result-ranking-list" class="w-full space-y-2 text-xs font-orbitron my-2"></div>
-
-            <button id="vs-result-close-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-gray-950 text-xs font-bold font-orbitron py-3 rounded-xl transition">
-                ロビーに戻る
-            </button>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <select id="cpu-level-select" class="bg-gray-900 border border-cyan-500/50 text-cyan-300 font-orbitron text-xs rounded-xl px-3 py-3 focus:outline-none">
+            <option value="1">CPU Lv.1 (Easy)</option><option value="2">CPU Lv.2</option><option value="3">CPU Lv.3 (Normal)</option>
+            <option value="4">CPU Lv.4</option><option value="5">CPU Lv.5 (Hard)</option><option value="6">CPU Lv.6</option>
+            <option value="7">CPU Lv.7 (Expert)</option><option value="8">CPU Lv.8</option><option value="9">CPU Lv.9 (Nightmare)</option>
+          </select>
+          <button id="start-cpu-match-btn" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold font-orbitron rounded-xl shadow-lg shadow-cyan-500/20 text-xs transition whitespace-nowrap">CPU戦開始</button>
         </div>
+      </div>
+
+      <div class="mb-8 p-6 bg-gradient-to-r from-red-950/50 via-gray-950 to-amber-950/50 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-left">
+          <div class="text-base font-bold font-orbitron text-amber-300 flex items-center gap-2"><i class="fa-solid fa-bolt text-xl text-amber-400"></i> 1vs1 クイックオンライン対戦</div>
+          <div class="text-xs text-gray-400 mt-1">「バトルに参加」を押すと自動で相手と即時マッチングします。</div>
+        </div>
+        <button id="vs-quick-match-btn" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-red-500 to-amber-500 hover:from-red-400 hover:to-amber-400 text-gray-950 font-black font-orbitron rounded-xl shadow-lg shadow-amber-500/20 text-sm tracking-wider transition transform hover:scale-105 active:scale-95 whitespace-nowrap"><i class="fa-solid fa-gamepad mr-2"></i> バトルに参加</button>
+      </div>
+
+      <div class="text-xs text-gray-500 uppercase tracking-widest font-orbitron mb-4">-- または 4人部屋ルーム対戦 --</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto">
+        <div class="bg-gray-950/70 p-5 rounded-xl border border-gray-800 flex flex-col items-center justify-between gap-4">
+          <i class="fa-solid fa-users text-3xl text-cyan-400"></i>
+          <div><div class="text-sm font-bold text-gray-200">4人部屋を作成</div><div class="text-[11px] text-gray-400 mt-1">最大4人で7分間勝負できる部屋を作成します</div></div>
+          <button id="vs-create-btn" class="w-full bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold font-orbitron py-2.5 rounded-lg text-xs transition">ルーム作成</button>
+        </div>
+        <div class="bg-gray-950/70 p-5 rounded-xl border border-gray-800 flex flex-col items-center justify-between gap-3">
+          <i class="fa-solid fa-right-to-bracket text-3xl text-amber-400"></i>
+          <div><div class="text-sm font-bold text-gray-200">ルームに参加</div><div class="text-[11px] text-gray-400 mt-1">4桁のコードを入力して参加します</div></div>
+          <input type="text" id="vs-code-input" maxlength="4" placeholder="CODE" class="w-full text-center bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm font-orbitron tracking-widest uppercase focus:outline-none focus:border-amber-400 text-amber-300">
+          <button id="vs-join-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold font-orbitron py-2.5 rounded-lg text-xs transition">ルーム参加</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Edit Name Modal -->
-    <div id="name-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl">
-            <h3 class="text-base font-bold text-gray-100 font-orbitron mb-4">プレイヤー名の編集</h3>
-            <input type="text" id="name-input" maxlength="15" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-100 focus:outline-none focus:border-cyan-400 mb-4" placeholder="名前を入力">
-            <div class="flex justify-end gap-2">
-                <button id="close-modal-btn" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-bold rounded-lg transition">キャンセル</button>
-                <button id="save-name-btn" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-gray-950 text-xs font-bold rounded-lg transition">保存</button>
-            </div>
+    <div id="vs-game-room" class="hidden flex flex-col gap-6">
+      <div class="bg-gray-900/80 rounded-2xl p-4 border border-gray-800 flex flex-wrap justify-between items-center gap-3">
+        <div class="flex items-center gap-3">
+          <span class="text-xs text-gray-400">ROOM:</span>
+          <span id="vs-room-id-display" class="font-orbitron font-extrabold text-cyan-400 text-lg tracking-wider">----</span>
+          <span id="vs-mode-badge" class="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/30 font-orbitron">1vs1</span>
         </div>
+        <div class="flex items-center gap-2 bg-gray-950 px-4 py-1.5 rounded-xl border border-gray-800">
+          <i class="fa-solid fa-stopwatch text-amber-400"></i>
+          <span id="vs-timer-display" class="font-orbitron font-extrabold text-xl text-amber-400">07:00</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="vs-start-room-btn" class="hidden bg-emerald-500 hover:bg-emerald-400 text-gray-950 text-xs font-bold font-orbitron px-4 py-2 rounded-lg transition shadow-lg shadow-emerald-500/20"><i class="fa-solid fa-play mr-1"></i> 対戦開始</button>
+          <button id="vs-leave-btn" class="text-xs text-red-400 hover:underline px-2 py-1">退室</button>
+        </div>
+      </div>
+
+      <div id="vs-players-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+
+      <div id="vs-action-area" class="bg-gray-900/60 rounded-2xl p-6 border border-gray-800 flex flex-col items-center gap-6 opacity-50 pointer-events-none relative overflow-hidden">
+        <div id="vs-status-message" class="text-xs font-orbitron text-gray-300 text-center">待機中...</div>
+        <button id="vs-core-button" class="core-btn w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-gradient-to-tr from-amber-600 via-amber-400 to-red-500 p-1 flex items-center justify-center shadow-2xl shadow-amber-500/30 focus:outline-none">
+          <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-amber-400/50 hover:bg-gray-900 transition">
+            <i class="fa-solid fa-bolt text-5xl text-amber-400"></i>
+            <span class="text-xs font-orbitron text-amber-300 mt-2 font-bold">TAP!</span>
+          </div>
+        </button>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+          <button id="vs-upgrade-click" class="p-4 bg-gray-900 hover:bg-gray-800 disabled:opacity-40 rounded-xl border border-gray-800 text-left transition flex justify-between items-center">
+            <div><div class="text-xs text-cyan-400 font-orbitron font-bold">パワー・タップ [A]</div><div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="vs-click-cost">10</span></div></div>
+            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="vs-click-lvl">1</span>/100</span>
+          </button>
+          <button id="vs-upgrade-auto" class="p-4 bg-gray-900 hover:bg-gray-800 disabled:opacity-40 rounded-xl border border-gray-800 text-left transition flex justify-between items-center">
+            <div><div class="text-xs text-cyan-400 font-orbitron font-bold">オート・ドローン [D]</div><div class="text-xs font-bold font-orbitron text-amber-400 mt-2">Cost: <span id="vs-auto-cost">5000</span></div></div>
+            <span class="text-xs font-orbitron text-gray-400">Lv.<span id="vs-auto-lvl">0</span>/10</span>
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-cyan-300 border border-cyan-500/50 px-4 py-3 rounded-xl shadow-xl text-xs font-bold transition-all duration-300 transform translate-y-20 opacity-0 z-50 flex items-center gap-2">
-        <i class="fa-solid fa-circle-check text-cyan-400"></i>
-        <span id="toast-message">保存しました</span>
+  <!-- ===== MISSIONS ===== -->
+  <div id="mission-mode-view" class="hidden max-w-4xl mx-auto flex flex-col gap-6">
+    <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-800">
+        <div>
+          <h2 class="text-lg font-bold font-orbitron text-cyan-300 flex items-center gap-2"><i class="fa-solid fa-calendar-day text-cyan-400"></i> デイリーミッション (Daily)</h2>
+          <p class="text-xs text-gray-400 mt-0.5">毎日AM0:00に自動で切り替わります</p>
+        </div>
+        <div class="text-right"><div class="text-[10px] text-gray-500 font-orbitron">RESET IN</div><div id="daily-timer-display" class="text-xs font-bold font-orbitron text-cyan-400">--:--:--</div></div>
+      </div>
+      <div id="daily-missions-list" class="space-y-3 mb-8"></div>
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-800">
+        <div>
+          <h2 class="text-lg font-bold font-orbitron text-amber-300 flex items-center gap-2"><i class="fa-solid fa-calendar-week text-amber-400"></i> 週間ミッション (Weekly)</h2>
+          <p class="text-xs text-gray-400 mt-0.5">毎週月曜日に目標内容と数値が変わります</p>
+        </div>
+        <div class="text-right"><div class="text-[10px] text-gray-500 font-orbitron">RESET IN</div><div id="weekly-timer-display" class="text-xs font-bold font-orbitron text-amber-400">--日 --:--:--</div></div>
+      </div>
+      <div id="weekly-missions-list" class="space-y-3"></div>
     </div>
+  </div>
 
-    <!-- Firebase Imports via Import Map -->
-    <script type="module">
-        import { initializeApp } from "firebase/app";
-        import { 
-            getAuth, 
-            GoogleAuthProvider, 
-            signInWithPopup, 
-            signOut, 
-            onAuthStateChanged 
-        } from "firebase/auth";
-        import { 
-            getFirestore, 
-            doc, 
-            getDoc, 
-            setDoc, 
-            updateDoc, 
-            deleteDoc, 
-            collection, 
-            onSnapshot 
-        } from "firebase/firestore";
+  <!-- ===== ACHIEVEMENTS ===== -->
+  <div id="achieve-mode-view" class="hidden max-w-4xl mx-auto flex flex-col gap-6">
+    <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800">
+      <h2 class="text-xl font-bold font-orbitron text-purple-300 mb-2 flex items-center gap-2"><i class="fa-solid fa-award text-purple-400"></i> 実績一覧 (Achievements)</h2>
+      <p class="text-xs text-gray-400 mb-6">特定の条件を達成して実績を解除しよう！</p>
+      <div id="achievements-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </div>
+</main>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAAp88ypoypEBetx-p1Ah7P4qLls2vROGY",
-            authDomain: "mapaa-a65a1.firebaseapp.com",
-            projectId: "mapaa-a65a1",
-            storageBucket: "mapaa-a65a1.firebasestorage.app",
-            messagingSenderId: "284057359693",
-            appId: "1:284057359693:web:fdb9f22edfcb776fae9304"
-        };
+<!-- Countdown Overlay -->
+<div id="vs-countdown-overlay" class="fixed inset-0 bg-black/70 z-40 hidden flex items-center justify-center pointer-events-none">
+  <div id="vs-countdown-text" class="text-6xl sm:text-8xl font-black font-orbitron text-cyan-400 neon-text-blue">3</div>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
+<!-- Result Modal -->
+<div id="vs-result-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-gray-900 border border-amber-500/40 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl flex flex-col items-center gap-4">
+    <i id="vs-result-icon" class="fa-solid fa-trophy text-5xl text-yellow-400"></i>
+    <h2 id="vs-result-title" class="text-2xl font-black font-orbitron text-yellow-400">VICTORY!</h2>
+    <div id="vs-result-ranking-list" class="w-full space-y-2 text-xs font-orbitron my-2"></div>
+    <button id="vs-result-close-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-gray-950 text-xs font-bold font-orbitron py-3 rounded-xl transition">ロビーに戻る</button>
+  </div>
+</div>
 
-        let activeTab = 'single';
-        let currentUser = null;
-        let displayName = "ゲスト";
-        
-        let gameState = {
-            energy: 0,
-            totalEnergy: 0,
-            clickPower: 1,
-            clickLevel: 1,
-            autoLevel: 0,
-            clickCost: 10,
-            autoCost: 5000,
-            rebirthCount: 0,
-            unlockedAchievements: [],
-            missionStats: {
-                totalClicks: 0,
-                skillsUsed: 0,
-                hacksCompleted: 0,
-                cpuWins: 0,
-                claimedMissions: []
-            },
-            lastLogoutTime: Date.now()
-        };
+<!-- Name Modal -->
+<div id="name-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl">
+    <h3 class="text-base font-bold text-gray-100 font-orbitron mb-4">プレイヤー名の編集</h3>
+    <input type="text" id="name-input" maxlength="15" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-100 focus:outline-none focus:border-cyan-400 mb-4" placeholder="名前を入力">
+    <div class="flex justify-end gap-2">
+      <button id="close-modal-btn" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-bold rounded-lg transition">キャンセル</button>
+      <button id="save-name-btn" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-gray-950 text-xs font-bold rounded-lg transition">保存</button>
+    </div>
+  </div>
+</div>
 
-        const ACHIEVEMENTS_DATA = [
-            { id: 'click_100', name: 'ファースト・タップ', desc: '累計100エナジーを獲得する', icon: 'fa-mouse' },
-            { id: 'click_10k', name: 'エナジー・コレクター', desc: '累計10,000エナジーを獲得する', icon: 'fa-bolt' },
-            { id: 'click_1m', name: 'エナジー・タイクーン', desc: '累計1,000,000エナジーを獲得する', icon: 'fa-coins' },
-            { id: 'auto_lv5', name: '自動化の足音', desc: 'オート・ドローンをLv.5にする', icon: 'fa-robot' },
-            { id: 'auto_lv10', name: '全自動都市', desc: 'オート・ドローンをLv.10(MAX)にする', icon: 'fa-city' },
-            { id: 'overcharge', name: 'オーバーロード', desc: '初めてオーバーチャージモードを発動させる', icon: 'fa-fire' },
-            { id: 'rebirth_1', name: '新世界への旅立ち', desc: '初めてシステム転生を実行する', icon: 'fa-rotate-right' },
-            { id: 'click_max', name: 'タップの極意', desc: 'パワータップのレベルを100(MAX)にする', icon: 'fa-hand-pointer' },
-            { id: 'use_skills_10', name: 'スキルマスター', desc: 'アクティブスキルを累計10回発動する', icon: 'fa-wand-magic-sparkles' },
-            { id: 'hack_5', name: 'クラッカー', desc: 'ハッキングノードを累計5回突破する', icon: 'fa-terminal' },
-            { id: 'cpu_win_1', name: 'VS AI ベテラン', desc: 'CPU対戦で勝利を収める', icon: 'fa-microchip' },
-            { id: 'cpu_win_lvl7', name: '人工知能を超えた者', desc: 'CPU Lv.7以上の高難易度CPUに勝利する', icon: 'fa-brain' }
-        ];
+<!-- Toast -->
+<div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-cyan-300 border border-cyan-500/50 px-4 py-3 rounded-xl shadow-xl text-xs font-bold transition-all duration-300 transform translate-y-20 opacity-0 z-50 flex items-center gap-2">
+  <i class="fa-solid fa-circle-check text-cyan-400"></i><span id="toast-message">保存しました</span>
+</div>
 
-        // 20 Types Pool of Missions
-        const MISSION_POOL = [
-            { id: 'm_tap_1', type: 'tap', title: 'コア連打トレ', desc: 'コアを{target}回タップする', baseTarget: 100 },
-            { id: 'm_tap_2', type: 'tap', title: '高速タップラッシュ', desc: 'コアを{target}回タップする', baseTarget: 300 },
-            { id: 'm_tap_3', type: 'tap', title: 'タップ無双', desc: 'コアを{target}回タップする', baseTarget: 800 },
-            { id: 'm_energy_1', type: 'energy', title: 'エナジー収集I', desc: '累計{target} NRGを獲得する', baseTarget: 5000 },
-            { id: 'm_energy_2', type: 'energy', title: 'エナジー収集II', desc: '累計{target} NRGを獲得する', baseTarget: 50000 },
-            { id: 'm_energy_3', type: 'energy', title: '大元帥級蓄電', desc: '累計{target} NRGを獲得する', baseTarget: 500000 },
-            { id: 'm_skill_1', type: 'skill', title: 'スキル発動テスト', desc: 'アクティブスキルを{target}回使用する', baseTarget: 2 },
-            { id: 'm_skill_2', type: 'skill', title: 'スキルオーケストラ', desc: 'アクティブスキルを{target}回使用する', baseTarget: 5 },
-            { id: 'm_hack_1', type: 'hack', title: 'ノード探索', desc: 'ハッキングノードを{target}回クリックする', baseTarget: 1 },
-            { id: 'm_hack_2', type: 'hack', title: 'サイバー浸透', desc: 'ハッキングノードを{target}回クリックする', baseTarget: 3 },
-            { id: 'm_cpu_1', type: 'cpu', title: 'AI対抗演習', desc: 'CPU対戦を{target}回行う（勝敗不問）', baseTarget: 1 },
-            { id: 'm_cpu_2', type: 'cpu_win', title: 'AI撃破ミッション', desc: 'CPU対戦で{target}回勝利する', baseTarget: 1 },
-            { id: 'm_auto_lvl', type: 'auto_lvl', title: '自動化推進', desc: 'オートドローンをLv.{target}以上にする', baseTarget: 3 },
-            { id: 'm_click_lvl', type: 'click_lvl', title: 'パワータップ強化', desc: 'パワータップをLv.{target}以上にする', baseTarget: 20 },
-            { id: 'm_tap_4', type: 'tap', title: '限界突入タップ', desc: 'コアを{target}回タップする', baseTarget: 1500 },
-            { id: 'm_energy_4', type: 'energy', title: '巨大プラント計画', desc: '累計{target} NRGを獲得する', baseTarget: 2000000 },
-            { id: 'm_skill_3', type: 'skill', title: 'タクティカルマスター', desc: 'アクティブスキルを{target}回使用する', baseTarget: 10 },
-            { id: 'm_hack_3', type: 'hack', title: 'ハッカーの領域', desc: 'ハッキングノードを{target}回クリックする', baseTarget: 5 },
-            { id: 'm_cpu_3', type: 'cpu_win', title: 'AIキラー', desc: 'CPU対戦で{target}回勝利する', baseTarget: 3 },
-            { id: 'm_rebirth', type: 'rebirth', title: '転生者の証', desc: '転生を{target}回実行する', baseTarget: 1 }
-        ];
+<script type="module">
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, onSnapshot } from "firebase/firestore";
 
-        let isCpuMatch = false;
-        let cpuLevel = 1;
-        let cpuTimerInterval = null;
+const firebaseConfig = {
+  apiKey: "AIzaSyAAp88ypoypEBetx-p1Ah7P4qLls2vROGY",
+  authDomain: "mapaa-a65a1.firebaseapp.com",
+  projectId: "mapaa-a65a1",
+  storageBucket: "mapaa-a65a1.firebasestorage.app",
+  messagingSenderId: "284057359693",
+  appId: "1:284057359693:web:fdb9f22edfcb776fae9304"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-        let overchargeMeter = 0;
-        let isOverchargeActive = false;
+let activeTab = 'single';
+let currentUser = null;
+let displayName = "ゲスト";
 
-        let skillStatus = {
-            s1Active: false,
-            s1Cd: 0,
-            s2Cd: 0,
-            s3Active: false,
-            s3Cd: 0
-        };
+const defaultStats = () => ({ totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, cpuPlays: 0, overcharged: false, claimedMissions: [], baselines: {} });
+const defaultState = () => ({
+  energy: 0, totalEnergy: 0, clickPower: 1, clickLevel: 1, autoLevel: 0, clickCost: 10, autoCost: 5000,
+  rebirthCount: 0, rebirthBase: 0, unlockedAchievements: [], missionStats: defaultStats(), lastLogoutTime: Date.now()
+});
+let gameState = defaultState();
+const stats = () => gameState.missionStats;
 
-        const MATCH_DURATION = 420;
-        let vsRoomId = null;
-        let vsMyPlayerId = null;
-        let vsUnsubRoom = null;
-        let vsMatchTimerInterval = null;
-        let vsHasStartedCountdown = false;
+const ACHIEVEMENTS_DATA = [
+  { id: 'click_100', name: 'ファースト・タップ', desc: '累計100エナジーを獲得する', icon: 'fa-mouse' },
+  { id: 'click_10k', name: 'エナジー・コレクター', desc: '累計10,000エナジーを獲得する', icon: 'fa-bolt' },
+  { id: 'click_1m', name: 'エナジー・タイクーン', desc: '累計1,000,000エナジーを獲得する', icon: 'fa-coins' },
+  { id: 'auto_lv5', name: '自動化の足音', desc: 'オート・ドローンをLv.5にする', icon: 'fa-robot' },
+  { id: 'auto_lv10', name: '全自動都市', desc: 'オート・ドローンをLv.10(MAX)にする', icon: 'fa-city' },
+  { id: 'overcharge', name: 'オーバーロード', desc: '初めてオーバーチャージモードを発動させる', icon: 'fa-fire' },
+  { id: 'rebirth_1', name: '新世界への旅立ち', desc: '初めてシステム転生を実行する', icon: 'fa-rotate-right' },
+  { id: 'click_max', name: 'タップの極意', desc: 'パワータップのレベルを100(MAX)にする', icon: 'fa-hand-pointer' },
+  { id: 'use_skills_10', name: 'スキルマスター', desc: 'アクティブスキルを累計10回発動する', icon: 'fa-wand-magic-sparkles' },
+  { id: 'hack_5', name: 'クラッカー', desc: 'ハッキングノードを累計5回突破する', icon: 'fa-terminal' },
+  { id: 'cpu_win_1', name: 'VS AI ベテラン', desc: 'CPU対戦で勝利を収める', icon: 'fa-microchip' },
+  { id: 'cpu_win_lvl7', name: '人工知能を超えた者', desc: 'CPU Lv.7以上の高難易度CPUに勝利する', icon: 'fa-brain' }
+];
 
-        let vsState = {
-            energy: 0,
-            clickPower: 1,
-            clickLevel: 1,
-            autoLevel: 0,
-            clickCost: 10,
-            autoCost: 5000
-        };
+const MISSION_POOL = [
+  { id: 'm_tap_1', type: 'tap', title: 'コア連打トレ', desc: 'コアを{target}回タップする', baseTarget: 100 },
+  { id: 'm_tap_2', type: 'tap', title: '高速タップラッシュ', desc: 'コアを{target}回タップする', baseTarget: 300 },
+  { id: 'm_tap_3', type: 'tap', title: 'タップ無双', desc: 'コアを{target}回タップする', baseTarget: 800 },
+  { id: 'm_energy_1', type: 'energy', title: 'エナジー収集I', desc: '{target} NRGを獲得する', baseTarget: 5000 },
+  { id: 'm_energy_2', type: 'energy', title: 'エナジー収集II', desc: '{target} NRGを獲得する', baseTarget: 50000 },
+  { id: 'm_energy_3', type: 'energy', title: '大元帥級蓄電', desc: '{target} NRGを獲得する', baseTarget: 500000 },
+  { id: 'm_skill_1', type: 'skill', title: 'スキル発動テスト', desc: 'アクティブスキルを{target}回使用する', baseTarget: 2 },
+  { id: 'm_skill_2', type: 'skill', title: 'スキルオーケストラ', desc: 'アクティブスキルを{target}回使用する', baseTarget: 5 },
+  { id: 'm_hack_1', type: 'hack', title: 'ノード探索', desc: 'ハッキングノードを{target}回クリックする', baseTarget: 1 },
+  { id: 'm_hack_2', type: 'hack', title: 'サイバー浸透', desc: 'ハッキングノードを{target}回クリックする', baseTarget: 3 },
+  { id: 'm_cpu_1', type: 'cpu', title: 'AI対抗演習', desc: 'CPU対戦を{target}回行う（勝敗不問）', baseTarget: 1 },
+  { id: 'm_cpu_2', type: 'cpu_win', title: 'AI撃破ミッション', desc: 'CPU対戦で{target}回勝利する', baseTarget: 1 },
+  { id: 'm_auto_lvl', type: 'auto_lvl', title: '自動化推進', desc: 'オートドローンをLv.{target}以上にする', baseTarget: 3 },
+  { id: 'm_click_lvl', type: 'click_lvl', title: 'パワータップ強化', desc: 'パワータップをLv.{target}以上にする', baseTarget: 20 },
+  { id: 'm_tap_4', type: 'tap', title: '限界突入タップ', desc: 'コアを{target}回タップする', baseTarget: 1500 },
+  { id: 'm_energy_4', type: 'energy', title: '巨大プラント計画', desc: '{target} NRGを獲得する', baseTarget: 2000000 },
+  { id: 'm_skill_3', type: 'skill', title: 'タクティカルマスター', desc: 'アクティブスキルを{target}回使用する', baseTarget: 10 },
+  { id: 'm_hack_3', type: 'hack', title: 'ハッカーの領域', desc: 'ハッキングノードを{target}回クリックする', baseTarget: 5 },
+  { id: 'm_cpu_3', type: 'cpu_win', title: 'AIキラー', desc: 'CPU対戦で{target}回勝利する', baseTarget: 3 },
+  { id: 'm_rebirth', type: 'rebirth', title: '転生者の証', desc: '転生を{target}回実行する', baseTarget: 1 }
+];
+const LEVEL_TYPES = ['auto_lvl', 'click_lvl']; // 現在値で判定（進捗の基準差し引きなし）
 
-        let cpuState = {
-            energy: 0,
-            clickPower: 1,
-            clickLevel: 1,
-            autoLevel: 0,
-            clickCost: 10,
-            autoCost: 5000
-        };
+let isCpuMatch = false, cpuLevel = 1, cpuTimerInterval = null, cpuTapInterval = null;
+let overchargeMeter = 0, isOverchargeActive = false;
+let skillStatus = { s1Active: false, s1Cd: 0, s2Cd: 0, s3Active: false, s3Cd: 0 };
 
-        let singleAutoTimer = 0;
-        let vsAutoTimer = 0;
+const MATCH_DURATION = 420;
+let vsRoomId = null, vsMyPlayerId = null, vsUnsubRoom = null, vsMatchTimerInterval = null;
+let vsHasStartedCountdown = false, vsPlaying = false;
+const defaultVs = () => ({ energy: 0, clickPower: 1, clickLevel: 1, autoLevel: 0, clickCost: 10, autoCost: 5000 });
+let vsState = defaultVs();
+let cpuState = defaultVs();
+let singleAutoTimer = 0, vsAutoTimer = 0;
+let lastMissionKey = '', lastDailyHtml = '', lastWeeklyHtml = '';
 
-        const el = {
-            tabSingleBtn: document.getElementById('tab-single-btn'),
-            tabVsBtn: document.getElementById('tab-vs-btn'),
-            tabMissionBtn: document.getElementById('tab-mission-btn'),
-            tabAchieveBtn: document.getElementById('tab-achieve-btn'),
-            singleView: document.getElementById('single-mode-view'),
-            vsView: document.getElementById('vs-mode-view'),
-            missionView: document.getElementById('mission-mode-view'),
-            achieveView: document.getElementById('achieve-mode-view'),
+const $ = id => document.getElementById(id);
+const el = {
+  tabSingleBtn: $('tab-single-btn'), tabVsBtn: $('tab-vs-btn'), tabMissionBtn: $('tab-mission-btn'), tabAchieveBtn: $('tab-achieve-btn'),
+  singleView: $('single-mode-view'), vsView: $('vs-mode-view'), missionView: $('mission-mode-view'), achieveView: $('achieve-mode-view'),
+  dailyTimerDisplay: $('daily-timer-display'), weeklyTimerDisplay: $('weekly-timer-display'),
+  dailyMissionsList: $('daily-missions-list'), weeklyMissionsList: $('weekly-missions-list'),
+  cpuLevelSelect: $('cpu-level-select'), startCpuMatchBtn: $('start-cpu-match-btn'),
+  rebirthCostDisplay: $('rebirth-cost-display'), rebirthProgress: $('rebirth-progress'),
+  skill1Btn: $('skill-1-btn'), skill1Cd: $('skill-1-cd'), skill2Btn: $('skill-2-btn'), skill2Cd: $('skill-2-cd'), skill3Btn: $('skill-3-btn'), skill3Cd: $('skill-3-cd'),
+  hackNode: $('hack-node'), supplyDrone: $('supply-drone'),
+  loginBtn: $('login-btn'), logoutBtn: $('logout-btn'), loadingSpinner: $('loading-spinner'), userProfile: $('user-profile'),
+  userAvatar: $('user-avatar'), userName: $('user-name'), editNameBtn: $('edit-name-btn'),
+  energyCount: $('energy-count'), epsDisplay: $('eps-display'), totalEnergyDisplay: $('total-energy-display'),
+  coreButton: $('core-button'), clickArea: $('click-area'),
+  upgradeClickBtn: $('upgrade-click-btn'), clickCost: $('click-cost'), clickLevel: $('click-level'),
+  upgradeAutoBtn: $('upgrade-auto-btn'), autoCost: $('auto-cost'), autoLevel: $('auto-level'),
+  rebirthBtn: $('rebirth-btn'), rebirthTag: $('rebirth-tag'), rebirthCount: $('rebirth-count'), rebirthBonus: $('rebirth-bonus'),
+  overchargeBar: $('overcharge-bar'), overchargePercent: $('overcharge-percent'),
+  offlineBonusCard: $('offline-bonus-card'), offlineEnergyAmount: $('offline-energy-amount'),
+  achieveBadge: $('achieve-badge'), achievementsGrid: $('achievements-grid'),
+  leaderboardList: $('leaderboard-list'), saveStatus: $('save-status'), manualSaveBtn: $('manual-save-btn'), resetDataBtn: $('reset-data-btn'),
+  nameModal: $('name-modal'), nameInput: $('name-input'), saveNameBtn: $('save-name-btn'), closeModalBtn: $('close-modal-btn'),
+  toast: $('toast'), toastMessage: $('toast-message'),
+  vsLobby: $('vs-lobby'), vsGameRoom: $('vs-game-room'), vsQuickMatchBtn: $('vs-quick-match-btn'), vsCreateBtn: $('vs-create-btn'),
+  vsJoinBtn: $('vs-join-btn'), vsCodeInput: $('vs-code-input'), vsRoomIdDisplay: $('vs-room-id-display'), vsModeBadge: $('vs-mode-badge'),
+  vsTimerDisplay: $('vs-timer-display'), vsStartRoomBtn: $('vs-start-room-btn'), vsLeaveBtn: $('vs-leave-btn'), vsPlayersGrid: $('vs-players-grid'),
+  vsActionArea: $('vs-action-area'), vsStatusMessage: $('vs-status-message'), vsCoreButton: $('vs-core-button'),
+  vsUpgradeClick: $('vs-upgrade-click'), vsUpgradeAuto: $('vs-upgrade-auto'),
+  vsClickCost: $('vs-click-cost'), vsClickLvl: $('vs-click-lvl'), vsAutoCost: $('vs-auto-cost'), vsAutoLvl: $('vs-auto-lvl'),
+  vsCountdownOverlay: $('vs-countdown-overlay'), vsCountdownText: $('vs-countdown-text'),
+  vsResultModal: $('vs-result-modal'), vsResultIcon: $('vs-result-icon'), vsResultTitle: $('vs-result-title'),
+  vsResultRankingList: $('vs-result-ranking-list'), vsResultCloseBtn: $('vs-result-close-btn')
+};
 
-            dailyTimerDisplay: document.getElementById('daily-timer-display'),
-            weeklyTimerDisplay: document.getElementById('weekly-timer-display'),
-            dailyMissionsList: document.getElementById('daily-missions-list'),
-            weeklyMissionsList: document.getElementById('weekly-missions-list'),
+/* ---------- formulas ---------- */
+const getRebirthCost = () => 500000 * ((gameState.rebirthCount || 0) + 1);
+const getRebirthProgress = () => Math.max(0, gameState.totalEnergy - (gameState.rebirthBase || 0));
+function getClickPowerGain(n) {
+  if (n <= 10) return 2; if (n <= 20) return 5; if (n <= 30) return 10; if (n <= 40) return 15; if (n <= 50) return 20;
+  if (n <= 60) return 25; if (n <= 70) return 30; if (n <= 80) return 35; if (n <= 90) return 40; if (n <= 100) return 50; return 0;
+}
+function getAutoInterval(level) {
+  if (level <= 0) return 0;
+  return Math.max(0.1, Math.round((1.1 - level * 0.1) * 10) / 10);
+}
+const getAutoPower = level => level * 5;
+const getRebirthMultiplier = () => 1 + ((gameState.rebirthCount || 0) * 0.2);
 
-            cpuLevelSelect: document.getElementById('cpu-level-select'),
-            startCpuMatchBtn: document.getElementById('start-cpu-match-btn'),
+/* ---------- overcharge / toast ---------- */
+function updateOverchargeUI() {
+  el.overchargeBar.style.width = `${overchargeMeter}%`;
+  el.overchargePercent.textContent = Math.floor(overchargeMeter);
+}
+function triggerOvercharge() {
+  isOverchargeActive = true;
+  stats().overcharged = true;
+  el.clickArea.classList.add('overcharge-active');
+  showToast("🔥 OVERCHARGE ACTIVATED! Tap production x2!");
+  checkAchievements();
+  let count = 10;
+  const timer = setInterval(() => {
+    count -= 1;
+    overchargeMeter = (count / 10) * 100;
+    updateOverchargeUI();
+    if (count <= 0) {
+      clearInterval(timer);
+      isOverchargeActive = false;
+      overchargeMeter = 0;
+      updateOverchargeUI();
+      el.clickArea.classList.remove('overcharge-active');
+      showToast("Overcharge mode ended");
+    }
+  }, 1000);
+}
+let toastTimer = null;
+function showToast(msg) {
+  el.toastMessage.textContent = msg;
+  el.toast.classList.remove('translate-y-20', 'opacity-0');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+}
 
-            rebirthCostDisplay: document.getElementById('rebirth-cost-display'),
+/* ---------- tabs ---------- */
+el.tabSingleBtn.addEventListener('click', () => switchTab('single'));
+el.tabVsBtn.addEventListener('click', () => switchTab('vs'));
+el.tabMissionBtn.addEventListener('click', () => switchTab('mission'));
+el.tabAchieveBtn.addEventListener('click', () => switchTab('achieve'));
+function switchTab(tab) {
+  activeTab = tab;
+  const d = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700";
+  el.tabSingleBtn.className = d; el.tabVsBtn.className = d; el.tabMissionBtn.className = d; el.tabAchieveBtn.className = d + " ml-auto";
+  [el.singleView, el.vsView, el.missionView, el.achieveView].forEach(v => v.classList.add('hidden'));
+  if (tab === 'single') {
+    el.tabSingleBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20";
+    el.singleView.classList.remove('hidden');
+  } else if (tab === 'vs') {
+    el.tabVsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-amber-500 text-gray-950 shadow-lg shadow-amber-500/20";
+    el.vsView.classList.remove('hidden');
+  } else if (tab === 'mission') {
+    el.tabMissionBtn.className = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-emerald-500 text-gray-950 shadow-lg shadow-emerald-500/20";
+    el.missionView.classList.remove('hidden');
+    renderMissions();
+  } else if (tab === 'achieve') {
+    el.tabAchieveBtn.className = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-purple-500 text-gray-950 shadow-lg shadow-purple-500/20 ml-auto";
+    el.achieveView.classList.remove('hidden');
+    renderAchievements();
+  }
+}
 
-            skill1Btn: document.getElementById('skill-1-btn'),
-            skill1Cd: document.getElementById('skill-1-cd'),
-            skill2Btn: document.getElementById('skill-2-btn'),
-            skill2Cd: document.getElementById('skill-2-cd'),
-            skill3Btn: document.getElementById('skill-3-btn'),
-            skill3Cd: document.getElementById('skill-3-cd'),
+/* ---------- missions ---------- */
+function getDailySeed() {
+  const n = new Date();
+  return n.getFullYear() * 10000 + (n.getMonth() + 1) * 100 + n.getDate();
+}
+function getWeeklySeed() {
+  const n = new Date();
+  const d = new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return d.getUTCFullYear() * 100 + weekNo;
+}
+function pseudoRandom(seed) {
+  let v = seed;
+  return () => { v = (v * 9301 + 49297) % 233280; return v / 233280; };
+}
+function getMissionsForSeed(seed, count, isWeekly, prefix) {
+  const rng = pseudoRandom(seed);
+  const shuffled = [...MISSION_POOL].sort(() => rng() - 0.5).slice(0, count);
+  return shuffled.map(m => {
+    // デイリー: 1.0〜1.4倍 / ウィークリー: 2〜4倍
+    const mult = isWeekly ? (2 + Math.floor(rng() * 3)) : (1 + Math.floor(rng() * 5) / 10);
+    const target = Math.max(1, Math.round(m.baseTarget * mult));
+    const reward = Math.round((isWeekly ? 25000 : 5000) * mult);
+    return { id: `${prefix}_${m.id}_${seed}`, type: m.type, title: m.title, desc: m.desc.replace('{target}', target.toLocaleString()), target, reward };
+  });
+}
+const getCurrentMissions = () => ({
+  daily: getMissionsForSeed(getDailySeed(), 3, false, 'd'),
+  weekly: getMissionsForSeed(getWeeklySeed(), 4, true, 'w')
+});
+function rawProgress(type) {
+  const s = stats();
+  switch (type) {
+    case 'tap': return s.totalClicks || 0;
+    case 'energy': return gameState.totalEnergy || 0;
+    case 'skill': return s.skillsUsed || 0;
+    case 'hack': return s.hacksCompleted || 0;
+    case 'cpu': return s.cpuPlays || 0;
+    case 'cpu_win': return s.cpuWins || 0;
+    case 'auto_lvl': return gameState.autoLevel || 0;
+    case 'click_lvl': return gameState.clickLevel || 0;
+    case 'rebirth': return gameState.rebirthCount || 0;
+    default: return 0;
+  }
+}
+// ミッション開始時点の累計値を記録し、その後の増加分のみを進捗とする。古いミッションの記録は削除。
+function ensureBaselines() {
+  const { daily, weekly } = getCurrentMissions();
+  const all = [...daily, ...weekly];
+  const s = stats();
+  const base = {};
+  all.forEach(m => {
+    if (LEVEL_TYPES.includes(m.type)) return;
+    base[m.id] = (s.baselines && s.baselines[m.id] !== undefined) ? s.baselines[m.id] : rawProgress(m.type);
+  });
+  s.baselines = base;
+  const ids = all.map(m => m.id);
+  s.claimedMissions = (s.claimedMissions || []).filter(id => ids.includes(id));
+}
+function getMissionProgress(m) {
+  const raw = rawProgress(m.type);
+  if (LEVEL_TYPES.includes(m.type)) return raw;
+  const b = stats().baselines[m.id];
+  return Math.max(0, raw - (b === undefined ? raw : b));
+}
+function missionCardHtml(m) {
+  const current = getMissionProgress(m);
+  const done = current >= m.target;
+  const claimed = stats().claimedMissions.includes(m.id);
+  const pct = Math.min(100, Math.floor((current / m.target) * 100));
+  const cardCls = claimed ? 'bg-gray-950/40 border-gray-800 opacity-60' : (done ? 'bg-emerald-950/30 border-emerald-500/50' : 'bg-gray-900/60 border-gray-800');
+  const btnCls = claimed ? 'bg-gray-800 text-gray-500 border border-gray-700' : (done ? 'bg-emerald-500 hover:bg-emerald-400 text-gray-950 shadow-lg shadow-emerald-500/20' : 'bg-gray-800 text-gray-500 border border-gray-700 opacity-60');
+  return `
+  <div class="p-4 rounded-xl border ${cardCls} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <div class="flex-1 w-full">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-xs font-bold text-gray-200">${m.title}</span>
+        <span class="text-[10px] font-orbitron text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded border border-amber-500/30">+${m.reward.toLocaleString()} NRG</span>
+      </div>
+      <div class="text-[11px] text-gray-400 mt-1">${m.desc}</div>
+      <div class="w-full max-w-xs bg-gray-950 h-2 rounded-full mt-2 overflow-hidden border border-gray-800"><div class="bg-emerald-400 h-full transition-all duration-300" style="width:${pct}%"></div></div>
+      <div class="text-[10px] text-gray-500 font-orbitron mt-1">${Math.floor(current).toLocaleString()} / ${m.target.toLocaleString()} (${pct}%)</div>
+    </div>
+    <button data-claim="${m.id}" data-reward="${m.reward}" ${(!done || claimed) ? 'disabled' : ''} class="px-4 py-2 rounded-lg text-xs font-bold font-orbitron whitespace-nowrap transition ${btnCls}">${claimed ? '受取済み' : (done ? '報酬を受け取る' : '進行中')}</button>
+  </div>`;
+}
+function renderMissions() {
+  ensureBaselines();
+  const { daily, weekly } = getCurrentMissions();
+  const dh = daily.map(missionCardHtml).join('');
+  const wh = weekly.map(missionCardHtml).join('');
+  if (dh !== lastDailyHtml) { el.dailyMissionsList.innerHTML = dh; lastDailyHtml = dh; }
+  if (wh !== lastWeeklyHtml) { el.weeklyMissionsList.innerHTML = wh; lastWeeklyHtml = wh; }
+}
+function claimMissionReward(mId, reward) {
+  const s = stats();
+  if (s.claimedMissions.includes(mId)) return;
+  const { daily, weekly } = getCurrentMissions();
+  const m = [...daily, ...weekly].find(x => x.id === mId);
+  if (!m || getMissionProgress(m) < m.target || m.reward !== reward) return;
+  s.claimedMissions.push(mId);
+  gameState.energy += m.reward;
+  gameState.totalEnergy += m.reward;
+  updateUI();
+  renderMissions();
+  checkAchievements();
+  saveUserData(true);
+  showToast(`🎁 ミッション報酬獲得！ +${m.reward.toLocaleString()} NRG`);
+  if (window.confetti) confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+}
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-claim]');
+  if (btn && !btn.disabled) claimMissionReward(btn.dataset.claim, parseInt(btn.dataset.reward, 10));
+});
+function updateMissionCountdowns() {
+  const now = new Date();
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const dd = Math.floor((tomorrow - now) / 1000);
+  el.dailyTimerDisplay.textContent = `${String(Math.floor(dd / 3600)).padStart(2, '0')}:${String(Math.floor((dd % 3600) / 60)).padStart(2, '0')}:${String(dd % 60).padStart(2, '0')}`;
+  const dow = now.getDay() || 7;
+  const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (8 - dow));
+  const wd = Math.floor((nextMonday - now) / 1000);
+  el.weeklyTimerDisplay.textContent = `${Math.floor(wd / 86400)}日 ${String(Math.floor((wd % 86400) / 3600)).padStart(2, '0')}:${String(Math.floor((wd % 3600) / 60)).padStart(2, '0')}:${String(wd % 60).padStart(2, '0')}`;
+  const key = getDailySeed() + '-' + getWeeklySeed();
+  if (key !== lastMissionKey) { lastMissionKey = key; ensureBaselines(); }
+}
 
-            hackNode: document.getElementById('hack-node'),
-            supplyDrone: document.getElementById('supply-drone'),
+/* ---------- achievements ---------- */
+function checkAchievements() {
+  if (!gameState.unlockedAchievements) gameState.unlockedAchievements = [];
+  const check = (id, cond) => {
+    if (cond && !gameState.unlockedAchievements.includes(id)) {
+      gameState.unlockedAchievements.push(id);
+      showToast(`🏆 実績解除: ${ACHIEVEMENTS_DATA.find(a => a.id === id).name}`);
+      if (window.confetti) confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+    }
+  };
+  const s = stats();
+  check('click_100', gameState.totalEnergy >= 100);
+  check('click_10k', gameState.totalEnergy >= 10000);
+  check('click_1m', gameState.totalEnergy >= 1000000);
+  check('auto_lv5', gameState.autoLevel >= 5);
+  check('auto_lv10', gameState.autoLevel >= 10);
+  check('overcharge', !!s.overcharged);
+  check('click_max', gameState.clickLevel >= 100);
+  check('rebirth_1', gameState.rebirthCount >= 1);
+  check('use_skills_10', (s.skillsUsed || 0) >= 10);
+  check('hack_5', (s.hacksCompleted || 0) >= 5);
+  check('cpu_win_1', (s.cpuWins || 0) >= 1);
+  updateUI();
+}
+function renderAchievements() {
+  const unlocked = gameState.unlockedAchievements || [];
+  el.achieveBadge.textContent = `${unlocked.length}/${ACHIEVEMENTS_DATA.length}`;
+  el.achievementsGrid.innerHTML = ACHIEVEMENTS_DATA.map(a => {
+    const done = unlocked.includes(a.id);
+    return `
+    <div class="p-4 rounded-xl border ${done ? 'bg-purple-950/40 border-purple-500/50' : 'bg-gray-950/50 border-gray-800 opacity-60'} flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl ${done ? 'bg-purple-500 text-gray-950' : 'bg-gray-800 text-gray-500'} flex items-center justify-center text-xl shrink-0"><i class="fa-solid ${a.icon}"></i></div>
+      <div>
+        <div class="text-xs font-bold font-orbitron ${done ? 'text-purple-300' : 'text-gray-400'}">${a.name}</div>
+        <div class="text-[11px] text-gray-400 mt-0.5">${a.desc}</div>
+        <div class="text-[10px] font-orbitron ${done ? 'text-emerald-400' : 'text-gray-600'} mt-1">${done ? '<i class="fa-solid fa-check mr-1"></i>達成済み' : '未達成'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
-            loginBtn: document.getElementById('login-btn'),
-            logoutBtn: document.getElementById('logout-btn'),
-            loadingSpinner: document.getElementById('loading-spinner'),
-            userProfile: document.getElementById('user-profile'),
-            userAvatar: document.getElementById('user-avatar'),
-            userName: document.getElementById('user-name'),
-            editNameBtn: document.getElementById('edit-name-btn'),
-            
-            energyCount: document.getElementById('energy-count'),
-            epsDisplay: document.getElementById('eps-display'),
-            totalEnergyDisplay: document.getElementById('total-energy-display'),
-            coreButton: document.getElementById('core-button'),
-            coreIcon: document.getElementById('core-icon'),
-            clickArea: document.getElementById('click-area'),
-            
-            upgradeClickBtn: document.getElementById('upgrade-click-btn'),
-            clickCost: document.getElementById('click-cost'),
-            clickLevel: document.getElementById('click-level'),
-            
-            upgradeAutoBtn: document.getElementById('upgrade-auto-btn'),
-            autoCost: document.getElementById('auto-cost'),
-            autoLevel: document.getElementById('auto-level'),
-            
-            rebirthBtn: document.getElementById('rebirth-btn'),
-            rebirthTag: document.getElementById('rebirth-tag'),
-            rebirthCount: document.getElementById('rebirth-count'),
-            rebirthBonus: document.getElementById('rebirth-bonus'),
+/* ---------- main UI ---------- */
+function updateUI() {
+  el.energyCount.textContent = Math.floor(gameState.energy).toLocaleString();
+  const mult = getRebirthMultiplier();
+  const interval = getAutoInterval(gameState.autoLevel);
+  const power = getAutoPower(gameState.autoLevel) * mult;
+  el.epsDisplay.textContent = gameState.autoLevel > 0 ? parseFloat((power / interval).toFixed(1)).toLocaleString() : "0";
+  el.totalEnergyDisplay.textContent = Math.floor(gameState.totalEnergy).toLocaleString();
 
-            overchargeBar: document.getElementById('overcharge-bar'),
-            overchargePercent: document.getElementById('overcharge-percent'),
-            overchargeStatus: document.getElementById('overcharge-status'),
+  if (gameState.clickLevel >= 100) {
+    el.clickCost.textContent = "MAX"; el.clickLevel.textContent = "100"; el.upgradeClickBtn.disabled = true;
+  } else {
+    el.clickCost.textContent = gameState.clickCost.toLocaleString(); el.clickLevel.textContent = gameState.clickLevel;
+    el.upgradeClickBtn.disabled = gameState.energy < gameState.clickCost;
+  }
+  if (gameState.autoLevel >= 10) {
+    el.autoCost.textContent = "MAX"; el.autoLevel.textContent = "10"; el.upgradeAutoBtn.disabled = true;
+  } else {
+    el.autoCost.textContent = gameState.autoCost.toLocaleString(); el.autoLevel.textContent = gameState.autoLevel;
+    el.upgradeAutoBtn.disabled = gameState.energy < gameState.autoCost;
+  }
 
-            offlineBonusCard: document.getElementById('offline-bonus-card'),
-            offlineEnergyAmount: document.getElementById('offline-energy-amount'),
+  const rc = getRebirthCost();
+  el.rebirthCostDisplay.textContent = rc.toLocaleString();
+  el.rebirthProgress.textContent = Math.floor(getRebirthProgress()).toLocaleString();
+  if (gameState.rebirthCount > 0) {
+    el.rebirthTag.classList.remove('hidden');
+    el.rebirthCount.textContent = gameState.rebirthCount;
+    el.rebirthBonus.textContent = Math.round((mult - 1) * 100);
+  } else el.rebirthTag.classList.add('hidden');
+  el.rebirthBtn.disabled = getRebirthProgress() < rc;
 
-            achieveBadge: document.getElementById('achieve-badge'),
-            achievementsGrid: document.getElementById('achievements-grid'),
+  el.achieveBadge.textContent = `${(gameState.unlockedAchievements || []).length}/${ACHIEVEMENTS_DATA.length}`;
+}
 
-            leaderboardList: document.getElementById('leaderboard-list'),
-            saveStatus: document.getElementById('save-status'),
-            manualSaveBtn: document.getElementById('manual-save-btn'),
-            resetDataBtn: document.getElementById('reset-data-btn'),
-            
-            nameModal: document.getElementById('name-modal'),
-            nameInput: document.getElementById('name-input'),
-            saveNameBtn: document.getElementById('save-name-btn'),
-            closeModalBtn: document.getElementById('close-modal-btn'),
-            
-            toast: document.getElementById('toast'),
-            toastMessage: document.getElementById('toast-message'),
+/* ---------- main tick (0.1s) ---------- */
+function tickSkill(key, cdEl) {
+  if (skillStatus[key] > 0) {
+    skillStatus[key] -= 0.1;
+    if (skillStatus[key] <= 0) { skillStatus[key] = 0; cdEl.classList.add('hidden'); }
+    else cdEl.textContent = `${Math.ceil(skillStatus[key])}s`;
+  }
+}
+let tickCount = 0;
+setInterval(() => {
+  updateMissionCountdowns();
+  tickCount++;
+  if (activeTab === 'mission' && tickCount % 10 === 0) renderMissions();
 
-            vsLobby: document.getElementById('vs-lobby'),
-            vsGameRoom: document.getElementById('vs-game-room'),
-            vsQuickMatchBtn: document.getElementById('vs-quick-match-btn'),
-            vsCreateBtn: document.getElementById('vs-create-btn'),
-            vsJoinBtn: document.getElementById('vs-join-btn'),
-            vsCodeInput: document.getElementById('vs-code-input'),
-            vsRoomIdDisplay: document.getElementById('vs-room-id-display'),
-            vsModeBadge: document.getElementById('vs-mode-badge'),
-            vsTimerDisplay: document.getElementById('vs-timer-display'),
-            vsStartRoomBtn: document.getElementById('vs-start-room-btn'),
-            vsLeaveBtn: document.getElementById('vs-leave-btn'),
-            vsPlayersGrid: document.getElementById('vs-players-grid'),
-            
-            vsActionArea: document.getElementById('vs-action-area'),
-            vsStatusMessage: document.getElementById('vs-status-message'),
-            vsCoreButton: document.getElementById('vs-core-button'),
-            vsUpgradeClick: document.getElementById('vs-upgrade-click'),
-            vsUpgradeAuto: document.getElementById('vs-upgrade-auto'),
-            vsClickCost: document.getElementById('vs-click-cost'),
-            vsClickLvl: document.getElementById('vs-click-lvl'),
-            vsAutoCost: document.getElementById('vs-auto-cost'),
-            vsAutoLvl: document.getElementById('vs-auto-lvl'),
-            vsCountdownOverlay: document.getElementById('vs-countdown-overlay'),
-            vsCountdownText: document.getElementById('vs-countdown-text'),
+  if (document.visibilityState !== 'visible') { singleAutoTimer = 0; vsAutoTimer = 0; return; }
 
-            vsResultModal: document.getElementById('vs-result-modal'),
-            vsResultIcon: document.getElementById('vs-result-icon'),
-            vsResultTitle: document.getElementById('vs-result-title'),
-            vsResultRankingList: document.getElementById('vs-result-ranking-list'),
-            vsResultCloseBtn: document.getElementById('vs-result-close-btn')
-        };
+  tickSkill('s1Cd', el.skill1Cd); tickSkill('s2Cd', el.skill2Cd); tickSkill('s3Cd', el.skill3Cd);
 
-        function getRebirthCost() {
-            const count = gameState.rebirthCount || 0;
-            return 500000 * (count + 1);
+  if (!isOverchargeActive && overchargeMeter > 0) {
+    overchargeMeter = Math.max(0, overchargeMeter - 1.5);
+    updateOverchargeUI();
+  }
+
+  if (activeTab === 'single' && gameState.autoLevel > 0) {
+    singleAutoTimer += 0.1;
+    const iv = getAutoInterval(gameState.autoLevel);
+    if (singleAutoTimer >= iv - 0.0001) {
+      singleAutoTimer -= iv;
+      const p = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
+      gameState.energy += p; gameState.totalEnergy += p;
+      checkAchievements(); updateUI();
+    }
+  }
+
+  if (activeTab === 'vs' && vsPlaying && vsState.autoLevel > 0 && (vsRoomId || isCpuMatch)) {
+    vsAutoTimer += 0.1;
+    const iv = getAutoInterval(vsState.autoLevel);
+    if (vsAutoTimer >= iv - 0.0001) {
+      vsAutoTimer -= iv;
+      vsState.energy += getAutoPower(vsState.autoLevel);
+      updateVsUI();
+      if (!isCpuMatch) syncVsScore();
+    }
+  }
+}, 100);
+
+/* ---------- skills ---------- */
+el.skill1Btn.addEventListener('click', () => {
+  if (skillStatus.s1Cd > 0) return;
+  skillStatus.s1Active = true; skillStatus.s1Cd = 30; el.skill1Cd.classList.remove('hidden');
+  stats().skillsUsed++;
+  showToast("⚡ スキル発動: オーバーロード！(タップ生産5倍)");
+  checkAchievements();
+  setTimeout(() => { skillStatus.s1Active = false; showToast("オーバーロードの効果が終了しました"); }, 10000);
+});
+el.skill2Btn.addEventListener('click', () => {
+  if (skillStatus.s2Cd > 0) return;
+  skillStatus.s2Cd = 45; el.skill2Cd.classList.remove('hidden');
+  stats().skillsUsed++;
+  const iv = getAutoInterval(gameState.autoLevel);
+  const p = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
+  const gain = iv > 0 ? Math.max(100, (20 / iv) * p) : 100;
+  gameState.energy += gain; gameState.totalEnergy += gain;
+  updateUI(); checkAchievements();
+  showToast(`🤖 ナノボット発動！ +${Math.floor(gain).toLocaleString()} NRG`);
+});
+el.skill3Btn.addEventListener('click', () => {
+  if (skillStatus.s3Cd > 0) return;
+  skillStatus.s3Active = true; skillStatus.s3Cd = 60; el.skill3Cd.classList.remove('hidden');
+  stats().skillsUsed++;
+  showToast("🎯 スキル発動: サイバー・フレンジー！(クリティカル50%)");
+  checkAchievements();
+  setTimeout(() => { skillStatus.s3Active = false; showToast("サイバー・フレンジーの効果が終了しました"); }, 15000);
+});
+
+/* ---------- hack node & drone ---------- */
+setInterval(() => {
+  if (activeTab !== 'single') return;
+  if (el.hackNode.classList.contains('hidden') && Math.random() < 0.4) {
+    el.hackNode.style.top = `${Math.floor(Math.random() * 60) + 10}%`;
+    el.hackNode.style.left = `${Math.floor(Math.random() * 60) + 10}%`;
+    el.hackNode.classList.remove('hidden');
+    setTimeout(() => el.hackNode.classList.add('hidden'), 8000);
+  }
+}, 20000);
+setInterval(() => {
+  if (activeTab !== 'single') return;
+  if (el.supplyDrone.classList.contains('hidden') && Math.random() < 0.3) {
+    el.supplyDrone.style.top = `${Math.floor(Math.random() * 70) + 10}%`;
+    el.supplyDrone.style.left = `5%`;
+    el.supplyDrone.classList.remove('hidden');
+    let pos = 5;
+    const anim = setInterval(() => {
+      pos += 2;
+      el.supplyDrone.style.left = `${pos}%`;
+      if (pos >= 90 || el.supplyDrone.classList.contains('hidden')) { clearInterval(anim); el.supplyDrone.classList.add('hidden'); }
+    }, 100);
+  }
+}, 30000);
+el.hackNode.addEventListener('click', e => {
+  e.stopPropagation();
+  el.hackNode.classList.add('hidden');
+  const bonus = Math.max(500, gameState.clickPower * 50 * getRebirthMultiplier());
+  gameState.energy += bonus; gameState.totalEnergy += bonus;
+  stats().hacksCompleted++;
+  updateUI(); checkAchievements();
+  showToast(`💻 ハッキング成功！ +${Math.floor(bonus).toLocaleString()} NRG 獲得！`);
+  if (window.confetti) confetti({ particleCount: 30, spread: 50, origin: { y: 0.6 } });
+});
+el.supplyDrone.addEventListener('click', e => {
+  e.stopPropagation();
+  el.supplyDrone.classList.add('hidden');
+  if (Math.random() < 0.5) {
+    const bonus = Math.max(1000, gameState.totalEnergy * 0.1);
+    gameState.energy += bonus; gameState.totalEnergy += bonus;
+    showToast(`🚁 ドローン撃墜！ 供給爆発 +${Math.floor(bonus).toLocaleString()} NRG!`);
+  } else {
+    skillStatus.s1Cd = 0; skillStatus.s2Cd = 0; skillStatus.s3Cd = 0;
+    el.skill1Cd.classList.add('hidden'); el.skill2Cd.classList.add('hidden'); el.skill3Cd.classList.add('hidden');
+    showToast(`🚁 ドローン撃墜！ 全スキルのクールダウン即時クリア！`);
+  }
+  updateUI(); checkAchievements();
+});
+
+/* ---------- tap ---------- */
+function handleCoreTap(e, target, area, isVs) {
+  const critRate = (!isVs && skillStatus.s3Active) ? 0.5 : 0.01;
+  const crit = Math.random() < critRate;
+  const mult = isVs ? 1 : (getRebirthMultiplier() * (isOverchargeActive ? 2 : 1) * (skillStatus.s1Active ? 5 : 1));
+  const earned = crit ? target.clickPower * 2.5 * mult : target.clickPower * mult;
+  target.energy += earned;
+  if (!isVs) {
+    target.totalEnergy += earned;
+    stats().totalClicks++;
+    if (!isOverchargeActive) {
+      overchargeMeter = Math.min(100, overchargeMeter + 4);
+      updateOverchargeUI();
+      if (overchargeMeter >= 100) triggerOvercharge();
+    }
+    checkAchievements();
+  }
+  const pop = document.createElement('div');
+  pop.className = crit ? 'crit-pop' : 'click-pop';
+  pop.textContent = crit ? `CRITICAL! +${Math.floor(earned)}` : `+${Math.floor(earned)}`;
+  const rect = area.getBoundingClientRect();
+  const cx = e.clientX || (rect.left + rect.width / 2);
+  const cy = e.clientY || (rect.top + rect.height / 2);
+  pop.style.left = `${cx - rect.left - (crit ? 30 : 10)}px`;
+  pop.style.top = `${cy - rect.top - 20}px`;
+  area.appendChild(pop);
+  setTimeout(() => pop.remove(), crit ? 1000 : 800);
+  if (isVs) { updateVsUI(); if (!isCpuMatch) syncVsScore(); } else updateUI();
+}
+el.coreButton.addEventListener('pointerdown', e => {
+  if (e.button === 0 || e.button === 2) { e.preventDefault(); handleCoreTap(e, gameState, el.clickArea, false); }
+});
+el.coreButton.addEventListener('contextmenu', e => e.preventDefault());
+
+el.upgradeClickBtn.addEventListener('click', () => {
+  if (gameState.clickLevel < 100 && gameState.energy >= gameState.clickCost) {
+    gameState.energy -= gameState.clickCost;
+    gameState.clickLevel += 1;
+    gameState.clickPower += getClickPowerGain(gameState.clickLevel);
+    gameState.clickCost = Math.floor(gameState.clickCost * 1.5);
+    checkAchievements(); updateUI();
+  }
+});
+el.upgradeAutoBtn.addEventListener('click', () => {
+  if (gameState.autoLevel < 10 && gameState.energy >= gameState.autoCost) {
+    gameState.energy -= gameState.autoCost;
+    gameState.autoLevel += 1;
+    gameState.autoCost += 5000;
+    checkAchievements(); updateUI();
+  }
+});
+
+// キーボード操作: [A] パワータップ強化 / [D] オートドローン強化
+document.addEventListener('keydown', e => {
+  if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+  const k = e.key.toLowerCase();
+  if (k !== 'a' && k !== 'd') return;
+  if (activeTab === 'single') (k === 'a' ? el.upgradeClickBtn : el.upgradeAutoBtn).click();
+  else if (activeTab === 'vs' && vsPlaying) (k === 'a' ? el.vsUpgradeClick : el.vsUpgradeAuto).click();
+});
+
+el.rebirthBtn.addEventListener('click', () => {
+  const cost = getRebirthCost();
+  if (getRebirthProgress() < cost) return;
+  if (!confirm(`本当に転生しますか？（必要: ${cost.toLocaleString()} NRG）\n現在の所持エナジーと設備は初期化されますが、全生産量+20%の永久ボーナスを獲得します。`)) return;
+  gameState.rebirthCount = (gameState.rebirthCount || 0) + 1;
+  gameState.rebirthBase = gameState.totalEnergy;
+  gameState.energy = 0; gameState.clickPower = 1; gameState.clickLevel = 1; gameState.autoLevel = 0;
+  gameState.clickCost = 10; gameState.autoCost = 5000;
+  singleAutoTimer = 0;
+  checkAchievements(); updateUI(); saveUserData();
+  if (window.confetti) confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+  showToast("✨ システム転生が完了しました！");
+});
+
+/* ================= CPU MATCH ================= */
+el.startCpuMatchBtn.addEventListener('click', () => {
+  cpuLevel = parseInt(el.cpuLevelSelect.value) || 1;
+  isCpuMatch = true;
+  vsRoomId = "CPU_ROOM";
+  resetVsState();
+  cpuState = defaultVs();
+  enterVsRoomUI("CPU-BATTLE", `vs CPU (Lv.${cpuLevel})`);
+  renderPlayersGrid([
+    { uid: 'human', name: displayName, score: 0, cps: 0 },
+    { uid: 'cpu', name: `CPU [Lv.${cpuLevel}]`, score: 0, cps: 0 }
+  ], 'human');
+  el.vsStatusMessage.textContent = `VS CPU (Level ${cpuLevel}) 開始準備中...`;
+  runCountdownSequence(Date.now() + 3000, () => {
+    if (!isCpuMatch) return;
+    el.vsStatusMessage.textContent = "7分間の勝負！キー操作 [A] [D] 有効";
+    el.vsActionArea.classList.remove('opacity-50', 'pointer-events-none');
+    vsPlaying = true;
+    startCpuGameLoop();
+  });
+});
+
+function startCpuGameLoop() {
+  let timeLeft = MATCH_DURATION;
+  let cpuAutoTimer = 0;
+  const tapsPerSec = cpuLevel * 1.1;
+  clearInterval(cpuTapInterval); clearInterval(cpuTimerInterval);
+
+  cpuTapInterval = setInterval(() => {
+    cpuState.energy += cpuState.clickPower;
+    if (cpuState.clickLevel < 100 && cpuState.energy >= cpuState.clickCost && Math.random() < 0.8) {
+      cpuState.energy -= cpuState.clickCost;
+      cpuState.clickLevel += 1;
+      cpuState.clickPower += getClickPowerGain(cpuState.clickLevel);
+      cpuState.clickCost = Math.floor(cpuState.clickCost * 1.5);
+    }
+    if (cpuState.autoLevel < 10 && cpuState.energy >= cpuState.autoCost && Math.random() < 0.7) {
+      cpuState.energy -= cpuState.autoCost;
+      cpuState.autoLevel += 1;
+      cpuState.autoCost += 5000;
+    }
+  }, 1000 / tapsPerSec);
+
+  let ticks = 0;
+  cpuTimerInterval = setInterval(() => {
+    timeLeft -= 0.1;          // 100msごとに0.1秒ずつ減らす（7分で終了）
+    ticks++;
+    el.vsTimerDisplay.textContent = formatTime(Math.max(0, Math.ceil(timeLeft)));
+
+    if (cpuState.autoLevel > 0) {
+      cpuAutoTimer += 0.1;
+      const iv = getAutoInterval(cpuState.autoLevel);
+      if (cpuAutoTimer >= iv - 0.0001) { cpuAutoTimer -= iv; cpuState.energy += getAutoPower(cpuState.autoLevel); }
+    }
+
+    const players = [
+      { uid: 'human', name: displayName, score: vsState.energy, cps: vsState.autoLevel },
+      { uid: 'cpu', name: `CPU [Lv.${cpuLevel}]`, score: cpuState.energy, cps: cpuState.autoLevel }
+    ];
+    if (ticks % 5 === 0) renderPlayersGrid(players, 'human');
+
+    if (timeLeft <= 0) {
+      clearInterval(cpuTimerInterval); clearInterval(cpuTapInterval);
+      renderPlayersGrid(players, 'human');
+      const s = stats();
+      s.cpuPlays = (s.cpuPlays || 0) + 1;
+      if (vsState.energy >= cpuState.energy) {
+        s.cpuWins = (s.cpuWins || 0) + 1;
+        if (cpuLevel >= 7 && !gameState.unlockedAchievements.includes('cpu_win_lvl7')) {
+          gameState.unlockedAchievements.push('cpu_win_lvl7');
+          showToast("🏆 実績解除: 人工知能を超えた者");
         }
+      }
+      checkAchievements();
+      saveUserData(true);
+      showVsResult(players, 'human');
+    }
+  }, 100);
+}
 
-        function getClickPowerGain(nextLevel) {
-            if (nextLevel <= 10) return 2;
-            if (nextLevel <= 20) return 5;
-            if (nextLevel <= 30) return 10;
-            if (nextLevel <= 40) return 15;
-            if (nextLevel <= 50) return 20;
-            if (nextLevel <= 60) return 25;
-            if (nextLevel <= 70) return 30;
-            if (nextLevel <= 80) return 35;
-            if (nextLevel <= 90) return 40;
-            if (nextLevel <= 100) return 50;
-            return 0;
+/* ================= VS (online) ================= */
+const getVsRoomRef = id => doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'vs_rooms', id);
+function formatTime(sec) {
+  return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+}
+function resetVsState() {
+  vsState = defaultVs();
+  vsAutoTimer = 0;
+  vsHasStartedCountdown = false;
+  vsPlaying = false;
+  updateVsUI();
+}
+function updateVsUI() {
+  if (vsState.clickLevel >= 100) { el.vsClickCost.textContent = "MAX"; el.vsClickLvl.textContent = "100"; el.vsUpgradeClick.disabled = true; }
+  else { el.vsClickCost.textContent = vsState.clickCost.toLocaleString(); el.vsClickLvl.textContent = vsState.clickLevel; el.vsUpgradeClick.disabled = vsState.energy < vsState.clickCost; }
+  if (vsState.autoLevel >= 10) { el.vsAutoCost.textContent = "MAX"; el.vsAutoLvl.textContent = "10"; el.vsUpgradeAuto.disabled = true; }
+  else { el.vsAutoCost.textContent = vsState.autoCost.toLocaleString(); el.vsAutoLvl.textContent = vsState.autoLevel; el.vsUpgradeAuto.disabled = vsState.energy < vsState.autoCost; }
+}
+function getMyUniqueId() {
+  if (currentUser) return currentUser.uid;
+  if (!vsMyPlayerId) vsMyPlayerId = 'p-' + Math.random().toString(36).substr(2, 6);
+  return vsMyPlayerId;
+}
+const queueRef = () => getVsRoomRef('quick_1vs1_queue');
+
+el.vsQuickMatchBtn.addEventListener('click', async () => {
+  isCpuMatch = false;
+  const myUid = getMyUniqueId();
+  vsMyPlayerId = myUid;
+  el.vsQuickMatchBtn.disabled = true;
+  el.vsQuickMatchBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> マッチング検索中...`;
+  try {
+    const queueSnap = await getDoc(queueRef());
+    let targetRoomId = null;
+    if (queueSnap.exists() && queueSnap.data().waitingRoomId) {
+      const cid = queueSnap.data().waitingRoomId;
+      const cSnap = await getDoc(getVsRoomRef(cid));
+      if (cSnap.exists() && cSnap.data().status === 'waiting' && !(cSnap.data().players || {})[myUid]) targetRoomId = cid;
+    }
+    if (targetRoomId) {
+      vsRoomId = targetRoomId;
+      resetVsState();
+      const roomSnap = await getDoc(getVsRoomRef(targetRoomId));
+      const players = roomSnap.data().players || {};
+      players[myUid] = { uid: myUid, name: displayName, score: 0, cps: 0 };
+      await updateDoc(getVsRoomRef(targetRoomId), { players, status: 'starting', startAt: Date.now() + 3500 });
+      await setDoc(queueRef(), { waitingRoomId: null });
+      enterVsRoomUI(targetRoomId, '1vs1 (クイック対戦)');
+      subscribeVsRoom(targetRoomId);
+    } else {
+      const roomId = 'QM-' + Math.floor(1000 + Math.random() * 9000);
+      vsRoomId = roomId;
+      resetVsState();
+      await setDoc(getVsRoomRef(roomId), {
+        mode: '1vs1', maxPlayers: 2, hostUid: myUid, status: 'waiting', timer: MATCH_DURATION,
+        players: { [myUid]: { uid: myUid, name: displayName, score: 0, cps: 0 } }, createdAt: Date.now()
+      });
+      await setDoc(queueRef(), { waitingRoomId: roomId });
+      enterVsRoomUI(roomId, '1vs1 (クイック対戦)');
+      subscribeVsRoom(roomId);
+    }
+  } catch (err) {
+    console.error("Quick Match Error:", err);
+    showToast("マッチング処理に失敗しました");
+    vsRoomId = null;
+  } finally {
+    el.vsQuickMatchBtn.disabled = false;
+    el.vsQuickMatchBtn.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i> バトルに参加`;
+  }
+});
+
+el.vsCreateBtn.addEventListener('click', async () => {
+  isCpuMatch = false;
+  const myUid = getMyUniqueId();
+  vsMyPlayerId = myUid;
+  const roomId = Math.floor(1000 + Math.random() * 9000).toString();
+  vsRoomId = roomId;
+  resetVsState();
+  try {
+    await setDoc(getVsRoomRef(roomId), {
+      mode: '4player', maxPlayers: 4, hostUid: myUid, status: 'waiting', timer: MATCH_DURATION,
+      players: { [myUid]: { uid: myUid, name: displayName, score: 0, cps: 0 } }, createdAt: Date.now()
+    });
+    enterVsRoomUI(roomId, '4人部屋対戦');
+    subscribeVsRoom(roomId);
+    showToast("4人ルームを作成しました！コード: " + roomId);
+  } catch (err) {
+    console.error("Create Room Error:", err);
+    showToast("ルーム作成に失敗しました");
+    vsRoomId = null;
+  }
+});
+
+el.vsJoinBtn.addEventListener('click', async () => {
+  isCpuMatch = false;
+  const code = el.vsCodeInput.value.trim();
+  if (code.length !== 4) { showToast("4桁のコードを入力してください"); return; }
+  const myUid = getMyUniqueId();
+  vsMyPlayerId = myUid;
+  try {
+    const roomSnap = await getDoc(getVsRoomRef(code));
+    if (!roomSnap.exists()) { showToast("ルームが見つかりません"); return; }
+    const data = roomSnap.data();
+    if (data.status !== 'waiting') { showToast("既に対戦中または終了したルームです"); return; }
+    const players = data.players || {};
+    if (!players[myUid] && Object.keys(players).length >= (data.maxPlayers || 4)) { showToast("満員のルームです"); return; }
+    vsRoomId = code;
+    resetVsState();
+    await updateDoc(getVsRoomRef(code), { [`players.${myUid}`]: { uid: myUid, name: displayName, score: 0, cps: 0 } });
+    enterVsRoomUI(code, '4人部屋対戦');
+    subscribeVsRoom(code);
+  } catch (err) {
+    console.error("Join Room Error:", err);
+    showToast("参加に失敗しました");
+    vsRoomId = null;
+  }
+});
+
+el.vsStartRoomBtn.addEventListener('click', async () => {
+  if (!vsRoomId || isCpuMatch) return;
+  try { await updateDoc(getVsRoomRef(vsRoomId), { status: 'starting', startAt: Date.now() + 3500 }); }
+  catch (err) { console.error("Start Room Error:", err); }
+});
+
+function enterVsRoomUI(roomId, title) {
+  el.vsLobby.classList.add('hidden');
+  el.vsGameRoom.classList.remove('hidden');
+  el.vsActionArea.classList.add('opacity-50', 'pointer-events-none');
+  el.vsRoomIdDisplay.textContent = roomId;
+  el.vsModeBadge.textContent = title;
+  el.vsTimerDisplay.textContent = formatTime(MATCH_DURATION);
+}
+el.vsLeaveBtn.addEventListener('click', leaveVsRoom);
+function leaveVsRoom() {
+  if (vsUnsubRoom) { vsUnsubRoom(); vsUnsubRoom = null; }
+  clearInterval(vsMatchTimerInterval); vsMatchTimerInterval = null;
+  clearInterval(cpuTimerInterval); clearInterval(cpuTapInterval);
+  vsRoomId = null; isCpuMatch = false; vsPlaying = false; vsHasStartedCountdown = false;
+  el.vsLobby.classList.remove('hidden');
+  el.vsGameRoom.classList.add('hidden');
+  el.vsResultModal.classList.add('hidden');
+  el.vsCountdownOverlay.classList.add('hidden');
+  el.vsActionArea.classList.add('opacity-50', 'pointer-events-none');
+}
+
+function subscribeVsRoom(roomId) {
+  if (vsUnsubRoom) vsUnsubRoom();
+  vsUnsubRoom = onSnapshot(getVsRoomRef(roomId), snap => {
+    if (!snap.exists()) { showToast("ルームが解散されました"); leaveVsRoom(); return; }
+    const data = snap.data();
+    const myUid = getMyUniqueId();
+    const isHost = data.hostUid === myUid;
+    const playerList = Object.values(data.players || {});
+    renderPlayersGrid(playerList, myUid);
+
+    if (data.mode === '4player' && isHost && data.status === 'waiting') el.vsStartRoomBtn.classList.remove('hidden');
+    else el.vsStartRoomBtn.classList.add('hidden');
+
+    if (data.status === 'waiting') {
+      el.vsStatusMessage.textContent = `対戦相手を待っています... (${playerList.length}/${data.maxPlayers || 4}人)`;
+      el.vsActionArea.classList.add('opacity-50', 'pointer-events-none');
+    } else if (data.status === 'starting' && !vsHasStartedCountdown) {
+      vsHasStartedCountdown = true;
+      el.vsStatusMessage.textContent = "まもなく開始します...";
+      runCountdownSequence(data.startAt, () => {
+        if (isHost && !vsMatchTimerInterval) startMatchCountdown(roomId);
+      });
+    } else if (data.status === 'playing') {
+      el.vsStatusMessage.textContent = "7分間の白熱バトル中！キー操作 [A] [D] 有効";
+      el.vsActionArea.classList.remove('opacity-50', 'pointer-events-none');
+      vsPlaying = true;
+    }
+    el.vsTimerDisplay.textContent = formatTime(data.timer !== undefined ? data.timer : MATCH_DURATION);
+
+    if (data.status === 'finished') {
+      clearInterval(vsMatchTimerInterval); vsMatchTimerInterval = null;
+      showVsResult(playerList, myUid);
+    }
+  }, err => console.error("VS Sync Error:", err));
+}
+
+function renderPlayersGrid(players, myUid) {
+  el.vsPlayersGrid.innerHTML = players.map(p => {
+    const isMe = p.uid === myUid || p.uid === 'human';
+    const score = isMe ? Math.floor(vsState.energy) : Math.floor(p.score || 0);
+    const lvl = isMe ? vsState.autoLevel : (p.cps || 0);
+    const iv = getAutoInterval(lvl);
+    const eps = iv > 0 ? (getAutoPower(lvl) / iv).toFixed(1) : "0";
+    return `
+    <div class="${isMe ? 'bg-cyan-950/40 border-cyan-500/60' : 'bg-gray-900/80 border-gray-800'} border-2 rounded-xl p-3 text-center flex flex-col justify-between">
+      <div class="text-[10px] ${isMe ? 'text-cyan-400' : 'text-gray-400'} font-bold flex items-center justify-center gap-1">
+        ${isMe ? '<i class="fa-solid fa-user text-cyan-400"></i> YOU' : '<i class="fa-solid fa-robot text-amber-400"></i> OPPONENT'}
+      </div>
+      <div class="text-xs font-bold text-gray-200 truncate my-1">${escapeHtml(p.name || 'ゲスト')}</div>
+      <div class="text-2xl font-extrabold font-orbitron ${isMe ? 'text-cyan-300' : 'text-amber-300'}">${score.toLocaleString()}</div>
+      <div class="text-[10px] text-gray-400 font-orbitron">RATE: ${parseFloat(eps).toLocaleString()}/s</div>
+    </div>`;
+  }).join('');
+}
+
+function runCountdownSequence(targetTime, onComplete) {
+  el.vsCountdownOverlay.classList.remove('hidden');
+  const step = () => {
+    if (!vsRoomId) { el.vsCountdownOverlay.classList.add('hidden'); return; }
+    const diff = Math.ceil((targetTime - Date.now()) / 1000);
+    if (diff > 0) {
+      el.vsCountdownText.textContent = diff;
+      el.vsCountdownText.className = "text-6xl sm:text-8xl font-black font-orbitron text-cyan-400 neon-text-blue countdown-anim";
+    } else if (diff === 0) {
+      el.vsCountdownText.textContent = "START!";
+      el.vsCountdownText.className = "text-5xl sm:text-7xl font-black font-orbitron text-yellow-400 neon-text-blue countdown-anim";
+    } else {
+      el.vsCountdownOverlay.classList.add('hidden');
+      if (onComplete) onComplete();
+      return;
+    }
+    setTimeout(step, 800);
+  };
+  step();
+}
+
+function startMatchCountdown(roomId) {
+  let timeLeft = MATCH_DURATION;
+  updateDoc(getVsRoomRef(roomId), { status: 'playing' });
+  vsMatchTimerInterval = setInterval(async () => {
+    timeLeft -= 1;
+    try {
+      if (timeLeft <= 0) {
+        clearInterval(vsMatchTimerInterval);
+        await updateDoc(getVsRoomRef(roomId), { timer: 0, status: 'finished' });
+      } else {
+        await updateDoc(getVsRoomRef(roomId), { timer: timeLeft });
+      }
+    } catch (e) { console.error("Timer Error:", e); }
+  }, 1000);
+}
+
+async function syncVsScore() {
+  if (!vsRoomId || isCpuMatch) return;
+  const myUid = getMyUniqueId();
+  try {
+    await updateDoc(getVsRoomRef(vsRoomId), {
+      [`players.${myUid}.score`]: vsState.energy,
+      [`players.${myUid}.cps`]: vsState.autoLevel
+    });
+  } catch (err) { console.error("Sync Score Error:", err); }
+}
+
+el.vsCoreButton.addEventListener('pointerdown', e => {
+  if (e.button === 0 || e.button === 2) { e.preventDefault(); handleCoreTap(e, vsState, el.vsActionArea, true); }
+});
+el.vsCoreButton.addEventListener('contextmenu', e => e.preventDefault());
+el.vsUpgradeClick.addEventListener('click', () => {
+  if (vsState.clickLevel < 100 && vsState.energy >= vsState.clickCost) {
+    vsState.energy -= vsState.clickCost;
+    vsState.clickLevel += 1;
+    vsState.clickPower += getClickPowerGain(vsState.clickLevel);
+    vsState.clickCost = Math.floor(vsState.clickCost * 1.5);
+    updateVsUI();
+    if (!isCpuMatch) syncVsScore();
+  }
+});
+el.vsUpgradeAuto.addEventListener('click', () => {
+  if (vsState.autoLevel < 10 && vsState.energy >= vsState.autoCost) {
+    vsState.energy -= vsState.autoCost;
+    vsState.autoLevel += 1;
+    vsState.autoCost += 5000;
+    updateVsUI();
+    if (!isCpuMatch) syncVsScore();
+  }
+});
+
+function showVsResult(players, myUid) {
+  vsPlaying = false;
+  el.vsActionArea.classList.add('opacity-50', 'pointer-events-none');
+  const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+  const myRank = sorted.findIndex(p => p.uid === myUid || p.uid === 'human') + 1;
+  const wasHidden = el.vsResultModal.classList.contains('hidden');
+  if (myRank === 1) {
+    el.vsResultIcon.className = "fa-solid fa-trophy text-6xl text-yellow-400";
+    el.vsResultTitle.textContent = "VICTORY!";
+    el.vsResultTitle.className = "text-3xl font-black font-orbitron text-yellow-400";
+    if (wasHidden && window.confetti) confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+  } else {
+    el.vsResultIcon.className = "fa-solid fa-award text-6xl text-gray-400";
+    el.vsResultTitle.textContent = `#${myRank} PLACE`;
+    el.vsResultTitle.className = "text-3xl font-black font-orbitron text-cyan-400";
+  }
+  el.vsResultRankingList.innerHTML = sorted.map((p, i) => {
+    const isMe = p.uid === myUid || p.uid === 'human';
+    return `
+    <div class="flex justify-between items-center p-2 rounded-lg ${isMe ? 'bg-cyan-950 border border-cyan-500/50' : 'bg-gray-800/50'}">
+      <div class="flex items-center gap-2"><span class="font-bold text-yellow-400 font-orbitron w-4">${i + 1}</span><span class="font-bold ${isMe ? 'text-cyan-300' : 'text-gray-200'}">${escapeHtml(p.name || 'ゲスト')}</span></div>
+      <div class="font-bold text-cyan-400">${Math.floor(isMe ? vsState.energy : (p.score || 0)).toLocaleString()}</div>
+    </div>`;
+  }).join('');
+  el.vsResultModal.classList.remove('hidden');
+}
+el.vsResultCloseBtn.addEventListener('click', leaveVsRoom);
+
+/* ================= Firestore save / load ================= */
+const getLeaderboardDocRef = uid => doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'scores', uid);
+
+async function saveUserData(silent = false) {
+  if (!currentUser) return;
+  gameState.lastLogoutTime = Date.now();
+  try {
+    await setDoc(getLeaderboardDocRef(currentUser.uid), {
+      uid: currentUser.uid, displayName, photoURL: currentUser.photoURL || '', gameState, updatedAt: Date.now()
+    });
+    if (!silent) showToast("データを保存しました！");
+    el.saveStatus.textContent = `最終同期: ${new Date().toLocaleTimeString()}`;
+  } catch (error) {
+    console.error("Firestore Save Error:", error);
+    if (!silent) showToast("保存に失敗しました。");
+  }
+}
+
+async function loadUserData(uid) {
+  try {
+    const snap = await getDoc(getLeaderboardDocRef(uid));
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.gameState) {
+        const loaded = data.gameState;
+        gameState = { ...defaultState(), ...loaded, missionStats: { ...defaultStats(), ...(loaded.missionStats || {}) } };
+        if (!gameState.missionStats.baselines) gameState.missionStats.baselines = {};
+        if (!gameState.missionStats.claimedMissions) gameState.missionStats.claimedMissions = [];
+        if (!gameState.unlockedAchievements) gameState.unlockedAchievements = [];
+
+        if (loaded.lastLogoutTime && gameState.autoLevel > 0) {
+          const offlineSec = Math.min(86400, Math.floor((Date.now() - loaded.lastLogoutTime) / 1000));
+          if (offlineSec > 10) {
+            const iv = getAutoInterval(gameState.autoLevel);
+            const p = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
+            const offlineEnergy = Math.floor((offlineSec / iv) * p * 0.5);
+            gameState.energy += offlineEnergy;
+            gameState.totalEnergy += offlineEnergy;
+            el.offlineEnergyAmount.textContent = offlineEnergy.toLocaleString();
+            el.offlineBonusCard.classList.remove('hidden');
+          }
         }
-
-        function getAutoInterval(level) {
-            if (level <= 0) return 0;
-            const interval = 1.1 - (level * 0.1);
-            return Math.max(0.1, Math.round(interval * 10) / 10);
-        }
-
-        function getAutoPower(level) {
-            return level * 5;
-        }
-
-        function getRebirthMultiplier() {
-            return 1 + ((gameState.rebirthCount || 0) * 0.2);
-        }
-
-        function updateOverchargeUI() {
-            el.overchargeBar.style.width = `${overchargeMeter}%`;
-            el.overchargePercent.textContent = Math.floor(overchargeMeter);
-        }
-
-        function triggerOvercharge() {
-            isOverchargeActive = true;
-            el.clickArea.classList.add('overcharge-active');
-            showToast("🔥 OVERCHARGE ACTIVATED! Tap production x2!");
-
-            let count = 10;
-            const timer = setInterval(() => {
-                count -= 1;
-                overchargeMeter = (count / 10) * 100;
-                updateOverchargeUI();
-                if (count <= 0) {
-                    clearInterval(timer);
-                    isOverchargeActive = false;
-                    overchargeMeter = 0;
-                    updateOverchargeUI();
-                    el.clickArea.classList.remove('overcharge-active');
-                    showToast("Overcharge mode ended");
-                }
-            }, 1000);
-        }
-
-        function showToast(msg) {
-            el.toastMessage.textContent = msg;
-            el.toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                el.toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
-        }
-
-        el.tabSingleBtn.addEventListener('click', () => switchTab('single'));
-        el.tabVsBtn.addEventListener('click', () => switchTab('vs'));
-        el.tabMissionBtn.addEventListener('click', () => switchTab('mission'));
-        el.tabAchieveBtn.addEventListener('click', () => switchTab('achieve'));
-
-        function switchTab(tab) {
-            activeTab = tab;
-            const btnDefault = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700";
-            
-            el.tabSingleBtn.className = btnDefault;
-            el.tabVsBtn.className = btnDefault;
-            el.tabMissionBtn.className = btnDefault;
-            el.tabAchieveBtn.className = btnDefault + " ml-auto";
-
-            el.singleView.classList.add('hidden');
-            el.vsView.classList.add('hidden');
-            el.missionView.classList.add('hidden');
-            el.achieveView.classList.add('hidden');
-
-            if (tab === 'single') {
-                el.tabSingleBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20";
-                el.singleView.classList.remove('hidden');
-            } else if (tab === 'vs') {
-                el.tabVsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-amber-500 text-gray-950 shadow-lg shadow-amber-500/20";
-                el.vsView.classList.remove('hidden');
-            } else if (tab === 'mission') {
-                el.tabMissionBtn.className = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-emerald-500 text-gray-950 shadow-lg shadow-emerald-500/20";
-                el.missionView.classList.remove('hidden');
-                renderMissions();
-            } else if (tab === 'achieve') {
-                el.tabAchieveBtn.className = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-purple-500 text-gray-950 shadow-lg shadow-purple-500/20 ml-auto";
-                el.achieveView.classList.remove('hidden');
-                renderAchievements();
-            }
-        }
-
-        // Mission System - Date based seed generation
-        function getDailySeed() {
-            const now = new Date();
-            return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
-        }
-
-        function getWeeklySeed() {
-            const now = new Date();
-            const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-            const dayNum = d.getUTCDay() || 7;
-            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-            return d.getUTCFullYear() * 100 + weekNo;
-        }
-
-        function pseudoRandom(seed) {
-            let value = seed;
-            return function() {
-                value = (value * 9301 + 49297) % 233280;
-                return value / 233280;
-            };
-        }
-
-        function getMissionsForSeed(seed, count, isWeekly = false) {
-            const rng = pseudoRandom(seed);
-            const shuffled = [...MISSION_POOL].sort(() => rng() - 0.5);
-            const selected = shuffled.slice(0, count);
-
-            return selected.map(m => {
-                const multiplier = isWeekly ? (2 + Math.floor(rng() * 3)) : (1 + Math.floor(rng() * 0.5 * 10) / 10);
-                const target = Math.round(m.baseTarget * multiplier);
-                const reward = Math.round((isWeekly ? 25000 : 5000) * multiplier);
-
-                return {
-                    id: `${m.id}_${seed}`,
-                    rawId: m.id,
-                    type: m.type,
-                    title: m.title,
-                    desc: m.desc.replace('{target}', target.toLocaleString()),
-                    target: target,
-                    reward: reward
-                };
-            });
-        }
-
-        function getMissionProgress(mission) {
-            if (!gameState.missionStats) gameState.missionStats = { totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, claimedMissions: [] };
-            
-            switch (mission.type) {
-                case 'tap': return gameState.missionStats.totalClicks || 0;
-                case 'energy': return gameState.totalEnergy || 0;
-                case 'skill': return gameState.missionStats.skillsUsed || 0;
-                case 'hack': return gameState.missionStats.hacksCompleted || 0;
-                case 'cpu_win': return gameState.missionStats.cpuWins || 0;
-                case 'auto_lvl': return gameState.autoLevel || 0;
-                case 'click_lvl': return gameState.clickLevel || 0;
-                case 'rebirth': return gameState.rebirthCount || 0;
-                default: return 0;
-            }
-        }
-
-        function renderMissions() {
-            const dailySeed = getDailySeed();
-            const weeklySeed = getWeeklySeed();
-
-            const dailyList = getMissionsForSeed(dailySeed, 3, false);
-            const weeklyList = getMissionsForSeed(weeklySeed, 4, true);
-
-            const claimed = gameState.missionStats?.claimedMissions || [];
-
-            const renderCard = (m) => {
-                const current = getMissionProgress(m);
-                const isCompleted = current >= m.target;
-                const isClaimed = claimed.includes(m.id);
-                const pct = Math.min(100, Math.floor((current / m.target) * 100));
-
-                return `
-                    <div class="p-4 rounded-xl border ${isClaimed ? 'bg-gray-950/40 border-gray-800 opacity-60' : (isCompleted ? 'bg-emerald-950/30 border-emerald-500/50' : 'bg-gray-900/60 border-gray-800')} flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-gray-200">${m.title}</span>
-                                <span class="text-[10px] font-orbitron text-amber-400 bg-amber-950/50 px-1.5 py-0.5 rounded border border-amber-500/30">+${m.reward.toLocaleString()} NRG</span>
-                            </div>
-                            <div class="text-[11px] text-gray-400 mt-1">${m.desc}</div>
-                            <div class="w-full max-w-xs bg-gray-950 h-2 rounded-full mt-2 overflow-hidden border border-gray-800">
-                                <div class="bg-emerald-400 h-full transition-all duration-300" style="width: ${pct}%"></div>
-                            </div>
-                            <div class="text-[10px] text-gray-500 font-orbitron mt-1">${current.toLocaleString()} / ${m.target.toLocaleString()} (${pct}%)</div>
-                        </div>
-                        <button onclick="window.claimMissionReward('${m.id}', ${m.reward})" ${(!isCompleted || isClaimed) ? 'disabled' : ''} class="px-4 py-2 rounded-lg text-xs font-bold font-orbitron whitespace-nowrap transition ${isClaimed ? 'bg-gray-800 text-gray-500 border border-gray-700' : (isCompleted ? 'bg-emerald-500 hover:bg-emerald-400 text-gray-950 shadow-lg shadow-emerald-500/20' : 'bg-gray-800 text-gray-500 border border-gray-700 disabled:opacity-40')}">
-                            ${isClaimed ? '受取済み' : (isCompleted ? '報酬を受け取る' : '進行中')}
-                        </button>
-                    </div>
-                `;
-            };
-
-            el.dailyMissionsList.innerHTML = dailyList.map(renderCard).join('');
-            el.weeklyMissionsList.innerHTML = weeklyList.map(renderCard).join('');
-        }
-
-        window.claimMissionReward = function(mId, reward) {
-            if (!gameState.missionStats.claimedMissions) gameState.missionStats.claimedMissions = [];
-            if (gameState.missionStats.claimedMissions.includes(mId)) return;
-
-            gameState.missionStats.claimedMissions.push(mId);
-            gameState.energy += reward;
-            gameState.totalEnergy += reward;
-
-            updateUI();
-            renderMissions();
-            showToast(`🎁 ミッション報酬獲得！ +${reward.toLocaleString()} NRG`);
-            if (window.confetti) {
-                confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
-            }
-        };
-
-        function updateMissionCountdowns() {
-            const now = new Date();
-
-            // Daily Countdown
-            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-            const dailyDiff = Math.floor((tomorrow - now) / 1000);
-            const dH = Math.floor(dailyDiff / 3600).toString().padStart(2, '0');
-            const dM = Math.floor((dailyDiff % 3600) / 60).toString().padStart(2, '0');
-            const dS = (dailyDiff % 60).toString().padStart(2, '0');
-            el.dailyTimerDisplay.textContent = `${dH}:${dM}:${dS}`;
-
-            // Weekly Countdown
-            const dayOfWeek = now.getDay() || 7;
-            const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (8 - dayOfWeek));
-            const weeklyDiff = Math.floor((nextMonday - now) / 1000);
-            const wDays = Math.floor(weeklyDiff / 86400);
-            const wH = Math.floor((weeklyDiff % 86400) / 3600).toString().padStart(2, '0');
-            const wM = Math.floor((weeklyDiff % 3600) / 60).toString().padStart(2, '0');
-            const wS = (weeklyDiff % 60).toString().padStart(2, '0');
-            el.weeklyTimerDisplay.textContent = `${wDays}日 ${wH}:${wM}:${wS}`;
-        }
-
-        function checkAchievements() {
-            if (!gameState.unlockedAchievements) gameState.unlockedAchievements = [];
-
-            const check = (id, condition) => {
-                if (!gameState.unlockedAchievements.includes(id) && condition) {
-                    gameState.unlockedAchievements.push(id);
-                    showToast(`🏆 実績解除: ${ACHIEVEMENTS_DATA.find(a => a.id === id).name}`);
-                    if (window.confetti) {
-                        confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
-                    }
-                }
-            };
-
-            const stats = gameState.missionStats || {};
-
-            check('click_100', gameState.totalEnergy >= 100);
-            check('click_10k', gameState.totalEnergy >= 10000);
-            check('click_1m', gameState.totalEnergy >= 1000000);
-            check('auto_lv5', gameState.autoLevel >= 5);
-            check('auto_lv10', gameState.autoLevel >= 10);
-            check('click_max', gameState.clickLevel >= 100);
-            check('rebirth_1', gameState.rebirthCount >= 1);
-            check('use_skills_10', (stats.skillsUsed || 0) >= 10);
-            check('hack_5', (stats.hacksCompleted || 0) >= 5);
-            check('cpu_win_1', (stats.cpuWins || 0) >= 1);
-
-            updateUI();
-        }
-
-        function renderAchievements() {
-            const unlocked = gameState.unlockedAchievements || [];
-            el.achieveBadge.textContent = `${unlocked.length}/${ACHIEVEMENTS_DATA.length}`;
-
-            el.achievementsGrid.innerHTML = ACHIEVEMENTS_DATA.map(a => {
-                const isDone = unlocked.includes(a.id);
-                return `
-                    <div class="p-4 rounded-xl border ${isDone ? 'bg-purple-950/40 border-purple-500/50' : 'bg-gray-950/50 border-gray-800 opacity-60'} flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl ${isDone ? 'bg-purple-500 text-gray-950' : 'bg-gray-800 text-gray-500'} flex items-center justify-center text-xl shrink-0">
-                            <i class="fa-solid ${a.icon}"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold font-orbitron ${isDone ? 'text-purple-300' : 'text-gray-400'}">${a.name}</div>
-                            <div class="text-[11px] text-gray-400 mt-0.5">${a.desc}</div>
-                            <div class="text-[10px] font-orbitron ${isDone ? 'text-emerald-400' : 'text-gray-600'} mt-1">
-                                ${isDone ? '<i class="fa-solid fa-check mr-1"></i>達成済み' : '未達成'}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function updateUI() {
-            el.energyCount.textContent = Math.floor(gameState.energy).toLocaleString();
-            
-            const rebirthMult = getRebirthMultiplier();
-            const autoInterval = getAutoInterval(gameState.autoLevel);
-            const autoPower = getAutoPower(gameState.autoLevel) * rebirthMult;
-
-            if (gameState.autoLevel > 0) {
-                const eps = (autoPower / autoInterval).toFixed(1);
-                el.epsDisplay.textContent = parseFloat(eps).toLocaleString();
-            } else {
-                el.epsDisplay.textContent = "0";
-            }
-            
-            el.totalEnergyDisplay.textContent = Math.floor(gameState.totalEnergy).toLocaleString();
-
-            if (gameState.clickLevel >= 100) {
-                el.clickCost.textContent = "MAX";
-                el.clickLevel.textContent = "100";
-                el.upgradeClickBtn.disabled = true;
-            } else {
-                el.clickCost.textContent = gameState.clickCost.toLocaleString();
-                el.clickLevel.textContent = gameState.clickLevel;
-                el.upgradeClickBtn.disabled = gameState.energy < gameState.clickCost;
-            }
-
-            if (gameState.autoLevel >= 10) {
-                el.autoCost.textContent = "MAX";
-                el.autoLevel.textContent = "10";
-                el.upgradeAutoBtn.disabled = true;
-            } else {
-                el.autoCost.textContent = gameState.autoCost.toLocaleString();
-                el.autoLevel.textContent = gameState.autoLevel;
-                el.upgradeAutoBtn.disabled = gameState.energy < gameState.autoCost;
-            }
-
-            const currentRebirthCost = getRebirthCost();
-            el.rebirthCostDisplay.textContent = currentRebirthCost.toLocaleString();
-
-            if (gameState.rebirthCount > 0) {
-                el.rebirthTag.classList.remove('hidden');
-                el.rebirthCount.textContent = gameState.rebirthCount;
-                el.rebirthBonus.textContent = Math.round((rebirthMult - 1) * 100);
-            } else {
-                el.rebirthTag.classList.add('hidden');
-            }
-
-            el.rebirthBtn.disabled = gameState.totalEnergy < currentRebirthCost;
-
-            const unlocked = gameState.unlockedAchievements || [];
-            el.achieveBadge.textContent = `${unlocked.length}/${ACHIEVEMENTS_DATA.length}`;
-        }
-
-        setInterval(() => {
-            updateMissionCountdowns();
-
-            if (document.visibilityState !== 'visible') {
-                singleAutoTimer = 0;
-                vsAutoTimer = 0;
-                return;
-            }
-
-            if (skillStatus.s1Cd > 0) {
-                skillStatus.s1Cd -= 0.1;
-                if (skillStatus.s1Cd <= 0) {
-                    skillStatus.s1Cd = 0;
-                    el.skill1Cd.classList.add('hidden');
-                } else {
-                    el.skill1Cd.textContent = `${Math.ceil(skillStatus.s1Cd)}s`;
-                }
-            }
-
-            if (skillStatus.s2Cd > 0) {
-                skillStatus.s2Cd -= 0.1;
-                if (skillStatus.s2Cd <= 0) {
-                    skillStatus.s2Cd = 0;
-                    el.skill2Cd.classList.add('hidden');
-                } else {
-                    el.skill2Cd.textContent = `${Math.ceil(skillStatus.s2Cd)}s`;
-                }
-            }
-
-            if (skillStatus.s3Cd > 0) {
-                skillStatus.s3Cd -= 0.1;
-                if (skillStatus.s3Cd <= 0) {
-                    skillStatus.s3Cd = 0;
-                    el.skill3Cd.classList.add('hidden');
-                } else {
-                    el.skill3Cd.textContent = `${Math.ceil(skillStatus.s3Cd)}s`;
-                }
-            }
-
-            if (!isOverchargeActive && overchargeMeter > 0) {
-                overchargeMeter = Math.max(0, overchargeMeter - 1.5);
-                updateOverchargeUI();
-            }
-
-            if (activeTab === 'single' && gameState.autoLevel > 0) {
-                singleAutoTimer += 0.1;
-                const interval = getAutoInterval(gameState.autoLevel);
-                if (singleAutoTimer >= interval) {
-                    singleAutoTimer -= interval;
-                    const autoPower = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
-                    gameState.energy += autoPower;
-                    gameState.totalEnergy += autoPower;
-                    checkAchievements();
-                    updateUI();
-                }
-            }
-
-            if (activeTab === 'vs' && vsState.autoLevel > 0 && (vsRoomId || isCpuMatch)) {
-                vsAutoTimer += 0.1;
-                const interval = getAutoInterval(vsState.autoLevel);
-                if (vsAutoTimer >= interval) {
-                    vsAutoTimer -= interval;
-                    const autoPower = getAutoPower(vsState.autoLevel);
-                    vsState.energy += autoPower;
-                    updateVsUI();
-                    if (!isCpuMatch) syncVsScore();
-                }
-            }
-        }, 100);
-
-        el.skill1Btn.addEventListener('click', () => {
-            if (skillStatus.s1Cd > 0) return;
-            skillStatus.s1Active = true;
-            skillStatus.s1Cd = 30;
-            el.skill1Cd.classList.remove('hidden');
-
-            if (!gameState.missionStats) gameState.missionStats = { totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, claimedMissions: [] };
-            gameState.missionStats.skillsUsed = (gameState.missionStats.skillsUsed || 0) + 1;
-
-            showToast("⚡ スキル発動: オーバーロード！(タップ生産5倍)");
-
-            setTimeout(() => {
-                skillStatus.s1Active = false;
-                showToast("オーバーロードの効果が終了しました");
-            }, 10000);
-        });
-
-        el.skill2Btn.addEventListener('click', () => {
-            if (skillStatus.s2Cd > 0) return;
-            skillStatus.s2Cd = 45;
-            el.skill2Cd.classList.remove('hidden');
-
-            if (!gameState.missionStats) gameState.missionStats = { totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, claimedMissions: [] };
-            gameState.missionStats.skillsUsed = (gameState.missionStats.skillsUsed || 0) + 1;
-
-            const autoInterval = getAutoInterval(gameState.autoLevel);
-            const autoPower = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
-            const gain = (autoInterval > 0) ? Math.max(100, (20 / autoInterval) * autoPower) : 100;
-
-            gameState.energy += gain;
-            gameState.totalEnergy += gain;
-            updateUI();
-            checkAchievements();
-            showToast(`🤖 ナノボット発動！ +${Math.floor(gain).toLocaleString()} NRG`);
-        });
-
-        el.skill3Btn.addEventListener('click', () => {
-            if (skillStatus.s3Cd > 0) return;
-            skillStatus.s3Active = true;
-            skillStatus.s3Cd = 60;
-            el.skill3Cd.classList.remove('hidden');
-
-            if (!gameState.missionStats) gameState.missionStats = { totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, claimedMissions: [] };
-            gameState.missionStats.skillsUsed = (gameState.missionStats.skillsUsed || 0) + 1;
-
-            showToast("🎯 スキル発動: サイバー・フレンジー！(クリティカル50%)");
-
-            setTimeout(() => {
-                skillStatus.s3Active = false;
-                showToast("サイバー・フレンジーの効果が終了しました");
-            }, 15000);
-        });
-
-        setInterval(() => {
-            if (activeTab !== 'single') return;
-
-            if (el.hackNode.classList.contains('hidden') && Math.random() < 0.4) {
-                const top = Math.floor(Math.random() * 60) + 10;
-                const left = Math.floor(Math.random() * 60) + 10;
-                el.hackNode.style.top = `${top}%`;
-                el.hackNode.style.left = `${left}%`;
-                el.hackNode.classList.remove('hidden');
-
-                setTimeout(() => {
-                    el.hackNode.classList.add('hidden');
-                }, 8000);
-            }
-        }, 20000);
-
-        setInterval(() => {
-            if (activeTab !== 'single') return;
-
-            if (el.supplyDrone.classList.contains('hidden') && Math.random() < 0.3) {
-                const top = Math.floor(Math.random() * 70) + 10;
-                el.supplyDrone.style.top = `${top}%`;
-                el.supplyDrone.style.left = `5%`;
-                el.supplyDrone.classList.remove('hidden');
-
-                let pos = 5;
-                const anim = setInterval(() => {
-                    pos += 2;
-                    el.supplyDrone.style.left = `${pos}%`;
-                    if (pos >= 90 || el.supplyDrone.classList.contains('hidden')) {
-                        clearInterval(anim);
-                        el.supplyDrone.classList.add('hidden');
-                    }
-                }, 100);
-            }
-        }, 30000);
-
-        el.hackNode.addEventListener('click', (e) => {
-            e.stopPropagation();
-            el.hackNode.classList.add('hidden');
-            const bonus = Math.max(500, gameState.clickPower * 50 * getRebirthMultiplier());
-            gameState.energy += bonus;
-            gameState.totalEnergy += bonus;
-
-            if (!gameState.missionStats) gameState.missionStats = { totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, claimedMissions: [] };
-            gameState.missionStats.hacksCompleted = (gameState.missionStats.hacksCompleted || 0) + 1;
-
-            updateUI();
-            checkAchievements();
-            showToast(`💻 ハッキング成功！ +${Math.floor(bonus).toLocaleString()} NRG 獲得！`);
-            if (window.confetti) {
-                confetti({ particleCount: 30, spread: 50, origin: { y: 0.6 } });
-            }
-        });
-
-        el.supplyDrone.addEventListener('click', (e) => {
-            e.stopPropagation();
-            el.supplyDrone.classList.add('hidden');
-            
-            const rand = Math.random();
-            if (rand < 0.5) {
-                const bonus = Math.max(1000, gameState.totalEnergy * 0.1);
-                gameState.energy += bonus;
-                gameState.totalEnergy += bonus;
-                showToast(`🚁 ドローン撃墜！ 供給爆発 +${Math.floor(bonus).toLocaleString()} NRG!`);
-            } else {
-                skillStatus.s1Cd = 0;
-                skillStatus.s2Cd = 0;
-                skillStatus.s3Cd = 0;
-                el.skill1Cd.classList.add('hidden');
-                el.skill2Cd.classList.add('hidden');
-                el.skill3Cd.classList.add('hidden');
-                showToast(`🚁 ドローン撃墜！ 全スキルのクールダウン即時クリア！`);
-            }
-            updateUI();
-            checkAchievements();
-        });
-
-        function handleCoreTap(e, targetState, targetArea, isVs = false) {
-            const critRate = (!isVs && skillStatus.s3Active) ? 0.5 : 0.01;
-            const isCritical = Math.random() < critRate;
-
-            let mult = isVs ? 1 : (getRebirthMultiplier() * (isOverchargeActive ? 2 : 1) * (skillStatus.s1Active ? 5 : 1));
-            
-            let earnedEnergy = isCritical ? (targetState.clickPower * 2.5 * mult) : (targetState.clickPower * mult);
-
-            targetState.energy += earnedEnergy;
-            if (!isVs) {
-                targetState.totalEnergy += earnedEnergy;
-
-                if (!gameState.missionStats) gameState.missionStats = { totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, claimedMissions: [] };
-                gameState.missionStats.totalClicks = (gameState.missionStats.totalClicks || 0) + 1;
-
-                if (!isOverchargeActive) {
-                    overchargeMeter = Math.min(100, overchargeMeter + 4);
-                    updateOverchargeUI();
-                    if (overchargeMeter >= 100) {
-                        triggerOvercharge();
-                    }
-                }
-                checkAchievements();
-            }
-            
-            const pop = document.createElement('div');
-            pop.className = isCritical ? 'crit-pop' : 'click-pop';
-            pop.textContent = isCritical ? `CRITICAL! +${Math.floor(earnedEnergy)}` : `+${Math.floor(earnedEnergy)}`;
-            const rect = targetArea.getBoundingClientRect();
-            const clientX = e.clientX || (rect.left + rect.width / 2);
-            const clientY = e.clientY || (rect.top + rect.height / 2);
-            const x = clientX - rect.left - (isCritical ? 30 : 10);
-            const y = clientY - rect.top - 20;
-            pop.style.left = `${x}px`;
-            pop.style.top = `${y}px`;
-            targetArea.appendChild(pop);
-
-            setTimeout(() => pop.remove(), isCritical ? 1000 : 800);
-
-            if (isVs) {
-                updateVsUI();
-                if (!isCpuMatch) syncVsScore();
-            } else {
-                updateUI();
-            }
-        }
-
-        el.coreButton.addEventListener('pointerdown', (e) => {
-            if (e.button === 0 || e.button === 2) {
-                e.preventDefault();
-                handleCoreTap(e, gameState, el.clickArea, false);
-            }
-        });
-        el.coreButton.addEventListener('contextmenu', (e) => e.preventDefault());
-
-        el.upgradeClickBtn.addEventListener('click', () => {
-            if (gameState.clickLevel < 100 && gameState.energy >= gameState.clickCost) {
-                gameState.energy -= gameState.clickCost;
-                gameState.clickLevel += 1;
-                gameState.clickPower += getClickPowerGain(gameState.clickLevel);
-                gameState.clickCost = Math.floor(gameState.clickCost * 1.5);
-                checkAchievements();
-                updateUI();
-            }
-        });
-
-        el.upgradeAutoBtn.addEventListener('click', () => {
-            if (gameState.autoLevel < 10 && gameState.energy >= gameState.autoCost) {
-                gameState.energy -= gameState.autoCost;
-                gameState.autoLevel += 1;
-                gameState.autoCost += 5000;
-                checkAchievements();
-                updateUI();
-            }
-        });
-
-        el.rebirthBtn.addEventListener('click', () => {
-            const currentCost = getRebirthCost();
-            if (gameState.totalEnergy < currentCost) return;
-            if (!confirm(`本当に転生しますか？（必要: ${currentCost.toLocaleString()} NRG）\n現在の所持エナジーと設備は初期化されますが、全生産量+20%の永久ボーナスを獲得します。`)) return;
-
-            gameState.rebirthCount = (gameState.rebirthCount || 0) + 1;
-            gameState.energy = 0;
-            gameState.clickPower = 1;
-            gameState.clickLevel = 1;
-            gameState.autoLevel = 0;
-            gameState.clickCost = 10;
-            gameState.autoCost = 5000;
-
-            checkAchievements();
-            updateUI();
-            saveUserData();
-
-            if (window.confetti) {
-                confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
-            }
-            showToast("✨ システム転生が完了しました！");
-        });
-
-        // ================= CPU MATCH SYSTEM =================
-        el.startCpuMatchBtn.addEventListener('click', () => {
-            cpuLevel = parseInt(el.cpuLevelSelect.value) || 1;
-            isCpuMatch = true;
-            vsRoomId = "CPU_ROOM";
-
-            resetVsState();
-
-            cpuState = {
-                energy: 0,
-                clickPower: 1,
-                clickLevel: 1,
-                autoLevel: 0,
-                clickCost: 10,
-                autoCost: 5000
-            };
-
-            enterVsRoomUI("CPU-BATTLE", `vs CPU (Lv.${cpuLevel})`);
-
-            const playerList = [
-                { uid: 'human', name: displayName, score: 0, cps: 0 },
-                { uid: 'cpu', name: `CPU [Lv.${cpuLevel}]`, score: 0, cps: 0 }
-            ];
-
-            renderPlayersGrid(playerList, 'human');
-
-            el.vsStatusMessage.textContent = `VS CPU (Level ${cpuLevel}) 開始準備中...`;
-            
-            runCountdownSequence(Date.now() + 3000, () => {
-                el.vsStatusMessage.textContent = "7分間の勝負！キー操作 [A] [D] 有効";
-                el.vsActionArea.classList.remove('opacity-50', 'pointer-events-none');
-                startCpuGameLoop();
-            });
-        });
-
-        function startCpuGameLoop() {
-            let timeLeft = MATCH_DURATION;
-            let cpuAutoTimer = 0;
-
-            // CPU parameters based on Level (Lv 1 to 9)
-            // Tap speed: Lv1 = 1 tap/sec -> Lv9 = 10 taps/sec (Human max can easily reach 12-15 taps/sec)
-            const cpuTapsPerSec = cpuLevel * 1.1; 
-            const tapIntervalMs = 1000 / cpuTapsPerSec;
-
-            let cpuTapInterval = setInterval(() => {
-                cpuState.energy += cpuState.clickPower;
-
-                // CPU Smart Purchase Logic
-                if (cpuState.clickLevel < 100 && cpuState.energy >= cpuState.clickCost && Math.random() < 0.8) {
-                    cpuState.energy -= cpuState.clickCost;
-                    cpuState.clickLevel += 1;
-                    cpuState.clickPower += getClickPowerGain(cpuState.clickLevel);
-                    cpuState.clickCost = Math.floor(cpuState.clickCost * 1.5);
-                }
-
-                if (cpuState.autoLevel < 10 && cpuState.energy >= cpuState.autoCost && Math.random() < 0.7) {
-                    cpuState.energy -= cpuState.autoCost;
-                    cpuState.autoLevel += 1;
-                    cpuState.autoCost += 5000;
-                }
-            }, tapIntervalMs);
-
-            cpuTimerInterval = setInterval(() => {
-                timeLeft -= 1;
-                el.vsTimerDisplay.textContent = formatTime(timeLeft);
-
-                // CPU Auto Drone ticks
-                if (cpuState.autoLevel > 0) {
-                    cpuAutoTimer += 0.1;
-                    const interval = getAutoInterval(cpuState.autoLevel);
-                    if (cpuAutoTimer >= interval) {
-                        cpuAutoTimer -= interval;
-                        cpuState.energy += getAutoPower(cpuState.autoLevel);
-                    }
-                }
-
-                // Render match state
-                const currentPlayers = [
-                    { uid: 'human', name: displayName, score: vsState.energy, cps: vsState.autoLevel },
-                    { uid: 'cpu', name: `CPU [Lv.${cpuLevel}]`, score: cpuState.energy, cps: cpuState.autoLevel }
-                ];
-                renderPlayersGrid(currentPlayers, 'human');
-
-                if (timeLeft <= 0) {
-                    clearInterval(cpuTimerInterval);
-                    clearInterval(cpuTapInterval);
-
-                    // Check result
-                    const isWin = vsState.energy >= cpuState.energy;
-
-                    if (isWin) {
-                        if (!gameState.missionStats) gameState.missionStats = { totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, claimedMissions: [] };
-                        gameState.missionStats.cpuWins = (gameState.missionStats.cpuWins || 0) + 1;
-                        checkAchievements();
-                        if (cpuLevel >= 7 && !gameState.unlockedAchievements.includes('cpu_win_lvl7')) {
-                            gameState.unlockedAchievements.push('cpu_win_lvl7');
-                            showToast("🏆 実績解除: 人工知能を超えた者");
-                        }
-                    }
-
-                    showVsResult(currentPlayers, 'human');
-                }
-            }, 100);
-        }
-
-        function getVsRoomRef(roomId) {
-            return doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'vs_rooms', roomId);
-        }
-
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const s = (seconds % 60).toString().padStart(2, '0');
-            return `${m}:${s}`;
-        }
-
-        function resetVsState() {
-            vsState = {
-                energy: 0,
-                clickPower: 1,
-                clickLevel: 1,
-                autoLevel: 0,
-                clickCost: 10,
-                autoCost: 5000
-            };
-            vsAutoTimer = 0;
-            vsHasStartedCountdown = false;
-            updateVsUI();
-        }
-
-        function updateVsUI() {
-            if (vsState.clickLevel >= 100) {
-                el.vsClickCost.textContent = "MAX";
-                el.vsClickLvl.textContent = "100";
-                el.vsUpgradeClick.disabled = true;
-            } else {
-                el.vsClickCost.textContent = vsState.clickCost.toLocaleString();
-                el.vsClickLvl.textContent = vsState.clickLevel;
-                el.vsUpgradeClick.disabled = vsState.energy < vsState.clickCost;
-            }
-
-            if (vsState.autoLevel >= 10) {
-                el.vsAutoCost.textContent = "MAX";
-                el.vsAutoLvl.textContent = "10";
-                el.vsUpgradeAuto.disabled = true;
-            } else {
-                el.vsAutoCost.textContent = vsState.autoCost.toLocaleString();
-                el.vsAutoLvl.textContent = vsState.autoLevel;
-                el.vsUpgradeAuto.disabled = vsState.energy < vsState.autoCost;
-            }
-        }
-
-        function getMyUniqueId() {
-            if (currentUser) return currentUser.uid;
-            if (!vsMyPlayerId) vsMyPlayerId = 'p-' + Math.random().toString(36).substr(2, 6);
-            return vsMyPlayerId;
-        }
-
-        el.vsQuickMatchBtn.addEventListener('click', async () => {
-            isCpuMatch = false;
-            const myUid = getMyUniqueId();
-            vsMyPlayerId = myUid;
-
-            el.vsQuickMatchBtn.disabled = true;
-            el.vsQuickMatchBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> マッチング検索中...`;
-
-            try {
-                const docRef = doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'vs_rooms', 'quick_1vs1_queue');
-                const queueSnap = await getDoc(docRef);
-
-                let targetRoomId = null;
-
-                if (queueSnap.exists() && queueSnap.data().waitingRoomId) {
-                    const candidateId = queueSnap.data().waitingRoomId;
-                    const cSnap = await getDoc(getVsRoomRef(candidateId));
-                    if (cSnap.exists() && cSnap.data().status === 'waiting') {
-                        targetRoomId = candidateId;
-                    }
-                }
-
-                if (targetRoomId) {
-                    vsRoomId = targetRoomId;
-                    resetVsState();
-
-                    const roomSnap = await getDoc(getVsRoomRef(targetRoomId));
-                    const players = roomSnap.data().players || {};
-                    players[myUid] = {
-                        uid: myUid,
-                        name: displayName,
-                        score: 0,
-                        cps: 0
-                    };
-
-                    await updateDoc(getVsRoomRef(targetRoomId), {
-                        players: players,
-                        status: 'starting',
-                        startAt: Date.now() + 3500
-                    });
-
-                    await setDoc(docRef, { waitingRoomId: null });
-
-                    enterVsRoomUI(targetRoomId, '1vs1 (クイック対戦)');
-                    subscribeVsRoom(targetRoomId);
-
-                } else {
-                    const roomId = 'QM-' + Math.floor(1000 + Math.random() * 9000);
-                    vsRoomId = roomId;
-                    resetVsState();
-
-                    const initialPlayers = {};
-                    initialPlayers[myUid] = {
-                        uid: myUid,
-                        name: displayName,
-                        score: 0,
-                        cps: 0
-                    };
-
-                    const roomData = {
-                        mode: '1vs1',
-                        maxPlayers: 2,
-                        hostUid: myUid,
-                        status: 'waiting',
-                        timer: MATCH_DURATION,
-                        players: initialPlayers,
-                        createdAt: Date.now()
-                    };
-
-                    await setDoc(getVsRoomRef(roomId), roomData);
-                    await setDoc(docRef, { waitingRoomId: roomId });
-
-                    enterVsRoomUI(roomId, '1vs1 (クイック対戦)');
-                    subscribeVsRoom(roomId);
-                }
-
-            } catch (err) {
-                console.error("Quick Match Error:", err);
-                showToast("マッチング処理に失敗しました");
-            } finally {
-                el.vsQuickMatchBtn.disabled = false;
-                el.vsQuickMatchBtn.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i> バトルに参加`;
-            }
-        });
-
-        el.vsCreateBtn.addEventListener('click', async () => {
-            isCpuMatch = false;
-            const myUid = getMyUniqueId();
-            vsMyPlayerId = myUid;
-
-            const roomId = Math.floor(1000 + Math.random() * 9000).toString();
-            vsRoomId = roomId;
-            resetVsState();
-
-            const initialPlayers = {};
-            initialPlayers[myUid] = {
-                uid: myUid,
-                name: displayName,
-                score: 0,
-                cps: 0
-            };
-
-            const roomData = {
-                mode: '4player',
-                maxPlayers: 4,
-                hostUid: myUid,
-                status: 'waiting',
-                timer: MATCH_DURATION,
-                players: initialPlayers,
-                createdAt: Date.now()
-            };
-
-            try {
-                await setDoc(getVsRoomRef(roomId), roomData);
-                enterVsRoomUI(roomId, '4人部屋対戦');
-                subscribeVsRoom(roomId);
-                showToast("4人ルームを作成しました！コード: " + roomId);
-            } catch (err) {
-                console.error("Create Room Error:", err);
-                showToast("ルーム作成に失敗しました");
-            }
-        });
-
-        el.vsJoinBtn.addEventListener('click', async () => {
-            isCpuMatch = false;
-            const code = el.vsCodeInput.value.trim();
-            if (code.length !== 4) {
-                showToast("4桁のコードを入力してください");
-                return;
-            }
-
-            const myUid = getMyUniqueId();
-            vsMyPlayerId = myUid;
-
-            try {
-                const roomSnap = await getDoc(getVsRoomRef(code));
-                if (!roomSnap.exists()) {
-                    showToast("ルームが見つかりません");
-                    return;
-                }
-                const roomData = roomSnap.data();
-                if (roomData.status !== 'waiting') {
-                    showToast("既に対戦中または終了したルームです");
-                    return;
-                }
-
-                const players = roomData.players || {};
-                const currentCount = Object.keys(players).length;
-                if (currentCount >= (roomData.maxPlayers || 4)) {
-                    showToast("満員のルームです");
-                    return;
-                }
-
-                vsRoomId = code;
-                resetVsState();
-
-                players[myUid] = {
-                    uid: myUid,
-                    name: displayName,
-                    score: 0,
-                    cps: 0
-                };
-
-                await updateDoc(getVsRoomRef(code), { players: players });
-                enterVsRoomUI(code, '4人部屋対戦');
-                subscribeVsRoom(code);
-
-            } catch (err) {
-                console.error("Join Room Error:", err);
-                showToast("参加に失敗しました");
-            }
-        });
-
-        el.vsStartRoomBtn.addEventListener('click', async () => {
-            if (!vsRoomId || isCpuMatch) return;
-            try {
-                await updateDoc(getVsRoomRef(vsRoomId), {
-                    status: 'starting',
-                    startAt: Date.now() + 3500
-                });
-            } catch (err) {
-                console.error("Start Room Error:", err);
-            }
-        });
-
-        function enterVsRoomUI(roomId, modeTitle) {
-            el.vsLobby.classList.add('hidden');
-            el.vsGameRoom.classList.remove('hidden');
-            el.vsRoomIdDisplay.textContent = roomId;
-            el.vsModeBadge.textContent = modeTitle;
-            el.vsTimerDisplay.textContent = formatTime(MATCH_DURATION);
-        }
-
-        el.vsLeaveBtn.addEventListener('click', leaveVsRoom);
-
-        function leaveVsRoom() {
-            if (vsUnsubRoom) vsUnsubRoom();
-            if (vsMatchTimerInterval) clearInterval(vsMatchTimerInterval);
-            if (cpuTimerInterval) clearInterval(cpuTimerInterval);
-            vsRoomId = null;
-            isCpuMatch = false;
-
-            el.vsLobby.classList.remove('hidden');
-            el.vsGameRoom.classList.add('hidden');
-            el.vsResultModal.classList.add('hidden');
-            el.vsCountdownOverlay.classList.add('hidden');
-        }
-
-        function subscribeVsRoom(roomId) {
-            if (vsUnsubRoom) vsUnsubRoom();
-
-            vsUnsubRoom = onSnapshot(getVsRoomRef(roomId), (snapshot) => {
-                if (!snapshot.exists()) {
-                    showToast("ルームが解散されました");
-                    leaveVsRoom();
-                    return;
-                }
-
-                const data = snapshot.data();
-                const myUid = getMyUniqueId();
-                const isHost = data.hostUid === myUid;
-                const playersMap = data.players || {};
-                const playerList = Object.values(playersMap);
-
-                renderPlayersGrid(playerList, myUid);
-
-                if (data.mode === '4player' && isHost && data.status === 'waiting') {
-                    el.vsStartRoomBtn.classList.remove('hidden');
-                } else {
-                    el.vsStartRoomBtn.classList.add('hidden');
-                }
-
-                if (data.status === 'waiting') {
-                    el.vsStatusMessage.textContent = `対戦相手を待っています... (${playerList.length}/${data.maxPlayers || 4}人)`;
-                    el.vsActionArea.classList.add('opacity-50', 'pointer-events-none');
-                } else if (data.status === 'starting' && !vsHasStartedCountdown) {
-                    vsHasStartedCountdown = true;
-                    runCountdownSequence(data.startAt, () => {
-                        if (isHost && !vsMatchTimerInterval) {
-                            startMatchCountdown(roomId);
-                        }
-                    });
-                } else if (data.status === 'playing') {
-                    el.vsStatusMessage.textContent = "7分間の白熱バトル中！キー操作 [A] [D] 有効";
-                    el.vsActionArea.classList.remove('opacity-50', 'pointer-events-none');
-                }
-
-                el.vsTimerDisplay.textContent = formatTime(data.timer !== undefined ? data.timer : MATCH_DURATION);
-
-                if (data.status === 'finished') {
-                    if (vsMatchTimerInterval) clearInterval(vsMatchTimerInterval);
-                    showVsResult(playerList, myUid);
-                }
-            }, (err) => {
-                console.error("VS Sync Error:", err);
-            });
-        }
-
-        function renderPlayersGrid(players, myUid) {
-            el.vsPlayersGrid.innerHTML = players.map(p => {
-                const isMe = p.uid === myUid || p.uid === 'human';
-                const score = isMe ? Math.floor(vsState.energy) : Math.floor(p.score || 0);
-                const lvl = isMe ? vsState.autoLevel : (p.cps || 0);
-                const autoInterval = getAutoInterval(lvl);
-                const autoPower = getAutoPower(lvl);
-                const epsDisplay = autoInterval > 0 ? (autoPower / autoInterval).toFixed(1) : "0";
-
-                return `
-                    <div class="${isMe ? 'bg-cyan-950/40 border-cyan-500/60' : 'bg-gray-900/80 border-gray-800'} border-2 rounded-xl p-3 text-center flex flex-col justify-between">
-                        <div class="text-[10px] ${isMe ? 'text-cyan-400' : 'text-gray-400'} font-bold flex items-center justify-center gap-1">
-                            ${isMe ? '<i class="fa-solid fa-user text-cyan-400"></i> YOU' : '<i class="fa-solid fa-robot text-amber-400"></i> OPPONENT'}
-                        </div>
-                        <div class="text-xs font-bold text-gray-200 truncate my-1">${escapeHtml(p.name || 'ゲスト')}</div>
-                        <div class="text-2xl font-extrabold font-orbitron ${isMe ? 'text-cyan-300' : 'text-amber-300'}">${score.toLocaleString()}</div>
-                        <div class="text-[10px] text-gray-400 font-orbitron">RATE: ${parseFloat(epsDisplay).toLocaleString()}/s</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function runCountdownSequence(targetTime, onComplete) {
-            el.vsCountdownOverlay.classList.remove('hidden');
-            
-            const updateCount = () => {
-                const diff = Math.ceil((targetTime - Date.now()) / 1000);
-                if (diff > 0) {
-                    el.vsCountdownText.textContent = diff;
-                    el.vsCountdownText.className = "text-6xl sm:text-8xl font-black font-orbitron text-cyan-400 neon-text-blue countdown-anim";
-                } else if (diff === 0) {
-                    el.vsCountdownText.textContent = "START!";
-                    el.vsCountdownText.className = "text-5xl sm:text-7xl font-black font-orbitron text-yellow-400 neon-text-blue countdown-anim";
-                } else {
-                    el.vsCountdownOverlay.classList.add('hidden');
-                    if (onComplete) onComplete();
-                    return;
-                }
-                setTimeout(updateCount, 800);
-            };
-
-            updateCount();
-        }
-
-        function startMatchCountdown(roomId) {
-            let timeLeft = MATCH_DURATION;
-            
-            updateDoc(getVsRoomRef(roomId), { status: 'playing' });
-
-            vsMatchTimerInterval = setInterval(async () => {
-                timeLeft -= 1;
-                if (timeLeft <= 0) {
-                    clearInterval(vsMatchTimerInterval);
-                    await updateDoc(getVsRoomRef(roomId), {
-                        timer: 0,
-                        status: 'finished'
-                    });
-                } else {
-                    await updateDoc(getVsRoomRef(roomId), {
-                        timer: timeLeft
-                    });
-                }
-            }, 1000);
-        }
-
-        async function syncVsScore() {
-            if (!vsRoomId || isCpuMatch) return;
-            const myUid = getMyUniqueId();
-            try {
-                const payload = {};
-                payload[`players.${myUid}.score`] = vsState.energy;
-                payload[`players.${myUid}.cps`] = vsState.autoLevel;
-                await updateDoc(getVsRoomRef(vsRoomId), payload);
-            } catch (err) {
-                console.error("Sync Score Error:", err);
-            }
-        }
-
-        el.vsCoreButton.addEventListener('pointerdown', (e) => {
-            if (e.button === 0 || e.button === 2) {
-                e.preventDefault();
-                handleCoreTap(e, vsState, el.vsActionArea, true);
-            }
-        });
-        el.vsCoreButton.addEventListener('contextmenu', (e) => e.preventDefault());
-
-        el.vsUpgradeClick.addEventListener('click', () => {
-            if (vsState.clickLevel < 100 && vsState.energy >= vsState.clickCost) {
-                vsState.energy -= vsState.clickCost;
-                vsState.clickLevel += 1;
-                vsState.clickPower += getClickPowerGain(vsState.clickLevel);
-                vsState.clickCost = Math.floor(vsState.clickCost * 1.5);
-                updateVsUI();
-                if (!isCpuMatch) syncVsScore();
-            }
-        });
-
-        el.vsUpgradeAuto.addEventListener('click', () => {
-            if (vsState.autoLevel < 10 && vsState.energy >= vsState.autoCost) {
-                vsState.energy -= vsState.autoCost;
-                vsState.autoLevel += 1;
-                vsState.autoCost += 5000;
-                updateVsUI();
-                if (!isCpuMatch) syncVsScore();
-            }
-        });
-
-        function showVsResult(players, myUid) {
-            const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
-            const myRank = sorted.findIndex(p => p.uid === myUid || p.uid === 'human') + 1;
-
-            if (myRank === 1) {
-                el.vsResultIcon.className = "fa-solid fa-trophy text-6xl text-yellow-400";
-                el.vsResultTitle.textContent = "VICTORY!";
-                el.vsResultTitle.className = "text-3xl font-black font-orbitron text-yellow-400";
-                if (window.confetti) {
-                    confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
-                }
-            } else {
-                el.vsResultIcon.className = "fa-solid fa-award text-6xl text-gray-400";
-                el.vsResultTitle.textContent = `#${myRank} PLACE`;
-                el.vsResultTitle.className = "text-3xl font-black font-orbitron text-cyan-400";
-            }
-
-            el.vsResultRankingList.innerHTML = sorted.map((p, idx) => {
-                const isMe = p.uid === myUid || p.uid === 'human';
-                return `
-                    <div class="flex justify-between items-center p-2 rounded-lg ${isMe ? 'bg-cyan-950 border border-cyan-500/50' : 'bg-gray-800/50'}">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-yellow-400 font-orbitron w-4">${idx + 1}</span>
-                            <span class="font-bold text-gray-200 ${isMe ? 'text-cyan-300' : ''}">${escapeHtml(p.name || 'ゲスト')}</span>
-                        </div>
-                        <div class="font-bold text-cyan-400">${Math.floor(p.score || 0).toLocaleString()}</div>
-                    </div>
-                `;
-            }).join('');
-
-            el.vsResultModal.classList.remove('hidden');
-        }
-
-        el.vsResultCloseBtn.addEventListener('click', leaveVsRoom);
-
-        function getLeaderboardDocRef(uid) {
-            return doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'scores', uid);
-        }
-
-        async function saveUserData(silent = false) {
-            if (!currentUser) return;
-
-            gameState.lastLogoutTime = Date.now();
-
-            const payload = {
-                uid: currentUser.uid,
-                displayName: displayName,
-                photoURL: currentUser.photoURL || '',
-                gameState: gameState,
-                updatedAt: Date.now()
-            };
-
-            try {
-                await setDoc(getLeaderboardDocRef(currentUser.uid), payload);
-                if (!silent) showToast("データを保存しました！");
-                el.saveStatus.textContent = `最終同期: ${new Date().toLocaleTimeString()}`;
-            } catch (error) {
-                console.error("Firestore Save Error:", error);
-                if (!silent) showToast("保存に失敗しました。");
-            }
-        }
-
-        async function loadUserData(uid) {
-            try {
-                const docSnap = await getDoc(getLeaderboardDocRef(uid));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    if (data.gameState) {
-                        gameState = { ...gameState, ...data.gameState };
-                        
-                        if (gameState.lastLogoutTime && gameState.autoLevel > 0) {
-                            const now = Date.now();
-                            const offlineSec = Math.min(86400, Math.floor((now - gameState.lastLogoutTime) / 1000));
-                            if (offlineSec > 10) {
-                                const autoInterval = getAutoInterval(gameState.autoLevel);
-                                const autoPower = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
-                                const offlineEnergy = Math.floor((offlineSec / autoInterval) * autoPower * 0.5);
-                                
-                                gameState.energy += offlineEnergy;
-                                gameState.totalEnergy += offlineEnergy;
-
-                                el.offlineEnergyAmount.textContent = offlineEnergy.toLocaleString();
-                                el.offlineBonusCard.classList.remove('hidden');
-                            }
-                        }
-                    }
-                    if (data.displayName) {
-                        displayName = data.displayName;
-                        el.userName.textContent = displayName;
-                    }
-                    showToast("データを読み込みました！");
-                } else {
-                    await saveUserData(true);
-                }
-                checkAchievements();
-                updateUI();
-            } catch (error) {
-                console.error("Firestore Load Error:", error);
-            }
-        }
-
-        async function resetUserData() {
-            if (!currentUser) return;
-            if (!confirm("本当に全データをリセットしますか？この操作は取り消せません。")) return;
-
-            try {
-                await deleteDoc(getLeaderboardDocRef(currentUser.uid));
-                gameState = {
-                    energy: 0,
-                    totalEnergy: 0,
-                    clickPower: 1,
-                    clickLevel: 1,
-                    autoLevel: 0,
-                    clickCost: 10,
-                    autoCost: 5000,
-                    rebirthCount: 0,
-                    unlockedAchievements: [],
-                    missionStats: {
-                        totalClicks: 0,
-                        skillsUsed: 0,
-                        hacksCompleted: 0,
-                        cpuWins: 0,
-                        claimedMissions: []
-                    },
-                    lastLogoutTime: Date.now()
-                };
-                updateUI();
-                renderAchievements();
-                showToast("データが削除・リセットされました");
-            } catch (error) {
-                console.error("Reset Error:", error);
-                showToast("リセットに失敗しました");
-            }
-        }
-
-        function subscribeLeaderboard() {
-            const scoresCollection = collection(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'scores');
-            
-            onSnapshot(scoresCollection, (snapshot) => {
-                const list = [];
-                snapshot.forEach(doc => {
-                    list.push(doc.data());
-                });
-
-                list.sort((a, b) => (b.gameState?.totalEnergy || 0) - (a.gameState?.totalEnergy || 0));
-                renderLeaderboard(list.slice(0, 10));
-            }, (error) => {
-                console.error("Leaderboard Snapshot Error:", error);
-                el.leaderboardList.innerHTML = `<div class="text-center text-xs text-red-400 py-4">ランキング読込エラー</div>`;
-            });
-        }
-
-        function renderLeaderboard(topUsers) {
-            if (topUsers.length === 0) {
-                el.leaderboardList.innerHTML = `<div class="text-center text-xs text-gray-500 py-8">データが存在しません</div>`;
-                return;
-            }
-
-            el.leaderboardList.innerHTML = topUsers.map((item, idx) => {
-                const isSelf = currentUser && item.uid === currentUser.uid;
-                const total = Math.floor(item.gameState?.totalEnergy || 0).toLocaleString();
-                const rb = item.gameState?.rebirthCount || 0;
-                
-                let rankBadge = `<span class="w-5 text-center font-orbitron font-bold text-gray-400">${idx + 1}</span>`;
-                if (idx === 0) rankBadge = `<i class="fa-solid fa-crown text-yellow-400 w-5 text-center"></i>`;
-                if (idx === 1) rankBadge = `<i class="fa-solid fa-medal text-gray-300 w-5 text-center flex-shrink-0"></i>`;
-                if (idx === 2) rankBadge = `<i class="fa-solid fa-medal text-amber-600 w-5 text-center flex-shrink-0"></i>`;
-
-                return `
-                    <div class="flex items-center justify-between p-2.5 rounded-xl text-xs ${isSelf ? 'bg-cyan-950/60 border border-cyan-500/40' : 'bg-gray-800/40'} border border-gray-800">
-                        <div class="flex items-center gap-2 overflow-hidden">
-                            ${rankBadge}
-                            <img src="${item.photoURL || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full border border-gray-700 shrink-0" alt="avatar" onerror="this.src='https://placehold.co/32x32/1e293b/00f0ff?text=U'">
-                            <span class="font-bold truncate text-gray-200 ${isSelf ? 'text-cyan-300' : ''}">${escapeHtml(item.displayName || '名無し')}</span>
-                            ${rb > 0 ? `<span class="text-[9px] bg-purple-950 text-purple-300 border border-purple-500/30 px-1 rounded font-orbitron">x${rb}</span>` : ''}
-                        </div>
-                        <div class="font-orbitron font-bold text-gray-300 ml-2 shrink-0">${total}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/[&<>"']/g, function(m) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-            });
-        }
-
-        el.loginBtn.addEventListener('click', async () => {
-            try {
-                await signInWithPopup(auth, provider);
-            } catch (error) {
-                console.error("Login Error:", error);
-                showToast("ログインに失敗しました");
-            }
-        });
-
-        el.logoutBtn.addEventListener('click', async () => {
-            try {
-                await saveUserData(true);
-                await signOut(auth);
-                location.reload();
-            } catch (error) {
-                console.error("Logout Error:", error);
-            }
-        });
-
-        onAuthStateChanged(auth, async (user) => {
-            el.loadingSpinner.classList.add('hidden');
-            if (user) {
-                currentUser = user;
-                displayName = user.displayName || "エージェント";
-                
-                el.loginBtn.classList.add('hidden');
-                el.userProfile.classList.remove('hidden');
-                el.userAvatar.src = user.photoURL || 'https://via.placeholder.com/32';
-                el.userName.textContent = displayName;
-                
-                el.manualSaveBtn.disabled = false;
-                el.resetDataBtn.disabled = false;
-
-                await loadUserData(user.uid);
-            } else {
-                currentUser = null;
-                el.loginBtn.classList.remove('hidden');
-                el.userProfile.classList.add('hidden');
-                el.saveStatus.textContent = "※ ゲストモード（進行状況は保持されません）";
-            }
-        });
-
-        el.editNameBtn.addEventListener('click', () => {
-            el.nameInput.value = displayName;
-            el.nameModal.classList.remove('hidden');
-        });
-
-        el.closeModalBtn.addEventListener('click', () => {
-            el.nameModal.classList.add('hidden');
-        });
-
-        el.saveNameBtn.addEventListener('click', async () => {
-            const newName = el.nameInput.value.trim();
-            if (newName) {
-                displayName = newName;
-                el.userName.textContent = displayName;
-                el.nameModal.classList.add('hidden');
-                if (currentUser) await saveUserData();
-            }
-        });
-
-        el.manualSaveBtn.addEventListener('click', () => saveUserData(false));
-        el.resetDataBtn.addEventListener('click', resetUserData);
-
-        updateUI();
-        subscribeLeaderboard();
-    </script>
+      }
+      if (data.displayName) { displayName = data.displayName; el.userName.textContent = displayName; }
+      showToast("データを読み込みました！");
+    } else {
+      await saveUserData(true);
+    }
+    ensureBaselines();
+    checkAchievements();
+    updateUI();
+  } catch (error) {
+    console.error("Firestore Load Error:", error);
+  }
+}
+
+async function resetUserData() {
+  if (!currentUser) return;
+  if (!confirm("本当に全データをリセットしますか？この操作は取り消せません。")) return;
+  try {
+    await deleteDoc(getLeaderboardDocRef(currentUser.uid));
+    gameState = defaultState();
+    ensureBaselines();
+    lastDailyHtml = ''; lastWeeklyHtml = '';
+    updateUI(); renderAchievements();
+    showToast("データが削除・リセットされました");
+  } catch (error) {
+    console.error("Reset Error:", error);
+    showToast("リセットに失敗しました");
+  }
+}
+
+function subscribeLeaderboard() {
+  onSnapshot(collection(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'scores'), snapshot => {
+    const list = [];
+    snapshot.forEach(d => list.push(d.data()));
+    list.sort((a, b) => (b.gameState?.totalEnergy || 0) - (a.gameState?.totalEnergy || 0));
+    renderLeaderboard(list.slice(0, 10));
+  }, error => {
+    console.error("Leaderboard Snapshot Error:", error);
+    el.leaderboardList.innerHTML = `<div class="text-center text-xs text-red-400 py-4">ランキング読込エラー</div>`;
+  });
+}
+function renderLeaderboard(users) {
+  if (users.length === 0) { el.leaderboardList.innerHTML = `<div class="text-center text-xs text-gray-500 py-8">データが存在しません</div>`; return; }
+  el.leaderboardList.innerHTML = users.map((item, idx) => {
+    const isSelf = currentUser && item.uid === currentUser.uid;
+    const total = Math.floor(item.gameState?.totalEnergy || 0).toLocaleString();
+    const rb = item.gameState?.rebirthCount || 0;
+    let badge = `<span class="w-5 text-center font-orbitron font-bold text-gray-400">${idx + 1}</span>`;
+    if (idx === 0) badge = `<i class="fa-solid fa-crown text-yellow-400 w-5 text-center"></i>`;
+    if (idx === 1) badge = `<i class="fa-solid fa-medal text-gray-300 w-5 text-center flex-shrink-0"></i>`;
+    if (idx === 2) badge = `<i class="fa-solid fa-medal text-amber-600 w-5 text-center flex-shrink-0"></i>`;
+    return `
+    <div class="flex items-center justify-between p-2.5 rounded-xl text-xs ${isSelf ? 'bg-cyan-950/60 border-cyan-500/40' : 'bg-gray-800/40'} border border-gray-800">
+      <div class="flex items-center gap-2 overflow-hidden">
+        ${badge}
+        <img src="${escapeHtml(item.photoURL || '')}" class="w-6 h-6 rounded-full border border-gray-700 shrink-0" alt="avatar" onerror="this.onerror=null;this.src='https://placehold.co/32x32/1e293b/00f0ff?text=U'">
+        <span class="font-bold truncate ${isSelf ? 'text-cyan-300' : 'text-gray-200'}">${escapeHtml(item.displayName || '名無し')}</span>
+        ${rb > 0 ? `<span class="text-[9px] bg-purple-950 text-purple-300 border border-purple-500/30 px-1 rounded font-orbitron">x${rb}</span>` : ''}
+      </div>
+      <div class="font-orbitron font-bold text-gray-300 ml-2 shrink-0">${total}</div>
+    </div>`;
+  }).join('');
+}
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+}
+
+/* ================= Auth ================= */
+el.loginBtn.addEventListener('click', async () => {
+  try { await signInWithPopup(auth, provider); }
+  catch (error) { console.error("Login Error:", error); showToast("ログインに失敗しました"); }
+});
+el.logoutBtn.addEventListener('click', async () => {
+  try { await saveUserData(true); await signOut(auth); location.reload(); }
+  catch (error) { console.error("Logout Error:", error); }
+});
+onAuthStateChanged(auth, async user => {
+  el.loadingSpinner.classList.add('hidden');
+  if (user) {
+    currentUser = user;
+    displayName = user.displayName || "エージェント";
+    el.loginBtn.classList.add('hidden');
+    el.userProfile.classList.remove('hidden');
+    el.userAvatar.src = user.photoURL || 'https://placehold.co/32x32/1e293b/00f0ff?text=U';
+    el.userName.textContent = displayName;
+    el.manualSaveBtn.disabled = false;
+    el.resetDataBtn.disabled = false;
+    await loadUserData(user.uid);
+  } else {
+    currentUser = null;
+    el.loginBtn.classList.remove('hidden');
+    el.userProfile.classList.add('hidden');
+    el.saveStatus.textContent = "※ ゲストモード（進行状況は保存されません）";
+  }
+});
+
+el.editNameBtn.addEventListener('click', () => { el.nameInput.value = displayName; el.nameModal.classList.remove('hidden'); });
+el.closeModalBtn.addEventListener('click', () => el.nameModal.classList.add('hidden'));
+el.saveNameBtn.addEventListener('click', async () => {
+  const n = el.nameInput.value.trim();
+  if (n) {
+    displayName = n;
+    el.userName.textContent = displayName;
+    el.nameModal.classList.add('hidden');
+    if (currentUser) await saveUserData();
+  }
+});
+el.manualSaveBtn.addEventListener('click', () => saveUserData(false));
+el.resetDataBtn.addEventListener('click', resetUserData);
+
+// 自動保存（30秒ごと／タブを離れた時）
+setInterval(() => { if (currentUser) saveUserData(true); }, 30000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && currentUser) saveUserData(true); });
+
+ensureBaselines();
+updateUI();
+subscribeLeaderboard();
+</script>
 </body>
 </html>
