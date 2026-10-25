@@ -66,7 +66,7 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
   <button id="tab-single-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20"><i class="fa-solid fa-user mr-1.5"></i> シングル（ハイスコア）</button>
   <button id="tab-vs-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700"><i class="fa-solid fa-trophy mr-1.5 text-amber-400"></i> マルチ＆CPU対戦モード (7分勝負)</button>
   <button id="tab-mission-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700"><i class="fa-solid fa-list-check mr-1.5 text-emerald-400"></i> ミッション</button>
-  <button id="tab-achieve-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 ml-auto"><i class="fa-solid fa-award mr-1.5 text-purple-400"></i> 実績 <span id="achieve-badge" class="bg-purple-900 text-purple-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0/12</span></button>
+  <button id="tab-achieve-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 ml-auto"><i class="fa-solid fa-award mr-1.5 text-purple-400"></i> 実績 <span id="achieve-badge" class="bg-purple-900 text-purple-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0/13</span></button>
 </div>
 
 <main class="max-w-7xl mx-auto px-4 py-4 w-full flex-grow">
@@ -200,6 +200,19 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
         <button id="vs-quick-match-btn" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-red-500 to-amber-500 hover:from-red-400 hover:to-amber-400 text-gray-950 font-black font-orbitron rounded-xl shadow-lg shadow-amber-500/20 text-sm tracking-wider transition transform hover:scale-105 active:scale-95 whitespace-nowrap"><i class="fa-solid fa-gamepad mr-2"></i> バトルに参加</button>
       </div>
 
+      <div class="mb-8 p-6 bg-gradient-to-r from-emerald-950/50 via-gray-950 to-teal-950/50 border border-emerald-500/30 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-left">
+          <div class="text-base font-bold font-orbitron text-emerald-300 flex items-center gap-2"><i class="fa-solid fa-people-arrows text-xl text-emerald-400"></i> オフライン2人対戦</div>
+          <div class="text-xs text-gray-400 mt-1">1台の端末で2人対戦。通信・ログイン不要！<br>P1: [Q]タップ [W]パワー [E]ドローン ／ P2: [I]タップ [O]パワー [P]ドローン</div>
+        </div>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <select id="local-time-select" class="bg-gray-900 border border-emerald-500/50 text-emerald-300 font-orbitron text-xs rounded-xl px-3 py-3 focus:outline-none">
+            <option value="60">1分</option><option value="180">3分</option><option value="420" selected>7分</option>
+          </select>
+          <button id="start-local-match-btn" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-bold font-orbitron rounded-xl shadow-lg shadow-emerald-500/20 text-xs transition whitespace-nowrap">対戦開始</button>
+        </div>
+      </div>
+
       <div class="text-xs text-gray-500 uppercase tracking-widest font-orbitron mb-4">-- または 4人部屋ルーム対戦 --</div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto">
         <div class="bg-gray-950/70 p-5 rounded-xl border border-gray-800 flex flex-col items-center justify-between gap-4">
@@ -254,6 +267,14 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
           </button>
         </div>
       </div>
+    </div>
+    <div id="vs-local-room" class="hidden flex flex-col gap-4">
+      <div class="bg-gray-900/80 rounded-2xl p-4 border border-gray-800 flex justify-between items-center gap-3">
+        <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30 font-orbitron">OFFLINE 2P</span>
+        <div class="flex items-center gap-2 bg-gray-950 px-4 py-1.5 rounded-xl border border-gray-800"><i class="fa-solid fa-stopwatch text-amber-400"></i><span id="local-timer-display" class="font-orbitron font-extrabold text-xl text-amber-400">07:00</span></div>
+        <button id="local-leave-btn" class="text-xs text-red-400 hover:underline px-2 py-1">退室</button>
+      </div>
+      <div id="local-panels" class="grid grid-cols-2 gap-3"></div>
     </div>
   </div>
 
@@ -343,10 +364,10 @@ let activeTab = 'single';
 let currentUser = null;
 let displayName = "ゲスト";
 
-const defaultStats = () => ({ totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, cpuPlays: 0, overcharged: false, claimedMissions: [], baselines: {} });
+const defaultStats = () => ({ totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, cpuPlays: 0, overcharged: false, claimedMissions: [], baselines: {}, localWins: 0 });
 const defaultState = () => ({
   energy: 0, totalEnergy: 0, clickPower: 1, clickLevel: 1, autoLevel: 0, clickCost: 10, autoCost: 5000,
-  rebirthCount: 0, rebirthBase: 0, unlockedAchievements: [], missionStats: defaultStats(), lastLogoutTime: Date.now()
+  rebirthCount: 0, rebirthBase: 0, unlockedAchievements: [], claimedAchievements: [], missionStats: defaultStats(), lastLogoutTime: Date.now()
 });
 let gameState = defaultState();
 const stats = () => gameState.missionStats;
@@ -363,8 +384,14 @@ const ACHIEVEMENTS_DATA = [
   { id: 'use_skills_10', name: 'スキルマスター', desc: 'アクティブスキルを累計10回発動する', icon: 'fa-wand-magic-sparkles' },
   { id: 'hack_5', name: 'クラッカー', desc: 'ハッキングノードを累計5回突破する', icon: 'fa-terminal' },
   { id: 'cpu_win_1', name: 'VS AI ベテラン', desc: 'CPU対戦で勝利を収める', icon: 'fa-microchip' },
-  { id: 'cpu_win_lvl7', name: '人工知能を超えた者', desc: 'CPU Lv.7以上の高難易度CPUに勝利する', icon: 'fa-brain' }
+  { id: 'cpu_win_lvl7', name: '人工知能を超えた者', desc: 'CPU Lv.7以上の高難易度CPUに勝利する', icon: 'fa-brain' },
+  { id: 'local_win_1', name: 'リアルファイター', desc: 'オフライン2人対戦でPLAYER 1として勝利する', icon: 'fa-people-arrows' }
 ];
+
+const ACH_REWARDS = {
+  click_100: 500, click_10k: 5000, click_1m: 100000, auto_lv5: 20000, auto_lv10: 100000, overcharge: 3000,
+  rebirth_1: 200000, click_max: 150000, use_skills_10: 5000, hack_5: 8000, cpu_win_1: 10000, cpu_win_lvl7: 300000, local_win_1: 5000
+};
 
 const MISSION_POOL = [
   { id: 'm_tap_1', type: 'tap', title: 'コア連打トレ', desc: 'コアを{target}回タップする', baseTarget: 100 },
@@ -648,7 +675,7 @@ function checkAchievements() {
   const check = (id, cond) => {
     if (cond && !gameState.unlockedAchievements.includes(id)) {
       gameState.unlockedAchievements.push(id);
-      showToast(`🏆 実績解除: ${ACHIEVEMENTS_DATA.find(a => a.id === id).name}`);
+      showToast(`🏆 実績解除: ${ACHIEVEMENTS_DATA.find(a => a.id === id).name}（報酬 +${(ACH_REWARDS[id] || 0).toLocaleString()} NRG を受け取れます）`);
       if (window.confetti) confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
     }
   };
@@ -664,24 +691,55 @@ function checkAchievements() {
   check('use_skills_10', (s.skillsUsed || 0) >= 10);
   check('hack_5', (s.hacksCompleted || 0) >= 5);
   check('cpu_win_1', (s.cpuWins || 0) >= 1);
+  check('local_win_1', (s.localWins || 0) >= 1);
   updateUI();
+}
+function updateAchBadge() {
+  const unlocked = gameState.unlockedAchievements || [];
+  const claimed = gameState.claimedAchievements || [];
+  const pending = unlocked.filter(id => !claimed.includes(id) && ACH_REWARDS[id]).length;
+  el.achieveBadge.textContent = `${unlocked.length}/${ACHIEVEMENTS_DATA.length}` + (pending > 0 ? ` 🎁${pending}` : '');
 }
 function renderAchievements() {
   const unlocked = gameState.unlockedAchievements || [];
-  el.achieveBadge.textContent = `${unlocked.length}/${ACHIEVEMENTS_DATA.length}`;
+  const claimed = gameState.claimedAchievements || [];
+  updateAchBadge();
   el.achievementsGrid.innerHTML = ACHIEVEMENTS_DATA.map(a => {
     const done = unlocked.includes(a.id);
+    const got = claimed.includes(a.id);
+    const r = (ACH_REWARDS[a.id] || 0).toLocaleString();
+    const rewardHtml = !done
+      ? `<div class="text-[10px] font-orbitron text-gray-600 mt-1">未達成 ／ 報酬 +${r} NRG</div>`
+      : got
+        ? `<div class="text-[10px] font-orbitron text-emerald-400 mt-1"><i class="fa-solid fa-check mr-1"></i>達成済み ／ 報酬受取済み</div>`
+        : `<button data-ach-claim="${a.id}" class="mt-2 px-3 py-1.5 rounded-lg text-[11px] font-bold font-orbitron bg-amber-500 hover:bg-amber-400 text-gray-950 shadow-lg shadow-amber-500/20 transition">🎁 +${r} NRG を受け取る</button>`;
     return `
     <div class="p-4 rounded-xl border ${done ? 'bg-purple-950/40 border-purple-500/50' : 'bg-gray-950/50 border-gray-800 opacity-60'} flex items-center gap-4">
       <div class="w-12 h-12 rounded-xl ${done ? 'bg-purple-500 text-gray-950' : 'bg-gray-800 text-gray-500'} flex items-center justify-center text-xl shrink-0"><i class="fa-solid ${a.icon}"></i></div>
       <div>
         <div class="text-xs font-bold font-orbitron ${done ? 'text-purple-300' : 'text-gray-400'}">${a.name}</div>
         <div class="text-[11px] text-gray-400 mt-0.5">${a.desc}</div>
-        <div class="text-[10px] font-orbitron ${done ? 'text-emerald-400' : 'text-gray-600'} mt-1">${done ? '<i class="fa-solid fa-check mr-1"></i>達成済み' : '未達成'}</div>
+        ${rewardHtml}
       </div>
     </div>`;
   }).join('');
 }
+function claimAchievementReward(id) {
+  const r = ACH_REWARDS[id];
+  if (!r || !(gameState.unlockedAchievements || []).includes(id)) return;
+  if (!gameState.claimedAchievements) gameState.claimedAchievements = [];
+  if (gameState.claimedAchievements.includes(id)) return;
+  gameState.claimedAchievements.push(id);
+  gameState.energy += r;
+  gameState.totalEnergy += r;
+  updateUI(); renderAchievements(); saveUserData(true);
+  showToast(`🎁 実績報酬獲得！ +${r.toLocaleString()} NRG`);
+  if (window.confetti) confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-ach-claim]');
+  if (b) claimAchievementReward(b.dataset.achClaim);
+});
 
 /* ---------- main UI ---------- */
 function updateUI() {
@@ -715,7 +773,7 @@ function updateUI() {
   } else el.rebirthTag.classList.add('hidden');
   el.rebirthBtn.disabled = getRebirthProgress() < rc;
 
-  el.achieveBadge.textContent = `${(gameState.unlockedAchievements || []).length}/${ACHIEVEMENTS_DATA.length}`;
+  updateAchBadge();
 }
 
 /* ---------- main tick (0.1s) ---------- */
@@ -1131,6 +1189,8 @@ function enterVsRoomUI(roomId, title) {
 }
 el.vsLeaveBtn.addEventListener('click', leaveVsRoom);
 function leaveVsRoom() {
+  clearInterval(localInterval); localInterval = null; localActive = false;
+  const lr = document.getElementById('vs-local-room'); if (lr) lr.classList.add('hidden');
   if (vsUnsubRoom) { vsUnsubRoom(); vsUnsubRoom = null; }
   clearInterval(vsMatchTimerInterval); vsMatchTimerInterval = null;
   clearInterval(cpuTimerInterval); clearInterval(cpuTapInterval);
@@ -1297,6 +1357,139 @@ function showVsResult(players, myUid) {
 }
 el.vsResultCloseBtn.addEventListener('click', leaveVsRoom);
 
+/* ================= OFFLINE 2P (same device) ================= */
+let localInterval = null, localTimeLeft = 0, localActive = false, lp = [defaultVs(), defaultVs()], lpAutoTimer = [0, 0];
+const LP_KEYS = [{ tap: 'q', uc: 'w', ua: 'e' }, { tap: 'i', uc: 'o', ua: 'p' }];
+const LP_C = [
+  { border: 'border-cyan-500/50', text: 'text-cyan-300', grad: 'from-cyan-600 via-cyan-400 to-blue-600', inner: 'border-cyan-400/50', icon: 'text-cyan-400' },
+  { border: 'border-amber-500/50', text: 'text-amber-300', grad: 'from-amber-600 via-amber-400 to-red-500', inner: 'border-amber-400/50', icon: 'text-amber-400' }
+];
+const lpEl = id => document.getElementById(id);
+
+function buildLocalPanels() {
+  lpEl('local-panels').innerHTML = [0, 1].map(i => {
+    const c = LP_C[i], k = LP_KEYS[i];
+    return `
+    <div id="lp-${i}" class="relative overflow-hidden bg-gray-900/60 border-2 ${c.border} rounded-2xl p-3 sm:p-5 flex flex-col items-center gap-3">
+      <div class="text-xs font-bold font-orbitron ${c.text}">PLAYER ${i + 1}</div>
+      <div id="lp-score-${i}" class="text-2xl sm:text-3xl font-black font-orbitron text-gray-100">0</div>
+      <div id="lp-rate-${i}" class="text-[10px] text-gray-400 font-orbitron">RATE: 0/s</div>
+      <button id="lp-tap-${i}" class="core-btn w-28 h-28 sm:w-40 sm:h-40 rounded-full bg-gradient-to-tr ${c.grad} p-1 flex items-center justify-center shadow-xl focus:outline-none">
+        <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border ${c.inner}"><i class="fa-solid fa-bolt text-3xl sm:text-4xl ${c.icon}"></i><span class="text-[10px] font-orbitron ${c.text} mt-1 font-bold">TAP [${k.tap.toUpperCase()}]</span></div>
+      </button>
+      <button id="lp-uc-${i}" class="w-full p-2 bg-gray-900 hover:bg-gray-800 disabled:opacity-40 rounded-xl border border-gray-800 text-left text-[11px] font-orbitron">
+        <span class="text-cyan-400 font-bold">パワー [${k.uc.toUpperCase()}]</span> Lv.<span id="lp-ucl-${i}">1</span>/100<br><span class="text-amber-400">Cost: <span id="lp-ucc-${i}">10</span></span></button>
+      <button id="lp-ua-${i}" class="w-full p-2 bg-gray-900 hover:bg-gray-800 disabled:opacity-40 rounded-xl border border-gray-800 text-left text-[11px] font-orbitron">
+        <span class="text-cyan-400 font-bold">ドローン [${k.ua.toUpperCase()}]</span> Lv.<span id="lp-ual-${i}">0</span>/10<br><span class="text-amber-400">Cost: <span id="lp-uac-${i}">5000</span></span></button>
+    </div>`;
+  }).join('');
+  [0, 1].forEach(i => {
+    lpEl(`lp-tap-${i}`).addEventListener('pointerdown', e => { if (e.button === 0 || e.button === 2) { e.preventDefault(); lTap(i, e); } });
+    lpEl(`lp-tap-${i}`).addEventListener('contextmenu', e => e.preventDefault());
+    lpEl(`lp-uc-${i}`).addEventListener('click', () => lUpgrade(i, 'c'));
+    lpEl(`lp-ua-${i}`).addEventListener('click', () => lUpgrade(i, 'a'));
+  });
+}
+function updateLocalUI() {
+  [0, 1].forEach(i => {
+    const s = lp[i];
+    lpEl(`lp-score-${i}`).textContent = Math.floor(s.energy).toLocaleString();
+    const iv = getAutoInterval(s.autoLevel);
+    lpEl(`lp-rate-${i}`).textContent = `RATE: ${iv > 0 ? parseFloat((getAutoPower(s.autoLevel) / iv).toFixed(1)).toLocaleString() : 0}/s`;
+    const maxC = s.clickLevel >= 100, maxA = s.autoLevel >= 10;
+    lpEl(`lp-ucl-${i}`).textContent = s.clickLevel;
+    lpEl(`lp-ucc-${i}`).textContent = maxC ? 'MAX' : s.clickCost.toLocaleString();
+    lpEl(`lp-uc-${i}`).disabled = maxC || s.energy < s.clickCost;
+    lpEl(`lp-ual-${i}`).textContent = s.autoLevel;
+    lpEl(`lp-uac-${i}`).textContent = maxA ? 'MAX' : s.autoCost.toLocaleString();
+    lpEl(`lp-ua-${i}`).disabled = maxA || s.energy < s.autoCost;
+  });
+}
+function lTap(i, e) {
+  if (!localActive) return;
+  const s = lp[i];
+  const crit = Math.random() < 0.01;
+  const earned = crit ? s.clickPower * 2.5 : s.clickPower;
+  s.energy += earned;
+  const panel = lpEl(`lp-${i}`);
+  const rect = panel.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.className = crit ? 'crit-pop' : 'click-pop';
+  pop.textContent = crit ? `CRITICAL! +${Math.floor(earned)}` : `+${Math.floor(earned)}`;
+  pop.style.left = `${(e && e.clientX ? e.clientX - rect.left : rect.width / 2) - 10}px`;
+  pop.style.top = `${(e && e.clientY ? e.clientY - rect.top : rect.height / 2) - 20}px`;
+  panel.appendChild(pop);
+  setTimeout(() => pop.remove(), crit ? 1000 : 800);
+  updateLocalUI();
+}
+function lUpgrade(i, kind) {
+  if (!localActive) return;
+  const s = lp[i];
+  if (kind === 'c') {
+    if (s.clickLevel < 100 && s.energy >= s.clickCost) {
+      s.energy -= s.clickCost; s.clickLevel += 1; s.clickPower += getClickPowerGain(s.clickLevel); s.clickCost = Math.floor(s.clickCost * 1.5);
+    }
+  } else if (s.autoLevel < 10 && s.energy >= s.autoCost) {
+    s.energy -= s.autoCost; s.autoLevel += 1; s.autoCost += 5000;
+  }
+  updateLocalUI();
+}
+$('start-local-match-btn').addEventListener('click', () => {
+  isCpuMatch = false;
+  vsRoomId = 'LOCAL_ROOM';
+  lp = [defaultVs(), defaultVs()]; lpAutoTimer = [0, 0];
+  localTimeLeft = parseInt($('local-time-select').value) || MATCH_DURATION;
+  buildLocalPanels(); updateLocalUI();
+  $('local-timer-display').textContent = formatTime(localTimeLeft);
+  el.vsLobby.classList.add('hidden');
+  $('vs-local-room').classList.remove('hidden');
+  runCountdownSequence(Date.now() + 3000, () => {
+    if (vsRoomId !== 'LOCAL_ROOM') return;
+    localActive = true;
+    localInterval = setInterval(() => {
+      localTimeLeft -= 0.1;
+      [0, 1].forEach(i => {
+        const s = lp[i];
+        if (s.autoLevel > 0) {
+          lpAutoTimer[i] += 0.1;
+          const iv = getAutoInterval(s.autoLevel);
+          if (lpAutoTimer[i] >= iv - 0.0001) { lpAutoTimer[i] -= iv; s.energy += getAutoPower(s.autoLevel); }
+        }
+      });
+      $('local-timer-display').textContent = formatTime(Math.max(0, Math.ceil(localTimeLeft)));
+      updateLocalUI();
+      if (localTimeLeft <= 0) finishLocalMatch();
+    }, 100);
+  });
+});
+$('local-leave-btn').addEventListener('click', leaveVsRoom);
+function finishLocalMatch() {
+  clearInterval(localInterval); localInterval = null; localActive = false;
+  const [a, b] = [Math.floor(lp[0].energy), Math.floor(lp[1].energy)];
+  const winner = a === b ? -1 : (a > b ? 0 : 1);
+  el.vsResultIcon.className = winner === -1 ? "fa-solid fa-handshake text-6xl text-gray-300" : "fa-solid fa-trophy text-6xl text-yellow-400";
+  el.vsResultTitle.textContent = winner === -1 ? "DRAW" : `PLAYER ${winner + 1} WIN!`;
+  el.vsResultTitle.className = "text-3xl font-black font-orbitron text-yellow-400";
+  const rows = [{ n: 'PLAYER 1', v: a, w: winner === 0 }, { n: 'PLAYER 2', v: b, w: winner === 1 }].sort((x, y) => y.v - x.v);
+  el.vsResultRankingList.innerHTML = rows.map((r, i) => `
+    <div class="flex justify-between items-center p-2 rounded-lg ${r.w ? 'bg-cyan-950 border border-cyan-500/50' : 'bg-gray-800/50'}">
+      <div class="flex items-center gap-2"><span class="font-bold text-yellow-400 font-orbitron w-4">${i + 1}</span><span class="font-bold text-gray-200">${r.n}</span></div>
+      <div class="font-bold text-cyan-400">${r.v.toLocaleString()}</div>
+    </div>`).join('');
+  el.vsResultModal.classList.remove('hidden');
+  if (winner >= 0 && window.confetti) confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+  if (winner === 0) { stats().localWins = (stats().localWins || 0) + 1; checkAchievements(); saveUserData(true); }
+}
+document.addEventListener('keydown', e => {
+  if (!localActive || e.repeat || (e.target && e.target.tagName === 'INPUT')) return;
+  const k = e.key.toLowerCase();
+  for (let i = 0; i < 2; i++) {
+    if (k === LP_KEYS[i].tap) { e.preventDefault(); lTap(i, null); }
+    else if (k === LP_KEYS[i].uc) lUpgrade(i, 'c');
+    else if (k === LP_KEYS[i].ua) lUpgrade(i, 'a');
+  }
+});
+
 /* ================= Firestore save / load ================= */
 const getLeaderboardDocRef = uid => doc(db, 'artifacts', 'cyber-clicker', 'public', 'data', 'scores', uid);
 
@@ -1326,6 +1519,7 @@ async function loadUserData(uid) {
         if (!gameState.missionStats.baselines) gameState.missionStats.baselines = {};
         if (!gameState.missionStats.claimedMissions) gameState.missionStats.claimedMissions = [];
         if (!gameState.unlockedAchievements) gameState.unlockedAchievements = [];
+        if (!gameState.claimedAchievements) gameState.claimedAchievements = [];
 
         if (loaded.lastLogoutTime && gameState.autoLevel > 0) {
           const offlineSec = Math.min(86400, Math.floor((Date.now() - loaded.lastLogoutTime) / 1000));
