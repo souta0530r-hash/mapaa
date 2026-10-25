@@ -29,6 +29,30 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
 .countdown-anim{animation:popScale .4s cubic-bezier(.175,.885,.32,1.275) forwards}
 @keyframes pulseGlow{0%,100%{box-shadow:0 0 15px rgba(234,179,8,.4)}50%{box-shadow:0 0 35px rgba(234,179,8,.8)}}
 .overcharge-active{animation:pulseGlow 1s infinite alternate}
+
+.skin-ring{background-image:linear-gradient(to top right,var(--s1),var(--s2),var(--s3))!important;box-shadow:0 0 30px var(--sg)!important}
+.skin-inner{border-color:var(--sb)!important}
+.skin-ico{color:var(--si)!important}
+.skin-label{color:var(--si)!important}
+[data-skin=default]{--s1:#0891b2;--s2:#22d3ee;--s3:#2563eb;--sg:rgba(6,182,212,.35);--sb:rgba(34,211,238,.5);--si:#22d3ee}
+[data-skin=crimson]{--s1:#991b1b;--s2:#f87171;--s3:#be123c;--sg:rgba(239,68,68,.4);--sb:rgba(248,113,113,.6);--si:#f87171}
+[data-skin=emerald]{--s1:#047857;--s2:#34d399;--s3:#0d9488;--sg:rgba(16,185,129,.4);--sb:rgba(110,231,183,.6);--si:#34d399}
+[data-skin=violet]{--s1:#6d28d9;--s2:#a78bfa;--s3:#c026d3;--sg:rgba(139,92,246,.4);--sb:rgba(196,181,253,.6);--si:#c4b5fd}
+[data-skin=gold]{--s1:#b45309;--s2:#fbbf24;--s3:#f59e0b;--sg:rgba(245,158,11,.5);--sb:rgba(252,211,77,.6);--si:#fcd34d}
+[data-skin=sakura]{--s1:#be185d;--s2:#f9a8d4;--s3:#f472b6;--sg:rgba(244,114,182,.4);--sb:rgba(251,207,232,.6);--si:#fbcfe8}
+[data-skin=hexagon]{--s1:#0369a1;--s2:#38bdf8;--s3:#1d4ed8;--sg:transparent;--sb:rgba(125,211,252,.6);--si:#7dd3fc}
+[data-skin=gear]{--s1:#475569;--s2:#cbd5e1;--s3:#64748b;--sg:transparent;--sb:rgba(226,232,240,.6);--si:#e2e8f0}
+[data-skin=phoenix]{--s1:#b91c1c;--s2:#f97316;--s3:#facc15;--sg:rgba(249,115,22,.55);--sb:rgba(251,146,60,.7);--si:#fb923c;animation:pulseGlow 1s infinite alternate}
+[data-skin=crown]{--s1:#a16207;--s2:#facc15;--s3:#ea580c;--sg:rgba(250,204,21,.5);--sb:rgba(253,224,71,.7);--si:#fde047}
+[data-skin=fist]{--s1:#7f1d1d;--s2:#ef4444;--s3:#f97316;--sg:transparent;--sb:rgba(252,165,165,.6);--si:#fca5a5}
+[data-skin=ice]{--s1:#0e7490;--s2:#a5f3fc;--s3:#60a5fa;--sg:transparent;--sb:rgba(207,250,254,.7);--si:#cffafe}
+[data-skin=rainbow]{--s1:#f43f5e;--s2:#a855f7;--s3:#22d3ee;--sg:rgba(168,85,247,.5);--sb:rgba(255,255,255,.6);--si:#fff;animation:skinHue 4s linear infinite}
+@keyframes skinHue{to{filter:hue-rotate(360deg)}}
+[data-skin=hexagon],[data-skin=hexagon] .skin-inner{border-radius:0!important;clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)}
+[data-skin=gear],[data-skin=gear] .skin-inner{border-radius:0!important;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
+[data-skin=crown],[data-skin=crown] .skin-inner{border-radius:28%!important}
+[data-skin=fist],[data-skin=fist] .skin-inner{border-radius:0!important;clip-path:polygon(50% 0,100% 18%,100% 68%,50% 100%,0 68%,0 18%)}
+[data-skin=ice],[data-skin=ice] .skin-inner{border-radius:0!important;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:#0d1117}
 ::-webkit-scrollbar-thumb{background:#1f2937;border-radius:3px}
@@ -66,6 +90,7 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
   <button id="tab-single-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20"><i class="fa-solid fa-user mr-1.5"></i> シングル（ハイスコア）</button>
   <button id="tab-vs-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700"><i class="fa-solid fa-trophy mr-1.5 text-amber-400"></i> マルチ＆CPU対戦モード (7分勝負)</button>
   <button id="tab-mission-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700"><i class="fa-solid fa-list-check mr-1.5 text-emerald-400"></i> ミッション</button>
+  <button id="tab-skin-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700"><i class="fa-solid fa-shirt mr-1.5 text-pink-400"></i> 着せ替え</button>
   <button id="tab-achieve-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 ml-auto"><i class="fa-solid fa-award mr-1.5 text-purple-400"></i> 実績 <span id="achieve-badge" class="bg-purple-900 text-purple-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0/13</span></button>
 </div>
 
@@ -118,10 +143,10 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
           <div id="overcharge-bar" class="bg-gradient-to-r from-cyan-500 to-amber-400 h-full rounded-full transition-all duration-100" style="width:0%;"></div>
         </div>
         <div id="overcharge-status" class="text-[11px] font-orbitron font-bold text-gray-400 mb-3">OVERCHARGE GAUGE: <span id="overcharge-percent">0</span>%</div>
-        <button id="core-button" class="core-btn w-44 h-44 sm:w-52 sm:h-52 rounded-full bg-gradient-to-tr from-cyan-600 via-cyan-400 to-blue-600 p-1 flex items-center justify-center shadow-2xl shadow-cyan-500/30 focus:outline-none">
-          <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-cyan-400/50 hover:bg-gray-900 transition">
-            <i id="core-icon" class="fa-solid fa-atom text-5xl sm:text-6xl text-cyan-400"></i>
-            <span class="text-xs font-orbitron text-cyan-300 mt-2 font-bold">TAP CORE</span>
+        <button id="core-button" data-skin="default" class="core-btn skin-ring w-44 h-44 sm:w-52 sm:h-52 rounded-full bg-gradient-to-tr from-cyan-600 via-cyan-400 to-blue-600 p-1 flex items-center justify-center shadow-2xl shadow-cyan-500/30 focus:outline-none">
+          <div class="skin-inner w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-cyan-400/50 hover:bg-gray-900 transition">
+            <i id="core-icon" class="skin-ico fa-solid fa-atom text-5xl sm:text-6xl text-cyan-400"></i>
+            <span class="skin-label text-xs font-orbitron text-cyan-300 mt-2 font-bold">TAP CORE</span>
           </div>
         </button>
         <div class="text-[11px] text-gray-500 mt-4 font-orbitron">※ 左右クリック対応 / スキル＆ハッキングノードを活用しよう</div>
@@ -300,6 +325,18 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
     </div>
   </div>
 
+  <!-- ===== SKINS ===== -->
+  <div id="skin-mode-view" class="hidden max-w-4xl mx-auto flex flex-col gap-6">
+    <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800">
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-xl font-bold font-orbitron text-pink-300 flex items-center gap-2"><i class="fa-solid fa-shirt text-pink-400"></i> 着せ替え (Skins)</h2>
+        <span id="skin-count" class="text-xs font-orbitron text-gray-400">1/13</span>
+      </div>
+      <p class="text-xs text-gray-400 mb-6">実績を解除すると着せ替えを入手できます。装備するとシングルモードのコアの見た目が変わります。難しい実績ほど特別なデザインが手に入ります。</p>
+      <div id="skin-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+    </div>
+  </div>
+
   <!-- ===== ACHIEVEMENTS ===== -->
   <div id="achieve-mode-view" class="hidden max-w-4xl mx-auto flex flex-col gap-6">
     <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800">
@@ -367,7 +404,7 @@ let displayName = "ゲスト";
 const defaultStats = () => ({ totalClicks: 0, skillsUsed: 0, hacksCompleted: 0, cpuWins: 0, cpuPlays: 0, overcharged: false, claimedMissions: [], baselines: {}, localWins: 0 });
 const defaultState = () => ({
   energy: 0, totalEnergy: 0, clickPower: 1, clickLevel: 1, autoLevel: 0, clickCost: 10, autoCost: 5000,
-  rebirthCount: 0, rebirthBase: 0, unlockedAchievements: [], claimedAchievements: [], missionStats: defaultStats(), lastLogoutTime: Date.now()
+  rebirthCount: 0, rebirthBase: 0, unlockedAchievements: [], claimedAchievements: [], ownedSkins: ['default'], equippedSkin: 'default', missionStats: defaultStats(), lastLogoutTime: Date.now()
 });
 let gameState = defaultState();
 const stats = () => gameState.missionStats;
@@ -520,8 +557,8 @@ el.tabAchieveBtn.addEventListener('click', () => switchTab('achieve'));
 function switchTab(tab) {
   activeTab = tab;
   const d = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700";
-  el.tabSingleBtn.className = d; el.tabVsBtn.className = d; el.tabMissionBtn.className = d; el.tabAchieveBtn.className = d + " ml-auto";
-  [el.singleView, el.vsView, el.missionView, el.achieveView].forEach(v => v.classList.add('hidden'));
+  el.tabSingleBtn.className = d; el.tabVsBtn.className = d; el.tabMissionBtn.className = d; el.tabSkinBtn.className = d; el.tabAchieveBtn.className = d + " ml-auto";
+  [el.singleView, el.vsView, el.missionView, el.achieveView, el.skinView].forEach(v => v.classList.add('hidden'));
   if (tab === 'single') {
     el.tabSingleBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20";
     el.singleView.classList.remove('hidden');
@@ -532,6 +569,10 @@ function switchTab(tab) {
     el.tabMissionBtn.className = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-emerald-500 text-gray-950 shadow-lg shadow-emerald-500/20";
     el.missionView.classList.remove('hidden');
     renderMissions();
+  } else if (tab === 'skin') {
+    el.tabSkinBtn.className = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-pink-500 text-gray-950 shadow-lg shadow-pink-500/20";
+    el.skinView.classList.remove('hidden');
+    renderSkins();
   } else if (tab === 'achieve') {
     el.tabAchieveBtn.className = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-purple-500 text-gray-950 shadow-lg shadow-purple-500/20 ml-auto";
     el.achieveView.classList.remove('hidden');
@@ -692,6 +733,7 @@ function checkAchievements() {
   check('hack_5', (s.hacksCompleted || 0) >= 5);
   check('cpu_win_1', (s.cpuWins || 0) >= 1);
   check('local_win_1', (s.localWins || 0) >= 1);
+  grantSkins();
   updateUI();
 }
 function updateAchBadge() {
@@ -708,6 +750,8 @@ function renderAchievements() {
     const done = unlocked.includes(a.id);
     const got = claimed.includes(a.id);
     const r = (ACH_REWARDS[a.id] || 0).toLocaleString();
+    const sk = SKINS.find(x => x.ach === a.id);
+    const skinHtml = sk ? `<div class="text-[10px] font-orbitron text-pink-300 mt-1">👗 着せ替え: ${sk.name}${done ? '（入手済み）' : ''}</div>` : '';
     const rewardHtml = !done
       ? `<div class="text-[10px] font-orbitron text-gray-600 mt-1">未達成 ／ 報酬 +${r} NRG</div>`
       : got
@@ -720,6 +764,7 @@ function renderAchievements() {
         <div class="text-xs font-bold font-orbitron ${done ? 'text-purple-300' : 'text-gray-400'}">${a.name}</div>
         <div class="text-[11px] text-gray-400 mt-0.5">${a.desc}</div>
         ${rewardHtml}
+        ${skinHtml}
       </div>
     </div>`;
   }).join('');
@@ -743,6 +788,7 @@ document.addEventListener('click', e => {
 
 /* ---------- main UI ---------- */
 function updateUI() {
+  applySkin();
   el.energyCount.textContent = Math.floor(gameState.energy).toLocaleString();
   const mult = getRebirthMultiplier();
   const interval = getAutoInterval(gameState.autoLevel);
@@ -1357,6 +1403,84 @@ function showVsResult(players, myUid) {
 }
 el.vsResultCloseBtn.addEventListener('click', leaveVsRoom);
 
+/* ================= SKINS (着せ替え) ================= */
+const SKINS = [
+  { id: 'default', name: 'サイバー・シアン', type: 'color', icon: 'fa-atom', ach: null },
+  { id: 'crimson', name: 'クリムゾン', type: 'color', icon: 'fa-atom', ach: 'click_10k' },
+  { id: 'emerald', name: 'エメラルド', type: 'color', icon: 'fa-atom', ach: 'hack_5' },
+  { id: 'violet', name: 'ヴァイオレット', type: 'color', icon: 'fa-atom', ach: 'use_skills_10' },
+  { id: 'sakura', name: 'サクラ', type: 'color', icon: 'fa-atom', ach: 'auto_lv5' },
+  { id: 'gold', name: 'ゴールデン', type: 'color', icon: 'fa-atom', ach: 'overcharge' },
+  { id: 'ice', name: 'アイス・ダイヤ', type: 'design', icon: 'fa-snowflake', ach: 'cpu_win_1' },
+  { id: 'fist', name: 'ファイター・シールド', type: 'design', icon: 'fa-hand-fist', ach: 'local_win_1' },
+  { id: 'hexagon', name: 'ヘキサ・ジェム', type: 'design', icon: 'fa-gem', ach: 'click_1m' },
+  { id: 'gear', name: 'オート・ギア', type: 'design', icon: 'fa-gear', spin: true, ach: 'auto_lv10' },
+  { id: 'phoenix', name: 'フェニックス', type: 'design', icon: 'fa-fire-flame-curved', ach: 'rebirth_1' },
+  { id: 'crown', name: 'タップ・クラウン', type: 'design', icon: 'fa-crown', ach: 'click_max' },
+  { id: 'rainbow', name: 'レインボー・ブレイン', type: 'design', icon: 'fa-brain', ach: 'cpu_win_lvl7' }
+];
+el.tabSkinBtn = $('tab-skin-btn');
+el.skinView = $('skin-mode-view');
+el.skinGrid = $('skin-grid');
+el.tabSkinBtn.addEventListener('click', () => switchTab('skin'));
+
+const getSkin = id => SKINS.find(x => x.id === id) || SKINS[0];
+function applySkin() {
+  const sk = getSkin(gameState.equippedSkin);
+  const btn = el.coreButton, ico = $('core-icon');
+  if (btn.dataset.skin === sk.id && ico.dataset.skin === sk.id) return;
+  btn.dataset.skin = sk.id;
+  ico.dataset.skin = sk.id;
+  ico.className = `skin-ico fa-solid ${sk.icon} text-5xl sm:text-6xl${sk.spin ? ' animate-spin' : ''}`;
+  ico.style.animationDuration = sk.spin ? '8s' : '';
+}
+function grantSkins() {
+  if (!Array.isArray(gameState.ownedSkins)) gameState.ownedSkins = ['default'];
+  let n = 0;
+  (gameState.unlockedAchievements || []).forEach(id => {
+    const sk = SKINS.find(x => x.ach === id);
+    if (sk && !gameState.ownedSkins.includes(sk.id)) {
+      gameState.ownedSkins.push(sk.id);
+      setTimeout(() => showToast(`👗 着せ替え入手: ${sk.name}（着せ替えタブで装備できます）`), 1800 + n * 2200);
+      n++;
+    }
+  });
+  if (n > 0) { if (activeTab === 'skin') renderSkins(); saveUserData(true); }
+}
+function skinPreviewHtml(sk, locked) {
+  return `<div class="w-20 h-20 mx-auto p-1 flex items-center justify-center skin-ring rounded-full ${locked ? 'opacity-30 grayscale' : ''}" data-skin="${sk.id}">
+    <div class="skin-inner w-full h-full rounded-full bg-gray-950 flex items-center justify-center border"><i class="skin-ico fa-solid ${sk.icon} text-2xl${sk.spin ? ' animate-spin' : ''}"></i></div></div>`;
+}
+function renderSkins() {
+  const owned = gameState.ownedSkins || ['default'];
+  $('skin-count').textContent = `${owned.length}/${SKINS.length}`;
+  el.skinGrid.innerHTML = SKINS.map(sk => {
+    const has = owned.includes(sk.id);
+    const on = gameState.equippedSkin === sk.id;
+    const ach = sk.ach ? ACHIEVEMENTS_DATA.find(a => a.id === sk.ach) : null;
+    const badge = sk.type === 'design'
+      ? '<span class="text-[9px] font-orbitron bg-purple-950 text-purple-300 border border-purple-500/40 px-1.5 py-0.5 rounded">DESIGN</span>'
+      : '<span class="text-[9px] font-orbitron bg-cyan-950 text-cyan-300 border border-cyan-500/40 px-1.5 py-0.5 rounded">COLOR</span>';
+    const action = on ? '<div class="text-[11px] font-bold font-orbitron text-emerald-400 mt-3"><i class="fa-solid fa-check mr-1"></i>装備中</div>'
+      : has ? `<button data-equip="${sk.id}" class="mt-3 w-full px-3 py-1.5 rounded-lg text-[11px] font-bold font-orbitron bg-pink-500 hover:bg-pink-400 text-gray-950 transition">装備する</button>`
+      : `<div class="text-[10px] text-gray-500 mt-3 leading-snug">🔒 入手条件:<br>実績「${ach ? ach.name : ''}」を解除</div>`;
+    return `<div class="p-4 rounded-xl border ${on ? 'border-pink-500/60 bg-pink-950/20' : 'border-gray-800 bg-gray-950/50'} text-center">
+      ${skinPreviewHtml(sk, !has)}
+      <div class="text-xs font-bold text-gray-200 mt-3">${has ? sk.name : '？？？'}</div>
+      <div class="mt-1">${badge}</div>${action}</div>`;
+  }).join('');
+}
+function equipSkin(id) {
+  if (!(gameState.ownedSkins || []).includes(id)) return;
+  gameState.equippedSkin = id;
+  applySkin(); renderSkins(); saveUserData(true);
+  showToast(`👗 「${getSkin(id).name}」を装備しました`);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-equip]');
+  if (b) equipSkin(b.dataset.equip);
+});
+
 /* ================= OFFLINE 2P (same device) ================= */
 let localInterval = null, localTimeLeft = 0, localActive = false, lp = [defaultVs(), defaultVs()], lpAutoTimer = [0, 0];
 const LP_KEYS = [{ tap: 'q', uc: 'w', ua: 'e' }, { tap: 'i', uc: 'o', ua: 'p' }];
@@ -1520,6 +1644,8 @@ async function loadUserData(uid) {
         if (!gameState.missionStats.claimedMissions) gameState.missionStats.claimedMissions = [];
         if (!gameState.unlockedAchievements) gameState.unlockedAchievements = [];
         if (!gameState.claimedAchievements) gameState.claimedAchievements = [];
+        if (!Array.isArray(gameState.ownedSkins) || !gameState.ownedSkins.includes('default')) gameState.ownedSkins = ['default', ...(gameState.ownedSkins || [])];
+        if (!gameState.ownedSkins.includes(gameState.equippedSkin)) gameState.equippedSkin = 'default';
 
         if (loaded.lastLogoutTime && gameState.autoLevel > 0) {
           const offlineSec = Math.min(86400, Math.floor((Date.now() - loaded.lastLogoutTime) / 1000));
