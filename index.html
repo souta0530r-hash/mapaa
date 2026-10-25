@@ -12,6 +12,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- ES Module Import Map for External Libraries -->
+    <script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+        }
+    }
+    </script>
+
     <style>
         body {
             font-family: 'Noto Sans JP', sans-serif;
@@ -83,7 +95,6 @@
         .overcharge-active {
             animation: pulseGlow 1s infinite alternate;
         }
-        /* カスタムスクロールバー */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -179,9 +190,49 @@
                     </div>
                 </div>
 
+                <!-- Active Skills Control Panel -->
+                <div class="bg-gray-900/80 rounded-2xl p-4 border border-gray-800">
+                    <div class="text-xs font-bold font-orbitron text-cyan-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-400"></i> CYBER SKILLS (アクティブスキル)
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button id="skill-1-btn" class="bg-gray-950 hover:bg-gray-800 border border-cyan-500/30 rounded-xl p-2.5 flex flex-col items-center justify-center transition disabled:opacity-40 group relative overflow-hidden">
+                            <i class="fa-solid fa-fire text-amber-400 text-lg mb-1"></i>
+                            <span class="text-[11px] font-bold text-gray-200">オーバーロード</span>
+                            <span class="text-[9px] text-gray-400 mt-0.5">タップ5倍(10s)</span>
+                            <div id="skill-1-cd" class="absolute inset-0 bg-gray-950/80 flex items-center justify-center font-orbitron font-bold text-amber-400 text-xs hidden">30s</div>
+                        </button>
+                        <button id="skill-2-btn" class="bg-gray-950 hover:bg-gray-800 border border-cyan-500/30 rounded-xl p-2.5 flex flex-col items-center justify-center transition disabled:opacity-40 group relative overflow-hidden">
+                            <i class="fa-solid fa-microchip text-cyan-400 text-lg mb-1"></i>
+                            <span class="text-[11px] font-bold text-gray-200">ナノボットバースト</span>
+                            <span class="text-[9px] text-gray-400 mt-0.5">即時20s分生産</span>
+                            <div id="skill-2-cd" class="absolute inset-0 bg-gray-950/80 flex items-center justify-center font-orbitron font-bold text-cyan-400 text-xs hidden">45s</div>
+                        </button>
+                        <button id="skill-3-btn" class="bg-gray-950 hover:bg-gray-800 border border-cyan-500/30 rounded-xl p-2.5 flex flex-col items-center justify-center transition disabled:opacity-40 group relative overflow-hidden">
+                            <i class="fa-solid fa-crosshair text-purple-400 text-lg mb-1"></i>
+                            <span class="text-[11px] font-bold text-gray-200">フレンジー</span>
+                            <span class="text-[9px] text-gray-400 mt-0.5">クリティカル50%(15s)</span>
+                            <div id="skill-3-cd" class="absolute inset-0 bg-gray-950/80 flex items-center justify-center font-orbitron font-bold text-purple-400 text-xs hidden">60s</div>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Main Tap Core Center -->
-                <div id="click-area" class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center min-h-[290px] relative overflow-hidden select-none">
+                <div id="click-area" class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center min-h-[300px] relative overflow-hidden select-none">
                     
+                    <!-- Interactive Mini-Game Hack Node -->
+                    <div id="hack-node" class="hidden absolute z-30 cursor-pointer bg-red-950/90 border-2 border-red-500 text-red-400 hover:scale-110 active:scale-95 transition-transform p-3 rounded-xl flex items-center gap-2 animate-bounce shadow-lg shadow-red-500/50">
+                        <i class="fa-solid fa-terminal text-lg"></i>
+                        <div class="text-[10px] font-orbitron font-bold leading-tight">
+                            HACK NODE!<br><span class="text-white text-xs">TAP TO BREAK</span>
+                        </div>
+                    </div>
+
+                    <!-- Flying Supply Drone -->
+                    <div id="supply-drone" class="hidden absolute z-30 cursor-pointer bg-amber-500 text-gray-950 p-2.5 rounded-full shadow-lg shadow-amber-500/50 hover:scale-125 transition-transform flex items-center justify-center">
+                        <i class="fa-solid fa-drone-front text-lg animate-spin" style="animation-duration: 3s;"></i>
+                    </div>
+
                     <!-- Overcharge Gauge Bar -->
                     <div class="w-full max-w-md mb-4 bg-gray-950 border border-gray-800 rounded-full h-3 p-0.5 relative overflow-hidden">
                         <div id="overcharge-bar" class="bg-gradient-to-r from-cyan-500 to-amber-400 h-full rounded-full transition-all duration-100" style="width: 0%;"></div>
@@ -196,7 +247,7 @@
                             <span class="text-xs font-orbitron text-cyan-300 mt-2 font-bold">TAP CORE</span>
                         </div>
                     </button>
-                    <div class="text-[11px] text-gray-500 mt-4 font-orbitron">※ 左右クリック対応 / 連打でオーバーチャージ発動 (2倍)</div>
+                    <div class="text-[11px] text-gray-500 mt-4 font-orbitron">※ 左右クリック対応 / スキル＆ハッキングノードを活用しよう</div>
                 </div>
 
                 <!-- Upgrade Buttons -->
@@ -442,16 +493,16 @@
         <span id="toast-message">保存しました</span>
     </div>
 
-    <!-- Firebase Modular Imports -->
+    <!-- Firebase Imports via Import Map -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { initializeApp } from "firebase/app";
         import { 
             getAuth, 
             GoogleAuthProvider, 
             signInWithPopup, 
             signOut, 
             onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        } from "firebase/auth";
         import { 
             getFirestore, 
             doc, 
@@ -461,7 +512,7 @@
             deleteDoc, 
             collection, 
             onSnapshot 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        } from "firebase/firestore";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAAp88ypoypEBetx-p1Ah7P4qLls2vROGY",
@@ -494,7 +545,6 @@
             lastLogoutTime: Date.now()
         };
 
-        // 実績の定義
         const ACHIEVEMENTS_DATA = [
             { id: 'click_100', name: 'ファースト・タップ', desc: '累計100エナジーを獲得する', icon: 'fa-mouse' },
             { id: 'click_10k', name: 'エナジー・コレクター', desc: '累計10,000エナジーを獲得する', icon: 'fa-bolt' },
@@ -504,10 +554,16 @@
             { id: 'click_max', name: 'タップの極意', desc: 'パワータップのレベルを100(MAX)にする', icon: 'fa-hand-pointer' }
         ];
 
-        // オーバーチャージ管理変数
         let overchargeMeter = 0;
         let isOverchargeActive = false;
-        let overchargeTimer = null;
+
+        let skillStatus = {
+            s1Active: false,
+            s1Cd: 0,
+            s2Cd: 0,
+            s3Active: false,
+            s3Cd: 0
+        };
 
         const MATCH_DURATION = 420;
         let vsRoomId = null;
@@ -535,6 +591,16 @@
             singleView: document.getElementById('single-mode-view'),
             vsView: document.getElementById('vs-mode-view'),
             achieveView: document.getElementById('achieve-mode-view'),
+
+            skill1Btn: document.getElementById('skill-1-btn'),
+            skill1Cd: document.getElementById('skill-1-cd'),
+            skill2Btn: document.getElementById('skill-2-btn'),
+            skill2Cd: document.getElementById('skill-2-cd'),
+            skill3Btn: document.getElementById('skill-3-btn'),
+            skill3Cd: document.getElementById('skill-3-cd'),
+
+            hackNode: document.getElementById('hack-node'),
+            supplyDrone: document.getElementById('supply-drone'),
 
             loginBtn: document.getElementById('login-btn'),
             logoutBtn: document.getElementById('logout-btn'),
@@ -645,6 +711,32 @@
 
         function getRebirthMultiplier() {
             return 1 + ((gameState.rebirthCount || 0) * 0.2);
+        }
+
+        function updateOverchargeUI() {
+            el.overchargeBar.style.width = `${overchargeMeter}%`;
+            el.overchargePercent.textContent = Math.floor(overchargeMeter);
+        }
+
+        function triggerOvercharge() {
+            isOverchargeActive = true;
+            el.clickArea.classList.add('overcharge-active');
+            showToast("🔥 OVERCHARGE ACTIVATED! Tap production x2!");
+
+            let count = 10;
+            const timer = setInterval(() => {
+                count -= 1;
+                overchargeMeter = (count / 10) * 100;
+                updateOverchargeUI();
+                if (count <= 0) {
+                    clearInterval(timer);
+                    isOverchargeActive = false;
+                    overchargeMeter = 0;
+                    updateOverchargeUI();
+                    el.clickArea.classList.remove('overcharge-active');
+                    showToast("Overcharge mode ended");
+                }
+            }, 1000);
         }
 
         function showToast(msg) {
@@ -765,7 +857,6 @@
                 el.upgradeAutoBtn.disabled = gameState.energy < gameState.autoCost;
             }
 
-            // 転生ステータス
             if (gameState.rebirthCount > 0) {
                 el.rebirthTag.classList.remove('hidden');
                 el.rebirthCount.textContent = gameState.rebirthCount;
@@ -780,7 +871,6 @@
             el.achieveBadge.textContent = `${unlocked.length}/${ACHIEVEMENTS_DATA.length}`;
         }
 
-        // 100msタイマー
         setInterval(() => {
             if (document.visibilityState !== 'visible') {
                 singleAutoTimer = 0;
@@ -788,13 +878,41 @@
                 return;
             }
 
-            // オーバーチャージメーター減衰
+            if (skillStatus.s1Cd > 0) {
+                skillStatus.s1Cd -= 0.1;
+                if (skillStatus.s1Cd <= 0) {
+                    skillStatus.s1Cd = 0;
+                    el.skill1Cd.classList.add('hidden');
+                } else {
+                    el.skill1Cd.textContent = `${Math.ceil(skillStatus.s1Cd)}s`;
+                }
+            }
+
+            if (skillStatus.s2Cd > 0) {
+                skillStatus.s2Cd -= 0.1;
+                if (skillStatus.s2Cd <= 0) {
+                    skillStatus.s2Cd = 0;
+                    el.skill2Cd.classList.add('hidden');
+                } else {
+                    el.skill2Cd.textContent = `${Math.ceil(skillStatus.s2Cd)}s`;
+                }
+            }
+
+            if (skillStatus.s3Cd > 0) {
+                skillStatus.s3Cd -= 0.1;
+                if (skillStatus.s3Cd <= 0) {
+                    skillStatus.s3Cd = 0;
+                    el.skill3Cd.classList.add('hidden');
+                } else {
+                    el.skill3Cd.textContent = `${Math.ceil(skillStatus.s3Cd)}s`;
+                }
+            }
+
             if (!isOverchargeActive && overchargeMeter > 0) {
                 overchargeMeter = Math.max(0, overchargeMeter - 1.5);
                 updateOverchargeUI();
             }
 
-            // シングルモード自動生産
             if (activeTab === 'single' && gameState.autoLevel > 0) {
                 singleAutoTimer += 0.1;
                 const interval = getAutoInterval(gameState.autoLevel);
@@ -808,7 +926,6 @@
                 }
             }
 
-            // VSモード自動生産
             if (activeTab === 'vs' && vsState.autoLevel > 0 && vsRoomId) {
                 vsAutoTimer += 0.1;
                 const interval = getAutoInterval(vsState.autoLevel);
@@ -822,67 +939,129 @@
             }
         }, 100);
 
-        function updateOverchargeUI() {
-            el.overchargeBar.style.width = `${overchargeMeter}%`;
-            el.overchargePercent.textContent = Math.floor(overchargeMeter);
-        }
+        el.skill1Btn.addEventListener('click', () => {
+            if (skillStatus.s1Cd > 0) return;
+            skillStatus.s1Active = true;
+            skillStatus.s1Cd = 30;
+            el.skill1Cd.classList.remove('hidden');
+            showToast("⚡ スキル発動: オーバーロード！(タップ生産5倍)");
 
-        function triggerOvercharge() {
-            isOverchargeActive = true;
-            if (!gameState.unlockedAchievements?.includes('overcharge')) {
-                gameState.unlockedAchievements = gameState.unlockedAchievements || [];
-                gameState.unlockedAchievements.push('overcharge');
-                showToast("🏆 実績解除: オーバーロード");
-            }
+            setTimeout(() => {
+                skillStatus.s1Active = false;
+                showToast("オーバーロードの効果が終了しました");
+            }, 10000);
+        });
 
-            el.clickArea.classList.add('overcharge-active');
-            el.overchargeStatus.innerHTML = `<span class="text-amber-400 font-bold animate-pulse">🔥 OVERCHARGE ACTIVE (生産2倍!)</span>`;
-            el.coreIcon.className = "fa-solid fa-fire text-5xl sm:text-6xl text-amber-400 animate-bounce";
+        el.skill2Btn.addEventListener('click', () => {
+            if (skillStatus.s2Cd > 0) return;
+            skillStatus.s2Cd = 45;
+            el.skill2Cd.classList.remove('hidden');
 
-            showToast("🔥 OVERCHARGE! 生産量が2倍になりました！");
+            const autoInterval = getAutoInterval(gameState.autoLevel);
+            const autoPower = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
+            const gain = (autoInterval > 0) ? Math.max(100, (20 / autoInterval) * autoPower) : 100;
 
-            let duration = 8;
-            overchargeTimer = setInterval(() => {
-                duration -= 0.1;
-                overchargeMeter = (duration / 8) * 100;
-                updateOverchargeUI();
+            gameState.energy += gain;
+            gameState.totalEnergy += gain;
+            updateUI();
+            checkAchievements();
+            showToast(`🤖 ナノボット発動！ +${Math.floor(gain).toLocaleString()} NRG`);
+        });
 
-                if (duration <= 0) {
-                    clearInterval(overchargeTimer);
-                    isOverchargeActive = false;
-                    overchargeMeter = 0;
-                    el.clickArea.classList.remove('overcharge-active');
-                    el.overchargeStatus.innerHTML = `OVERCHARGE GAUGE: <span id="overcharge-percent">0</span>%`;
-                    el.coreIcon.className = "fa-solid fa-atom text-5xl sm:text-6xl text-cyan-400";
-                    updateOverchargeUI();
-                }
-            }, 100);
-        }
+        el.skill3Btn.addEventListener('click', () => {
+            if (skillStatus.s3Cd > 0) return;
+            skillStatus.s3Active = true;
+            skillStatus.s3Cd = 60;
+            el.skill3Cd.classList.remove('hidden');
+            showToast("🎯 スキル発動: サイバー・フレンジー！(クリティカル50%)");
+
+            setTimeout(() => {
+                skillStatus.s3Active = false;
+                showToast("サイバー・フレンジーの効果が終了しました");
+            }, 15000);
+        });
 
         setInterval(() => {
-            if (currentUser && activeTab === 'single') {
-                saveUserData(true);
+            if (activeTab !== 'single') return;
+
+            if (el.hackNode.classList.contains('hidden') && Math.random() < 0.4) {
+                const top = Math.floor(Math.random() * 60) + 10;
+                const left = Math.floor(Math.random() * 60) + 10;
+                el.hackNode.style.top = `${top}%`;
+                el.hackNode.style.left = `${left}%`;
+                el.hackNode.classList.remove('hidden');
+
+                setTimeout(() => {
+                    el.hackNode.classList.add('hidden');
+                }, 8000);
             }
-        }, 10000);
+        }, 20000);
 
-        window.addEventListener('keydown', (e) => {
-            if (document.activeElement.tagName === 'INPUT') return;
+        setInterval(() => {
+            if (activeTab !== 'single') return;
 
-            const key = e.key.toLowerCase();
-            if (activeTab === 'single') {
-                if (key === 'a') el.upgradeClickBtn.click();
-                if (key === 'd') el.upgradeAutoBtn.click();
-            } else if (activeTab === 'vs' && vsRoomId) {
-                if (key === 'a') el.vsUpgradeClick.click();
-                if (key === 'd') el.vsUpgradeAuto.click();
+            if (el.supplyDrone.classList.contains('hidden') && Math.random() < 0.3) {
+                const top = Math.floor(Math.random() * 70) + 10;
+                el.supplyDrone.style.top = `${top}%`;
+                el.supplyDrone.style.left = `5%`;
+                el.supplyDrone.classList.remove('hidden');
+
+                let pos = 5;
+                const anim = setInterval(() => {
+                    pos += 2;
+                    el.supplyDrone.style.left = `${pos}%`;
+                    if (pos >= 90 || el.supplyDrone.classList.contains('hidden')) {
+                        clearInterval(anim);
+                        el.supplyDrone.classList.add('hidden');
+                    }
+                }, 100);
+            }
+        }, 30000);
+
+        el.hackNode.addEventListener('click', (e) => {
+            e.stopPropagation();
+            el.hackNode.classList.add('hidden');
+            const bonus = Math.max(500, gameState.clickPower * 50 * getRebirthMultiplier());
+            gameState.energy += bonus;
+            gameState.totalEnergy += bonus;
+            updateUI();
+            checkAchievements();
+            showToast(`💻 ハッキング成功！ +${Math.floor(bonus).toLocaleString()} NRG 獲得！`);
+            if (window.confetti) {
+                confetti({ particleCount: 30, spread: 50, origin: { y: 0.6 } });
             }
         });
 
-        function handleCoreTap(e, targetState, targetArea, isVs = false) {
-            const isCritical = Math.random() < 0.01;
-            let mult = isVs ? 1 : (getRebirthMultiplier() * (isOverchargeActive ? 2 : 1));
+        el.supplyDrone.addEventListener('click', (e) => {
+            e.stopPropagation();
+            el.supplyDrone.classList.add('hidden');
             
-            let earnedEnergy = isCritical ? (targetState.clickPower * 2 * mult) : (targetState.clickPower * mult);
+            const rand = Math.random();
+            if (rand < 0.5) {
+                const bonus = Math.max(1000, gameState.totalEnergy * 0.1);
+                gameState.energy += bonus;
+                gameState.totalEnergy += bonus;
+                showToast(`🚁 ドローン撃墜！ 供給爆発 +${Math.floor(bonus).toLocaleString()} NRG!`);
+            } else {
+                skillStatus.s1Cd = 0;
+                skillStatus.s2Cd = 0;
+                skillStatus.s3Cd = 0;
+                el.skill1Cd.classList.add('hidden');
+                el.skill2Cd.classList.add('hidden');
+                el.skill3Cd.classList.add('hidden');
+                showToast(`🚁 ドローン撃墜！ 全スキルのクールダウン即時クリア！`);
+            }
+            updateUI();
+            checkAchievements();
+        });
+
+        function handleCoreTap(e, targetState, targetArea, isVs = false) {
+            const critRate = (!isVs && skillStatus.s3Active) ? 0.5 : 0.01;
+            const isCritical = Math.random() < critRate;
+
+            let mult = isVs ? 1 : (getRebirthMultiplier() * (isOverchargeActive ? 2 : 1) * (skillStatus.s1Active ? 5 : 1));
+            
+            let earnedEnergy = isCritical ? (targetState.clickPower * 2.5 * mult) : (targetState.clickPower * mult);
 
             targetState.energy += earnedEnergy;
             if (!isVs) {
@@ -949,7 +1128,6 @@
             }
         });
 
-        // 転生実行
         el.rebirthBtn.addEventListener('click', () => {
             if (gameState.totalEnergy < 1000000) return;
             if (!confirm("本当に転生しますか？現在の所持エナジーと設備は初期化されますが、永久に生産量+20%ボーナスを獲得します。")) return;
@@ -1454,14 +1632,13 @@
                     if (data.gameState) {
                         gameState = { ...gameState, ...data.gameState };
                         
-                        // オフライン放置報酬計算 (最大24時間)
                         if (gameState.lastLogoutTime && gameState.autoLevel > 0) {
                             const now = Date.now();
                             const offlineSec = Math.min(86400, Math.floor((now - gameState.lastLogoutTime) / 1000));
                             if (offlineSec > 10) {
                                 const autoInterval = getAutoInterval(gameState.autoLevel);
                                 const autoPower = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
-                                const offlineEnergy = Math.floor((offlineSec / autoInterval) * autoPower * 0.5); // オフラインは50%率
+                                const offlineEnergy = Math.floor((offlineSec / autoInterval) * autoPower * 0.5);
                                 
                                 gameState.energy += offlineEnergy;
                                 gameState.totalEnergy += offlineEnergy;
