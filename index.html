@@ -6,7 +6,7 @@
 <title>Cyber Energy Clicker - Expanded Edition</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&family=Rajdhani:wght@500;700&family=Russo+One&family=Exo+2:wght@500;800&family=Share+Tech+Mono&family=Audiowide&family=Cinzel:wght@600;800&family=Righteous&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script type="importmap">
 { "imports": {
@@ -18,12 +18,12 @@
 <style>
 body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d9;user-select:none;-webkit-user-select:none}
 .font-orbitron{font-family:'Orbitron',sans-serif}
-.neon-text-blue{text-shadow:0 0 5px #00f0ff,0 0 10px #00f0ff,0 0 20px #00f0ff}
-.neon-box-blue{box-shadow:0 0 15px rgba(0,240,255,.25);border:1px solid rgba(0,240,255,.4)}
+.neon-text-blue{text-shadow:0 0 5px var(--neon),0 0 10px var(--neon),0 0 20px var(--neon)}
+.neon-box-blue{box-shadow:0 0 15px color-mix(in srgb,var(--neon) 25%,transparent);border:1px solid var(--ab,rgba(0,240,255,.4))}
 .core-btn{transition:transform .05s ease,box-shadow .1s ease;touch-action:manipulation}
 .core-btn:active{transform:scale(.92)}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-55px) scale(1.25)}}
-.click-pop{position:absolute;pointer-events:none;animation:floatUp .8s ease-out forwards;font-weight:bold;font-family:'Orbitron',sans-serif;color:#00f0ff;text-shadow:0 0 5px #000;z-index:10}
+.click-pop{position:absolute;pointer-events:none;animation:floatUp .8s ease-out forwards;font-weight:bold;font-family:'Orbitron',sans-serif;color:var(--pop);text-shadow:0 0 5px #000;z-index:10}
 .crit-pop{position:absolute;pointer-events:none;animation:floatUp 1s ease-out forwards;font-weight:900;font-family:'Orbitron',sans-serif;color:#facc15;text-shadow:0 0 10px #eab308,0 0 20px #000;z-index:20}
 @keyframes popScale{0%{transform:scale(.3);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
 .countdown-anim{animation:popScale .4s cubic-bezier(.175,.885,.32,1.275) forwards}
@@ -53,19 +53,59 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
 [data-skin=crown],[data-skin=crown] .skin-inner{border-radius:28%!important}
 [data-skin=fist],[data-skin=fist] .skin-inner{border-radius:0!important;clip-path:polygon(50% 0,100% 18%,100% 68%,50% 100%,0 68%,0 18%)}
 [data-skin=ice],[data-skin=ice] .skin-inner{border-radius:0!important;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+[data-theme=default]{--bg:#0b0f17;--panel:rgba(17,24,39,.8);--well:#030712;--btn:#1f2937;--line:#1f2937;--txt:#c9d1d9;--a1:#06b6d4;--a2:#22d3ee;--a3:#3b82f6;--ab:rgba(34,211,238,.4);--ad:rgba(8,51,68,.4);--neon:#00f0ff;--pop:#00f0ff;--pat:none;--pats:auto;--fh:'Orbitron';--r2:1rem;--r1:.75rem;--r0:.5rem}
+[data-theme=crimson]{--bg:#14090b;--panel:rgba(31,17,20,.82);--well:rgba(18,8,10,.92);--btn:#3a1d22;--line:#4a2229;--txt:#e6cfd2;--a1:#ef4444;--a2:#f87171;--a3:#fb923c;--ab:rgba(248,113,113,.4);--ad:rgba(127,29,29,.35);--neon:#ff4d4d;--pop:#ff6b6b;--pat:radial-gradient(circle at 15% 0%,rgba(239,68,68,.14),transparent 55%);--pats:auto;--fh:'Orbitron';--r2:1rem;--r1:.75rem;--r0:.5rem}
+[data-theme=emerald]{--bg:#08130f;--panel:rgba(15,32,26,.82);--well:rgba(6,18,14,.92);--btn:#1b3a30;--line:#1f4a3a;--txt:#cfe6dc;--a1:#10b981;--a2:#34d399;--a3:#2dd4bf;--ab:rgba(52,211,153,.4);--ad:rgba(6,78,59,.35);--neon:#34d399;--pop:#6ee7b7;--pat:radial-gradient(circle at 85% 0%,rgba(16,185,129,.14),transparent 55%);--pats:auto;--fh:'Orbitron';--r2:1rem;--r1:.75rem;--r0:.5rem}
+[data-theme=violet]{--bg:#0f0b1a;--panel:rgba(26,20,48,.82);--well:rgba(14,10,28,.92);--btn:#2d2352;--line:#3b2f6b;--txt:#ddd6f3;--a1:#8b5cf6;--a2:#a78bfa;--a3:#e879f9;--ab:rgba(167,139,250,.4);--ad:rgba(76,29,149,.35);--neon:#a78bfa;--pop:#c4b5fd;--pat:radial-gradient(circle at 50% 0%,rgba(139,92,246,.16),transparent 55%);--pats:auto;--fh:'Orbitron';--r2:1rem;--r1:.75rem;--r0:.5rem}
+[data-theme=sakura]{--bg:#1a0d14;--panel:rgba(45,22,35,.82);--well:rgba(26,12,20,.92);--btn:#4a2438;--line:#6b3350;--txt:#f3d9e6;--a1:#ec4899;--a2:#f9a8d4;--a3:#fda4af;--ab:rgba(249,168,212,.4);--ad:rgba(157,23,77,.35);--neon:#f472b6;--pop:#fbcfe8;--pat:radial-gradient(rgba(249,168,212,.16) 2px,transparent 3px),radial-gradient(rgba(253,164,175,.1) 3px,transparent 4px);--pats:60px 60px,90px 90px;--fh:'Orbitron';--r2:1rem;--r1:.75rem;--r0:.5rem}
+[data-theme=gold]{--bg:#14100a;--panel:rgba(35,28,14,.82);--well:rgba(20,15,6,.92);--btn:#3d3012;--line:#5a4616;--txt:#efe3c4;--a1:#f59e0b;--a2:#fcd34d;--a3:#fb923c;--ab:rgba(252,211,77,.4);--ad:rgba(120,53,15,.35);--neon:#fbbf24;--pop:#fde68a;--pat:radial-gradient(circle at 50% -10%,rgba(251,191,36,.16),transparent 55%);--pats:auto;--fh:'Orbitron';--r2:1rem;--r1:.75rem;--r0:.5rem}
+[data-theme=ice]{--bg:#06121a;--panel:rgba(10,30,44,.8);--well:rgba(4,16,26,.92);--btn:#12384e;--line:#1b4f6b;--txt:#d5eef7;--a1:#22d3ee;--a2:#a5f3fc;--a3:#93c5fd;--ab:rgba(165,243,252,.45);--ad:rgba(8,80,110,.35);--neon:#a5f3fc;--pop:#cffafe;--pat:radial-gradient(rgba(255,255,255,.2) 1px,transparent 2px),radial-gradient(rgba(165,243,252,.14) 1px,transparent 2px);--pats:48px 48px,48px 48px;--fh:'Rajdhani';--r2:.2rem;--r1:.15rem;--r0:.1rem}
+[data-theme=fist]{--bg:#12090a;--panel:rgba(34,16,16,.84);--well:rgba(20,8,8,.92);--btn:#4a1e1e;--line:#6b2a2a;--txt:#f0d6d2;--a1:#ef4444;--a2:#fca5a5;--a3:#f97316;--ab:rgba(252,165,165,.45);--ad:rgba(127,29,29,.4);--neon:#ff5a3c;--pop:#fdba74;--pat:repeating-linear-gradient(115deg,rgba(239,68,68,.08) 0 14px,transparent 14px 36px);--pats:auto;--fh:'Russo One';--r2:0;--r1:0;--r0:0}
+[data-theme=hexagon]{--bg:#050f1c;--panel:rgba(9,27,48,.8);--well:rgba(3,12,24,.92);--btn:#123556;--line:#1a4a78;--txt:#d2e6f7;--a1:#0ea5e9;--a2:#38bdf8;--a3:#818cf8;--ab:rgba(56,189,248,.45);--ad:rgba(7,89,133,.35);--neon:#38bdf8;--pop:#7dd3fc;--pat:linear-gradient(60deg,rgba(56,189,248,.08) 25%,transparent 25.5%),linear-gradient(-60deg,rgba(56,189,248,.08) 25%,transparent 25.5%);--pats:46px 80px,46px 80px;--fh:'Exo 2';--r2:.5rem;--r1:.4rem;--r0:.3rem}
+[data-theme=gear]{--bg:#0e1115;--panel:rgba(24,28,34,.84);--well:rgba(12,14,18,.94);--btn:#2a313b;--line:#3b4552;--txt:#dbe1e8;--a1:#94a3b8;--a2:#e2e8f0;--a3:#fbbf24;--ab:rgba(226,232,240,.4);--ad:rgba(71,85,105,.4);--neon:#cbd5e1;--pop:#e2e8f0;--pat:repeating-linear-gradient(45deg,rgba(203,213,225,.05) 0 2px,transparent 2px 14px);--pats:auto;--fh:'Share Tech Mono';--r2:0;--r1:0;--r0:0}
+[data-theme=phoenix]{--bg:#130806;--panel:rgba(38,18,12,.82);--well:rgba(22,9,6,.92);--btn:#4a2312;--line:#6b3315;--txt:#f3dccd;--a1:#f97316;--a2:#fb923c;--a3:#facc15;--ab:rgba(251,146,60,.45);--ad:rgba(124,45,18,.4);--neon:#fb923c;--pop:#fdba74;--pat:linear-gradient(to top,rgba(249,115,22,.28),transparent);--pats:100% 55%;--fh:'Audiowide';--r2:1.25rem;--r1:.9rem;--r0:.6rem}
+[data-theme=crown]{--bg:#120f06;--panel:rgba(36,29,12,.82);--well:rgba(20,15,5,.92);--btn:#403210;--line:#5e4a14;--txt:#f2e7c4;--a1:#eab308;--a2:#fde047;--a3:#f97316;--ab:rgba(253,224,71,.45);--ad:rgba(133,77,14,.4);--neon:#facc15;--pop:#fde68a;--pat:radial-gradient(circle at 50% -8%,rgba(250,204,21,.22),transparent 55%),repeating-linear-gradient(45deg,rgba(250,204,21,.04) 0 2px,transparent 2px 22px);--pats:auto;--fh:'Cinzel';--r2:1.75rem;--r1:1.1rem;--r0:.8rem}
+[data-theme=rainbow]{--bg:#0b0b14;--panel:rgba(22,20,40,.82);--well:rgba(11,10,22,.92);--btn:#2a2650;--line:#3d3770;--txt:#e6e2f7;--a1:#a855f7;--a2:#c4b5fd;--a3:#22d3ee;--ab:rgba(255,255,255,.35);--ad:rgba(88,28,135,.35);--neon:#c084fc;--pop:#e9d5ff;--pat:linear-gradient(135deg,rgba(244,63,94,.1),rgba(168,85,247,.1),rgba(34,211,238,.1));--pats:auto;--fh:'Righteous';--r2:1.5rem;--r1:1rem;--r0:.7rem}
+@property --a1{syntax:'<color>';inherits:true;initial-value:#06b6d4}
+@property --a2{syntax:'<color>';inherits:true;initial-value:#22d3ee}
+@property --a3{syntax:'<color>';inherits:true;initial-value:#3b82f6}
+@keyframes rbw{0%,100%{--a1:#f43f5e;--a2:#fda4af;--a3:#f59e0b}20%{--a1:#f59e0b;--a2:#fde68a;--a3:#22c55e}40%{--a1:#22c55e;--a2:#86efac;--a3:#06b6d4}60%{--a1:#06b6d4;--a2:#67e8f9;--a3:#8b5cf6}80%{--a1:#8b5cf6;--a2:#c4b5fd;--a3:#f43f5e}}
+@keyframes emberGlow{from{background-size:100% 45%}to{background-size:100% 75%}}
+body[data-theme=rainbow]{animation:rbw 10s linear infinite}
+body[data-theme=phoenix]{animation:emberGlow 3s ease-in-out infinite alternate;background-repeat:no-repeat;background-position:bottom}
+body.themed{background-color:var(--bg)!important;background-image:var(--pat);background-size:var(--pats);background-attachment:fixed;color:var(--txt)}
+body.themed .font-orbitron{font-family:var(--fh),'Noto Sans JP',sans-serif!important}
+body.themed .rounded-2xl{border-radius:var(--r2)!important}
+body.themed .rounded-xl{border-radius:var(--r1)!important}
+body.themed .rounded-lg{border-radius:var(--r0)!important}
+body.themed [class*="bg-gray-900"]{background-color:var(--panel)!important}
+body.themed [class*="bg-gray-950"]{background-color:var(--well)!important}
+body.themed [class*="bg-gray-800"]{background-color:var(--btn)!important}
+body.themed [class*="border-gray-8"],body.themed [class*="border-gray-7"]{border-color:var(--line)!important}
+body.themed [class*="text-cyan-"]{color:var(--a2)!important}
+body.themed [class*="border-cyan-"]{border-color:var(--ab)!important}
+body.themed [class~="bg-cyan-500"]{background-color:var(--a1)!important}
+body.themed [class*="bg-cyan-950"]{background-color:var(--ad)!important}
+body.themed [class*="focus:border-cyan"]:focus{border-color:var(--a2)!important}
+body.themed button[class*="hover:bg-"]:hover{filter:brightness(1.2)}
+body.themed #site-title{background-image:linear-gradient(to right,var(--a2),var(--a3),var(--a1))!important}
+body.themed #overcharge-bar{background-image:linear-gradient(to right,var(--a1),var(--a3))!important}
+body.themed .skin-ico,body.themed .skin-label{color:var(--si)!important}
+body.themed .skin-inner{border-color:var(--sb)!important}
+body.themed #vs-core-button{background-image:linear-gradient(to top right,var(--s1),var(--s2),var(--s3))!important;box-shadow:0 0 30px var(--sg)!important}
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:#0d1117}
 ::-webkit-scrollbar-thumb{background:#1f2937;border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:#00f0ff}
+::-webkit-scrollbar-thumb:hover{background:var(--neon)}
 </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
+<body data-theme="default" class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
 
 <header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur sticky top-0 z-40">
   <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
     <div class="flex items-center gap-3">
-      <i class="fa-solid fa-atom text-cyan-400 text-2xl animate-spin" style="animation-duration:10s;"></i>
-      <h1 class="text-xl font-black font-orbitron tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-blue-500">
+      <i id="header-icon" class="fa-solid fa-atom text-cyan-400 text-2xl animate-spin" style="animation-duration:10s;"></i>
+      <h1 id="site-title" class="text-xl font-black font-orbitron tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-blue-500">
         CYBER ENERGY <span class="text-xs text-amber-400 border border-amber-500/40 px-1.5 py-0.5 rounded font-mono ml-1">EXPANDED</span>
       </h1>
     </div>
@@ -277,7 +317,7 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
         <div id="vs-status-message" class="text-xs font-orbitron text-gray-300 text-center">待機中...</div>
         <button id="vs-core-button" class="core-btn w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-gradient-to-tr from-amber-600 via-amber-400 to-red-500 p-1 flex items-center justify-center shadow-2xl shadow-amber-500/30 focus:outline-none">
           <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-amber-400/50 hover:bg-gray-900 transition">
-            <i class="fa-solid fa-bolt text-5xl text-amber-400"></i>
+            <i id="vs-core-icon" class="fa-solid fa-bolt text-5xl text-amber-400"></i>
             <span class="text-xs font-orbitron text-amber-300 mt-2 font-bold">TAP!</span>
           </div>
         </button>
@@ -332,7 +372,7 @@ body{font-family:'Noto Sans JP',sans-serif;background-color:#0b0f17;color:#c9d1d
         <h2 class="text-xl font-bold font-orbitron text-pink-300 flex items-center gap-2"><i class="fa-solid fa-shirt text-pink-400"></i> 着せ替え (Skins)</h2>
         <span id="skin-count" class="text-xs font-orbitron text-gray-400">1/13</span>
       </div>
-      <p class="text-xs text-gray-400 mb-6">実績を解除すると着せ替えを入手できます。装備するとシングルモードのコアの見た目が変わります。難しい実績ほど特別なデザインが手に入ります。</p>
+      <p class="text-xs text-gray-400 mb-6">実績を解除すると着せ替えを入手できます。装備すると画面全体の配色・背景・コアの見た目が変わります。COLORは配色の着せ替え、DESIGNはさらにフォント・角の形・背景模様・アイコンまで変わる特別仕様です（難しい実績ほどDESIGNが手に入ります）。</p>
       <div id="skin-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
     </div>
   </div>
@@ -1431,6 +1471,17 @@ function applySkin() {
   if (btn.dataset.skin === sk.id && ico.dataset.skin === sk.id) return;
   btn.dataset.skin = sk.id;
   ico.dataset.skin = sk.id;
+  const themed = sk.id !== 'default';
+  document.body.dataset.theme = sk.id;
+  document.body.classList.toggle('themed', themed);
+  const hi = $('header-icon');
+  hi.className = `fa-solid ${sk.icon} text-cyan-400 text-2xl animate-spin`;
+  hi.style.animationDuration = '10s';
+  const vb = $('vs-core-button'), vc = $('vs-core-icon');
+  vb.dataset.skin = sk.id;
+  vb.classList.toggle('skin-ring', themed);
+  vb.firstElementChild.classList.toggle('skin-inner', themed);
+  vc.className = themed ? `skin-ico fa-solid ${sk.icon} text-5xl${sk.spin ? ' animate-spin' : ''}` : 'fa-solid fa-bolt text-5xl text-amber-400';
   ico.className = `skin-ico fa-solid ${sk.icon} text-5xl sm:text-6xl${sk.spin ? ' animate-spin' : ''}`;
   ico.style.animationDuration = sk.spin ? '8s' : '';
 }
@@ -1451,6 +1502,11 @@ function skinPreviewHtml(sk, locked) {
   return `<div class="w-20 h-20 mx-auto p-1 flex items-center justify-center skin-ring rounded-full ${locked ? 'opacity-30 grayscale' : ''}" data-skin="${sk.id}">
     <div class="skin-inner w-full h-full rounded-full bg-gray-950 flex items-center justify-center border"><i class="skin-ico fa-solid ${sk.icon} text-2xl${sk.spin ? ' animate-spin' : ''}"></i></div></div>`;
 }
+function themePreviewHtml(sk, has) {
+  return `<div data-theme="${sk.id}" class="mt-3 p-2 text-left ${has ? '' : 'opacity-30 grayscale'}" style="background-color:var(--bg);background-image:var(--pat);background-size:var(--pats);border:1px solid var(--line);border-radius:var(--r1)">
+    <div style="padding:6px;background:var(--panel);border:1px solid var(--ab);border-radius:var(--r0);font-family:var(--fh),sans-serif;color:var(--a2);font-size:11px;font-weight:700">Aa 123 NRG
+      <div style="display:flex;gap:3px;margin-top:4px"><i style="flex:1;height:5px;background:var(--a1)"></i><i style="flex:1;height:5px;background:var(--a2)"></i><i style="flex:1;height:5px;background:var(--a3)"></i></div></div></div>`;
+}
 function renderSkins() {
   const owned = gameState.ownedSkins || ['default'];
   $('skin-count').textContent = `${owned.length}/${SKINS.length}`;
@@ -1466,6 +1522,7 @@ function renderSkins() {
       : `<div class="text-[10px] text-gray-500 mt-3 leading-snug">🔒 入手条件:<br>実績「${ach ? ach.name : ''}」を解除</div>`;
     return `<div class="p-4 rounded-xl border ${on ? 'border-pink-500/60 bg-pink-950/20' : 'border-gray-800 bg-gray-950/50'} text-center">
       ${skinPreviewHtml(sk, !has)}
+      ${themePreviewHtml(sk, has)}
       <div class="text-xs font-bold text-gray-200 mt-3">${has ? sk.name : '？？？'}</div>
       <div class="mt-1">${badge}</div>${action}</div>`;
   }).join('');
