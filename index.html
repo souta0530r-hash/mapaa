@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Energy Clicker</title>
+    <title>Cyber Energy Clicker - Expanded Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body {
             font-family: 'Noto Sans JP', sans-serif;
-            background-color: #0d1117;
+            background-color: #0b0f17;
             color: #c9d1d9;
             user-select: none;
             -webkit-user-select: none;
@@ -26,9 +28,15 @@
         .neon-text-blue {
             text-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff, 0 0 20px #00f0ff;
         }
+        .neon-text-amber {
+            text-shadow: 0 0 5px #f59e0b, 0 0 10px #f59e0b, 0 0 20px #f59e0b;
+        }
+        .neon-text-purple {
+            text-shadow: 0 0 5px #a855f7, 0 0 10px #a855f7, 0 0 20px #a855f7;
+        }
         .neon-box-blue {
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-            border: 1px solid rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+            border: 1px solid rgba(0, 240, 255, 0.4);
         }
         .core-btn {
             transition: transform 0.05s ease, box-shadow 0.1s ease;
@@ -38,7 +46,7 @@
         }
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-55px) scale(1.25); }
         }
         .click-pop {
             position: absolute;
@@ -48,6 +56,7 @@
             font-family: 'Orbitron', sans-serif;
             color: #00f0ff;
             text-shadow: 0 0 5px #000;
+            z-index: 10;
         }
         .crit-pop {
             position: absolute;
@@ -67,17 +76,38 @@
         .countdown-anim {
             animation: popScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(234, 179, 8, 0.8); }
+        }
+        .overcharge-active {
+            animation: pulseGlow 1s infinite alternate;
+        }
+        /* カスタムスクロールバー */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
 
     <!-- Header Navigation -->
-    <header class="border-b border-gray-800 bg-gray-900/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+    <header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <i class="fa-solid font-orbitron fa-atom text-cyan-400 text-2xl animate-spin" style="animation-duration: 10s;"></i>
-                <h1 class="text-xl font-black font-orbitron tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-                    CYBER ENERGY
+                <h1 class="text-xl font-black font-orbitron tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-blue-500">
+                    CYBER ENERGY <span class="text-xs text-amber-400 border border-amber-500/40 px-1.5 py-0.5 rounded font-mono ml-1">EXPANDED</span>
                 </h1>
             </div>
 
@@ -104,17 +134,20 @@
     </header>
 
     <!-- Mode Navigation Tabs -->
-    <div class="max-w-6xl mx-auto px-4 pt-4 flex gap-2">
+    <div class="max-w-7xl mx-auto px-4 pt-4 flex flex-wrap gap-2">
         <button id="tab-single-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20">
             <i class="fa-solid fa-user mr-1.5"></i> シングル（ハイスコア）
         </button>
         <button id="tab-vs-btn" class="px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700">
             <i class="fa-solid fa-trophy mr-1.5 text-amber-400"></i> マルチ対戦モード (7分勝負)
         </button>
+        <button id="tab-achieve-btn" class="px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 ml-auto">
+            <i class="fa-solid fa-award mr-1.5 text-purple-400"></i> 実績 <span id="achieve-badge" class="bg-purple-900 text-purple-200 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0/6</span>
+        </button>
     </div>
 
     <!-- Main Content Area -->
-    <main class="max-w-6xl mx-auto px-4 py-4 w-full flex-grow">
+    <main class="max-w-7xl mx-auto px-4 py-4 w-full flex-grow">
 
         <!-- ================= SINGLE PLAYER MODE ================= -->
         <div id="single-mode-view" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -122,9 +155,14 @@
             <!-- Center Tap & Action Screen -->
             <div class="lg:col-span-2 flex flex-col gap-6">
                 <!-- Status Stats Display -->
-                <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800 flex flex-wrap justify-between items-center gap-4 neon-box-blue">
+                <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800 flex flex-wrap justify-between items-center gap-4 neon-box-blue relative overflow-hidden">
                     <div>
-                        <div class="text-xs text-cyan-400 font-orbitron uppercase tracking-widest">Energy Core</div>
+                        <div class="text-xs text-cyan-400 font-orbitron uppercase tracking-widest flex items-center gap-2">
+                            Energy Core 
+                            <span id="rebirth-tag" class="hidden text-[10px] bg-purple-950 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded font-bold">
+                                <i class="fa-solid fa-rotate-right mr-1"></i>転生 x<span id="rebirth-count">0</span> (+<span id="rebirth-bonus">0</span>%)
+                            </span>
+                        </div>
                         <div class="text-3xl sm:text-4xl font-black font-orbitron text-gray-100 neon-text-blue">
                             <span id="energy-count">0</span> <span class="text-cyan-400 text-xl">NRG</span>
                         </div>
@@ -142,14 +180,23 @@
                 </div>
 
                 <!-- Main Tap Core Center -->
-                <div id="click-area" class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center min-h-[280px] relative overflow-hidden select-none">
+                <div id="click-area" class="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/80 flex flex-col items-center justify-center min-h-[290px] relative overflow-hidden select-none">
+                    
+                    <!-- Overcharge Gauge Bar -->
+                    <div class="w-full max-w-md mb-4 bg-gray-950 border border-gray-800 rounded-full h-3 p-0.5 relative overflow-hidden">
+                        <div id="overcharge-bar" class="bg-gradient-to-r from-cyan-500 to-amber-400 h-full rounded-full transition-all duration-100" style="width: 0%;"></div>
+                    </div>
+                    <div id="overcharge-status" class="text-[11px] font-orbitron font-bold text-gray-400 mb-3">
+                        OVERCHARGE GAUGE: <span id="overcharge-percent">0</span>%
+                    </div>
+
                     <button id="core-button" class="core-btn w-44 h-44 sm:w-52 sm:h-52 rounded-full bg-gradient-to-tr from-cyan-600 via-cyan-400 to-blue-600 p-1 flex items-center justify-center shadow-2xl shadow-cyan-500/30 focus:outline-none">
                         <div class="w-full h-full rounded-full bg-gray-950 flex flex-col items-center justify-center border border-cyan-400/50 hover:bg-gray-900 transition">
-                            <i class="fa-solid fa-atom text-5xl sm:text-6xl text-cyan-400"></i>
+                            <i id="core-icon" class="fa-solid fa-atom text-5xl sm:text-6xl text-cyan-400"></i>
                             <span class="text-xs font-orbitron text-cyan-300 mt-2 font-bold">TAP CORE</span>
                         </div>
                     </button>
-                    <div class="text-xs text-gray-500 mt-4 font-orbitron">※ タブがアクティブな時のみ生産が行われます</div>
+                    <div class="text-[11px] text-gray-500 mt-4 font-orbitron">※ 左右クリック対応 / 連打でオーバーチャージ発動 (2倍)</div>
                 </div>
 
                 <!-- Upgrade Buttons -->
@@ -176,6 +223,22 @@
                         </div>
                     </button>
                 </div>
+
+                <!-- Rebirth System Button -->
+                <div class="bg-gradient-to-r from-purple-950/60 via-gray-900 to-indigo-950/60 border border-purple-500/30 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <div class="text-xs font-bold font-orbitron text-purple-300 flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right text-purple-400"></i> システム転生 (Rebirth)
+                        </div>
+                        <div class="text-[11px] text-gray-400 mt-1">
+                            現在のエナジーを初期化し、全生産量に永続ブースト(+20%/回)を獲得します。<br>
+                            <span class="text-purple-400 font-orbitron">必要: 累計1,000,000 NRG</span>
+                        </div>
+                    </div>
+                    <button id="rebirth-btn" disabled class="w-full sm:w-auto px-5 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-30 disabled:hover:bg-purple-600 text-white font-bold font-orbitron rounded-xl text-xs transition whitespace-nowrap shadow-lg shadow-purple-500/20">
+                        転生を実行する
+                    </button>
+                </div>
             </div>
 
             <!-- Leaderboard & Data Panel -->
@@ -189,9 +252,17 @@
                         </div>
                         <span class="text-[10px] text-gray-500 font-orbitron">TOP 10</span>
                     </div>
-                    <div id="leaderboard-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                    <div id="leaderboard-list" class="space-y-2 max-h-[280px] overflow-y-auto pr-1">
                         <div class="text-center text-xs text-gray-500 py-4">読み込み中...</div>
                     </div>
+                </div>
+
+                <!-- Offline Bonus Notification Box -->
+                <div id="offline-bonus-card" class="hidden bg-cyan-950/40 border border-cyan-500/40 rounded-2xl p-4 text-xs">
+                    <div class="text-cyan-300 font-bold font-orbitron flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-moon"></i> オフライン報酬獲得！
+                    </div>
+                    <div class="text-gray-300">不在中に <span id="offline-energy-amount" class="font-bold text-amber-300 font-orbitron">0</span> NRG 生産しました</div>
                 </div>
 
                 <!-- Account / Save Data Settings -->
@@ -323,6 +394,20 @@
 
         </div>
 
+        <!-- ================= ACHIEVEMENTS VIEW ================= -->
+        <div id="achieve-mode-view" class="hidden max-w-4xl mx-auto flex flex-col gap-6">
+            <div class="bg-gray-900/80 rounded-2xl p-6 border border-gray-800">
+                <h2 class="text-xl font-bold font-orbitron text-purple-300 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-award text-purple-400"></i> 実績一覧 (Achievements)
+                </h2>
+                <p class="text-xs text-gray-400 mb-6">特定の条件を達成して実績を解除しよう！</p>
+
+                <div id="achievements-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamic Rendering -->
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Result Overlay Modal -->
@@ -403,8 +488,26 @@
             clickLevel: 1,
             autoLevel: 0,
             clickCost: 10,
-            autoCost: 5000
+            autoCost: 5000,
+            rebirthCount: 0,
+            unlockedAchievements: [],
+            lastLogoutTime: Date.now()
         };
+
+        // 実績の定義
+        const ACHIEVEMENTS_DATA = [
+            { id: 'click_100', name: 'ファースト・タップ', desc: '累計100エナジーを獲得する', icon: 'fa-mouse' },
+            { id: 'click_10k', name: 'エナジー・コレクター', desc: '累計10,000エナジーを獲得する', icon: 'fa-bolt' },
+            { id: 'auto_lv5', name: '自動化の足音', desc: 'オート・ドローンをLv.5にする', icon: 'fa-robot' },
+            { id: 'overcharge', name: 'オーバーロード', desc: '初めてオーバーチャージモードを発動させる', icon: 'fa-fire' },
+            { id: 'rebirth_1', name: '新世界への旅立ち', desc: '初めてシステム転生を実行する', icon: 'fa-rotate-right' },
+            { id: 'click_max', name: 'タップの極意', desc: 'パワータップのレベルを100(MAX)にする', icon: 'fa-hand-pointer' }
+        ];
+
+        // オーバーチャージ管理変数
+        let overchargeMeter = 0;
+        let isOverchargeActive = false;
+        let overchargeTimer = null;
 
         const MATCH_DURATION = 420;
         let vsRoomId = null;
@@ -422,15 +525,16 @@
             autoCost: 5000
         };
 
-        // タイマー用の累計経過時間管理
         let singleAutoTimer = 0;
         let vsAutoTimer = 0;
 
         const el = {
             tabSingleBtn: document.getElementById('tab-single-btn'),
             tabVsBtn: document.getElementById('tab-vs-btn'),
+            tabAchieveBtn: document.getElementById('tab-achieve-btn'),
             singleView: document.getElementById('single-mode-view'),
             vsView: document.getElementById('vs-mode-view'),
+            achieveView: document.getElementById('achieve-mode-view'),
 
             loginBtn: document.getElementById('login-btn'),
             logoutBtn: document.getElementById('logout-btn'),
@@ -444,6 +548,7 @@
             epsDisplay: document.getElementById('eps-display'),
             totalEnergyDisplay: document.getElementById('total-energy-display'),
             coreButton: document.getElementById('core-button'),
+            coreIcon: document.getElementById('core-icon'),
             clickArea: document.getElementById('click-area'),
             
             upgradeClickBtn: document.getElementById('upgrade-click-btn'),
@@ -454,6 +559,21 @@
             autoCost: document.getElementById('auto-cost'),
             autoLevel: document.getElementById('auto-level'),
             
+            rebirthBtn: document.getElementById('rebirth-btn'),
+            rebirthTag: document.getElementById('rebirth-tag'),
+            rebirthCount: document.getElementById('rebirth-count'),
+            rebirthBonus: document.getElementById('rebirth-bonus'),
+
+            overchargeBar: document.getElementById('overcharge-bar'),
+            overchargePercent: document.getElementById('overcharge-percent'),
+            overchargeStatus: document.getElementById('overcharge-status'),
+
+            offlineBonusCard: document.getElementById('offline-bonus-card'),
+            offlineEnergyAmount: document.getElementById('offline-energy-amount'),
+
+            achieveBadge: document.getElementById('achieve-badge'),
+            achievementsGrid: document.getElementById('achievements-grid'),
+
             leaderboardList: document.getElementById('leaderboard-list'),
             saveStatus: document.getElementById('save-status'),
             manualSaveBtn: document.getElementById('manual-save-btn'),
@@ -499,7 +619,6 @@
             vsResultCloseBtn: document.getElementById('vs-result-close-btn')
         };
 
-        // レベル別パワータップの上昇幅を判定する関数
         function getClickPowerGain(nextLevel) {
             if (nextLevel <= 10) return 2;
             if (nextLevel <= 20) return 5;
@@ -514,16 +633,18 @@
             return 0;
         }
 
-        // オート・ドローンの生成間隔 (秒) を計算する関数 (Lv1=1.0s, Lv2=0.9s ... Lv10=0.1s)
         function getAutoInterval(level) {
             if (level <= 0) return 0;
             const interval = 1.1 - (level * 0.1);
             return Math.max(0.1, Math.round(interval * 10) / 10);
         }
 
-        // オート・ドローンの1回あたりの生成量 (レベル1につき+5アップ)
         function getAutoPower(level) {
             return level * 5;
+        }
+
+        function getRebirthMultiplier() {
+            return 1 + ((gameState.rebirthCount || 0) * 0.2);
         }
 
         function showToast(msg) {
@@ -536,27 +657,85 @@
 
         el.tabSingleBtn.addEventListener('click', () => switchTab('single'));
         el.tabVsBtn.addEventListener('click', () => switchTab('vs'));
+        el.tabAchieveBtn.addEventListener('click', () => switchTab('achieve'));
 
         function switchTab(tab) {
             activeTab = tab;
+            const btnDefault = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700";
+            
+            el.tabSingleBtn.className = btnDefault;
+            el.tabVsBtn.className = btnDefault;
+            el.tabAchieveBtn.className = btnDefault + " ml-auto";
+
+            el.singleView.classList.add('hidden');
+            el.vsView.classList.add('hidden');
+            el.achieveView.classList.add('hidden');
+
             if (tab === 'single') {
                 el.tabSingleBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-cyan-500 text-gray-950 shadow-lg shadow-cyan-500/20";
-                el.tabVsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700";
                 el.singleView.classList.remove('hidden');
-                el.vsView.classList.add('hidden');
-            } else {
+            } else if (tab === 'vs') {
                 el.tabVsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-amber-500 text-gray-950 shadow-lg shadow-amber-500/20";
-                el.tabSingleBtn.className = "px-5 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700";
-                el.singleView.classList.add('hidden');
                 el.vsView.classList.remove('hidden');
+            } else if (tab === 'achieve') {
+                el.tabAchieveBtn.className = "px-4 py-2 rounded-xl text-xs font-bold font-orbitron transition bg-purple-500 text-gray-950 shadow-lg shadow-purple-500/20 ml-auto";
+                el.achieveView.classList.remove('hidden');
+                renderAchievements();
             }
+        }
+
+        function checkAchievements() {
+            if (!gameState.unlockedAchievements) gameState.unlockedAchievements = [];
+
+            const check = (id, condition) => {
+                if (!gameState.unlockedAchievements.includes(id) && condition) {
+                    gameState.unlockedAchievements.push(id);
+                    showToast(`🏆 実績解除: ${ACHIEVEMENTS_DATA.find(a => a.id === id).name}`);
+                    if (window.confetti) {
+                        confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+                    }
+                }
+            };
+
+            check('click_100', gameState.totalEnergy >= 100);
+            check('click_10k', gameState.totalEnergy >= 10000);
+            check('auto_lv5', gameState.autoLevel >= 5);
+            check('click_max', gameState.clickLevel >= 100);
+            check('rebirth_1', gameState.rebirthCount >= 1);
+
+            updateUI();
+        }
+
+        function renderAchievements() {
+            const unlocked = gameState.unlockedAchievements || [];
+            el.achieveBadge.textContent = `${unlocked.length}/${ACHIEVEMENTS_DATA.length}`;
+
+            el.achievementsGrid.innerHTML = ACHIEVEMENTS_DATA.map(a => {
+                const isDone = unlocked.includes(a.id);
+                return `
+                    <div class="p-4 rounded-xl border ${isDone ? 'bg-purple-950/40 border-purple-500/50' : 'bg-gray-950/50 border-gray-800 opacity-60'} flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl ${isDone ? 'bg-purple-500 text-gray-950' : 'bg-gray-800 text-gray-500'} flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid ${a.icon}"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold font-orbitron ${isDone ? 'text-purple-300' : 'text-gray-400'}">${a.name}</div>
+                            <div class="text-[11px] text-gray-400 mt-0.5">${a.desc}</div>
+                            <div class="text-[10px] font-orbitron ${isDone ? 'text-emerald-400' : 'text-gray-600'} mt-1">
+                                ${isDone ? '<i class="fa-solid fa-check mr-1"></i>達成済み' : '未達成'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function updateUI() {
             el.energyCount.textContent = Math.floor(gameState.energy).toLocaleString();
             
+            const rebirthMult = getRebirthMultiplier();
             const autoInterval = getAutoInterval(gameState.autoLevel);
-            const autoPower = getAutoPower(gameState.autoLevel);
+            const autoPower = getAutoPower(gameState.autoLevel) * rebirthMult;
+
             if (gameState.autoLevel > 0) {
                 const eps = (autoPower / autoInterval).toFixed(1);
                 el.epsDisplay.textContent = parseFloat(eps).toLocaleString();
@@ -585,15 +764,34 @@
                 el.autoLevel.textContent = gameState.autoLevel;
                 el.upgradeAutoBtn.disabled = gameState.energy < gameState.autoCost;
             }
+
+            // 転生ステータス
+            if (gameState.rebirthCount > 0) {
+                el.rebirthTag.classList.remove('hidden');
+                el.rebirthCount.textContent = gameState.rebirthCount;
+                el.rebirthBonus.textContent = Math.round((rebirthMult - 1) * 100);
+            } else {
+                el.rebirthTag.classList.add('hidden');
+            }
+
+            el.rebirthBtn.disabled = gameState.totalEnergy < 1000000;
+
+            const unlocked = gameState.unlockedAchievements || [];
+            el.achieveBadge.textContent = `${unlocked.length}/${ACHIEVEMENTS_DATA.length}`;
         }
 
-        // 100msごとに自動生成タイマーの更新チェック
+        // 100msタイマー
         setInterval(() => {
-            // アクティブなタブでない場合は完全に処理を停止し、経過時間も加算しない
             if (document.visibilityState !== 'visible') {
                 singleAutoTimer = 0;
                 vsAutoTimer = 0;
                 return;
+            }
+
+            // オーバーチャージメーター減衰
+            if (!isOverchargeActive && overchargeMeter > 0) {
+                overchargeMeter = Math.max(0, overchargeMeter - 1.5);
+                updateOverchargeUI();
             }
 
             // シングルモード自動生産
@@ -602,9 +800,10 @@
                 const interval = getAutoInterval(gameState.autoLevel);
                 if (singleAutoTimer >= interval) {
                     singleAutoTimer -= interval;
-                    const autoPower = getAutoPower(gameState.autoLevel);
+                    const autoPower = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
                     gameState.energy += autoPower;
                     gameState.totalEnergy += autoPower;
+                    checkAchievements();
                     updateUI();
                 }
             }
@@ -622,6 +821,43 @@
                 }
             }
         }, 100);
+
+        function updateOverchargeUI() {
+            el.overchargeBar.style.width = `${overchargeMeter}%`;
+            el.overchargePercent.textContent = Math.floor(overchargeMeter);
+        }
+
+        function triggerOvercharge() {
+            isOverchargeActive = true;
+            if (!gameState.unlockedAchievements?.includes('overcharge')) {
+                gameState.unlockedAchievements = gameState.unlockedAchievements || [];
+                gameState.unlockedAchievements.push('overcharge');
+                showToast("🏆 実績解除: オーバーロード");
+            }
+
+            el.clickArea.classList.add('overcharge-active');
+            el.overchargeStatus.innerHTML = `<span class="text-amber-400 font-bold animate-pulse">🔥 OVERCHARGE ACTIVE (生産2倍!)</span>`;
+            el.coreIcon.className = "fa-solid fa-fire text-5xl sm:text-6xl text-amber-400 animate-bounce";
+
+            showToast("🔥 OVERCHARGE! 生産量が2倍になりました！");
+
+            let duration = 8;
+            overchargeTimer = setInterval(() => {
+                duration -= 0.1;
+                overchargeMeter = (duration / 8) * 100;
+                updateOverchargeUI();
+
+                if (duration <= 0) {
+                    clearInterval(overchargeTimer);
+                    isOverchargeActive = false;
+                    overchargeMeter = 0;
+                    el.clickArea.classList.remove('overcharge-active');
+                    el.overchargeStatus.innerHTML = `OVERCHARGE GAUGE: <span id="overcharge-percent">0</span>%`;
+                    el.coreIcon.className = "fa-solid fa-atom text-5xl sm:text-6xl text-cyan-400";
+                    updateOverchargeUI();
+                }
+            }, 100);
+        }
 
         setInterval(() => {
             if (currentUser && activeTab === 'single') {
@@ -642,20 +878,29 @@
             }
         });
 
-        // タップ処理を行う共通関数
         function handleCoreTap(e, targetState, targetArea, isVs = false) {
-            // 1%の確率でボーナス判定 (Math.random() < 0.01)
             const isCritical = Math.random() < 0.01;
-            const earnedEnergy = isCritical ? (targetState.clickPower * 2) : targetState.clickPower;
+            let mult = isVs ? 1 : (getRebirthMultiplier() * (isOverchargeActive ? 2 : 1));
+            
+            let earnedEnergy = isCritical ? (targetState.clickPower * 2 * mult) : (targetState.clickPower * mult);
 
             targetState.energy += earnedEnergy;
             if (!isVs) {
                 targetState.totalEnergy += earnedEnergy;
+
+                if (!isOverchargeActive) {
+                    overchargeMeter = Math.min(100, overchargeMeter + 4);
+                    updateOverchargeUI();
+                    if (overchargeMeter >= 100) {
+                        triggerOvercharge();
+                    }
+                }
+                checkAchievements();
             }
             
             const pop = document.createElement('div');
             pop.className = isCritical ? 'crit-pop' : 'click-pop';
-            pop.textContent = isCritical ? `CRITICAL! +${earnedEnergy}` : `+${earnedEnergy}`;
+            pop.textContent = isCritical ? `CRITICAL! +${Math.floor(earnedEnergy)}` : `+${Math.floor(earnedEnergy)}`;
             const rect = targetArea.getBoundingClientRect();
             const clientX = e.clientX || (rect.left + rect.width / 2);
             const clientY = e.clientY || (rect.top + rect.height / 2);
@@ -675,7 +920,6 @@
             }
         }
 
-        // シングル用コアボタン（左クリック／右クリック対応）
         el.coreButton.addEventListener('pointerdown', (e) => {
             if (e.button === 0 || e.button === 2) {
                 e.preventDefault();
@@ -684,25 +928,48 @@
         });
         el.coreButton.addEventListener('contextmenu', (e) => e.preventDefault());
 
-        // パワータップ強化 (シングル)
         el.upgradeClickBtn.addEventListener('click', () => {
             if (gameState.clickLevel < 100 && gameState.energy >= gameState.clickCost) {
                 gameState.energy -= gameState.clickCost;
                 gameState.clickLevel += 1;
                 gameState.clickPower += getClickPowerGain(gameState.clickLevel);
                 gameState.clickCost = Math.floor(gameState.clickCost * 1.5);
+                checkAchievements();
                 updateUI();
             }
         });
 
-        // オートドローン強化 (シングル)
         el.upgradeAutoBtn.addEventListener('click', () => {
             if (gameState.autoLevel < 10 && gameState.energy >= gameState.autoCost) {
                 gameState.energy -= gameState.autoCost;
                 gameState.autoLevel += 1;
                 gameState.autoCost += 5000;
+                checkAchievements();
                 updateUI();
             }
+        });
+
+        // 転生実行
+        el.rebirthBtn.addEventListener('click', () => {
+            if (gameState.totalEnergy < 1000000) return;
+            if (!confirm("本当に転生しますか？現在の所持エナジーと設備は初期化されますが、永久に生産量+20%ボーナスを獲得します。")) return;
+
+            gameState.rebirthCount = (gameState.rebirthCount || 0) + 1;
+            gameState.energy = 0;
+            gameState.clickPower = 1;
+            gameState.clickLevel = 1;
+            gameState.autoLevel = 0;
+            gameState.clickCost = 10;
+            gameState.autoCost = 5000;
+
+            checkAchievements();
+            updateUI();
+            saveUserData();
+
+            if (window.confetti) {
+                confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+            }
+            showToast("✨ システム転生が完了しました！");
         });
 
         function getVsRoomRef(roomId) {
@@ -1088,7 +1355,6 @@
             }
         }
 
-        // VS用コアボタン（左クリック／右クリック対応）
         el.vsCoreButton.addEventListener('pointerdown', (e) => {
             if (e.button === 0 || e.button === 2) {
                 e.preventDefault();
@@ -1097,7 +1363,6 @@
         });
         el.vsCoreButton.addEventListener('contextmenu', (e) => e.preventDefault());
 
-        // パワータップ強化 (VS)
         el.vsUpgradeClick.addEventListener('click', () => {
             if (vsState.clickLevel < 100 && vsState.energy >= vsState.clickCost) {
                 vsState.energy -= vsState.clickCost;
@@ -1109,7 +1374,6 @@
             }
         });
 
-        // オートドローン強化 (VS)
         el.vsUpgradeAuto.addEventListener('click', () => {
             if (vsState.autoLevel < 10 && vsState.energy >= vsState.autoCost) {
                 vsState.energy -= vsState.autoCost;
@@ -1128,6 +1392,9 @@
                 el.vsResultIcon.className = "fa-solid fa-trophy text-6xl text-yellow-400";
                 el.vsResultTitle.textContent = "VICTORY!";
                 el.vsResultTitle.className = "text-3xl font-black font-orbitron text-yellow-400";
+                if (window.confetti) {
+                    confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+                }
             } else {
                 el.vsResultIcon.className = "fa-solid fa-award text-6xl text-gray-400";
                 el.vsResultTitle.textContent = `#${myRank} PLACE`;
@@ -1159,6 +1426,8 @@
         async function saveUserData(silent = false) {
             if (!currentUser) return;
 
+            gameState.lastLogoutTime = Date.now();
+
             const payload = {
                 uid: currentUser.uid,
                 displayName: displayName,
@@ -1184,6 +1453,23 @@
                     const data = docSnap.data();
                     if (data.gameState) {
                         gameState = { ...gameState, ...data.gameState };
+                        
+                        // オフライン放置報酬計算 (最大24時間)
+                        if (gameState.lastLogoutTime && gameState.autoLevel > 0) {
+                            const now = Date.now();
+                            const offlineSec = Math.min(86400, Math.floor((now - gameState.lastLogoutTime) / 1000));
+                            if (offlineSec > 10) {
+                                const autoInterval = getAutoInterval(gameState.autoLevel);
+                                const autoPower = getAutoPower(gameState.autoLevel) * getRebirthMultiplier();
+                                const offlineEnergy = Math.floor((offlineSec / autoInterval) * autoPower * 0.5); // オフラインは50%率
+                                
+                                gameState.energy += offlineEnergy;
+                                gameState.totalEnergy += offlineEnergy;
+
+                                el.offlineEnergyAmount.textContent = offlineEnergy.toLocaleString();
+                                el.offlineBonusCard.classList.remove('hidden');
+                            }
+                        }
                     }
                     if (data.displayName) {
                         displayName = data.displayName;
@@ -1193,6 +1479,7 @@
                 } else {
                     await saveUserData(true);
                 }
+                checkAchievements();
                 updateUI();
             } catch (error) {
                 console.error("Firestore Load Error:", error);
@@ -1212,9 +1499,13 @@
                     clickLevel: 1,
                     autoLevel: 0,
                     clickCost: 10,
-                    autoCost: 5000
+                    autoCost: 5000,
+                    rebirthCount: 0,
+                    unlockedAchievements: [],
+                    lastLogoutTime: Date.now()
                 };
                 updateUI();
+                renderAchievements();
                 showToast("データが削除・リセットされました");
             } catch (error) {
                 console.error("Reset Error:", error);
@@ -1248,20 +1539,22 @@
             el.leaderboardList.innerHTML = topUsers.map((item, idx) => {
                 const isSelf = currentUser && item.uid === currentUser.uid;
                 const total = Math.floor(item.gameState?.totalEnergy || 0).toLocaleString();
+                const rb = item.gameState?.rebirthCount || 0;
                 
                 let rankBadge = `<span class="w-5 text-center font-orbitron font-bold text-gray-400">${idx + 1}</span>`;
                 if (idx === 0) rankBadge = `<i class="fa-solid fa-crown text-yellow-400 w-5 text-center"></i>`;
-                if (idx === 1) rankBadge = `<i class="fa-solid fa-medal text-gray-300 w-5 text-center"></i>`;
-                if (idx === 2) rankBadge = `<i class="fa-solid fa-medal text-amber-600 w-5 text-center"></i>`;
+                if (idx === 1) rankBadge = `<i class="fa-solid fa-medal text-gray-300 w-5 text-center flex-shrink-0"></i>`;
+                if (idx === 2) rankBadge = `<i class="fa-solid fa-medal text-amber-600 w-5 text-center flex-shrink-0"></i>`;
 
                 return `
                     <div class="flex items-center justify-between p-2.5 rounded-xl text-xs ${isSelf ? 'bg-cyan-950/60 border border-cyan-500/40' : 'bg-gray-800/40'} border border-gray-800">
                         <div class="flex items-center gap-2 overflow-hidden">
                             ${rankBadge}
-                            <img src="${item.photoURL || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full border border-gray-700" alt="avatar" onerror="this.src='https://placehold.co/32x32/1e293b/00f0ff?text=U'">
+                            <img src="${item.photoURL || 'https://via.placeholder.com/32'}" class="w-6 h-6 rounded-full border border-gray-700 shrink-0" alt="avatar" onerror="this.src='https://placehold.co/32x32/1e293b/00f0ff?text=U'">
                             <span class="font-bold truncate text-gray-200 ${isSelf ? 'text-cyan-300' : ''}">${escapeHtml(item.displayName || '名無し')}</span>
+                            ${rb > 0 ? `<span class="text-[9px] bg-purple-950 text-purple-300 border border-purple-500/30 px-1 rounded font-orbitron">x${rb}</span>` : ''}
                         </div>
-                        <div class="font-orbitron font-bold text-gray-300 ml-2">${total}</div>
+                        <div class="font-orbitron font-bold text-gray-300 ml-2 shrink-0">${total}</div>
                     </div>
                 `;
             }).join('');
@@ -1284,6 +1577,7 @@
 
         el.logoutBtn.addEventListener('click', async () => {
             try {
+                await saveUserData(true);
                 await signOut(auth);
                 location.reload();
             } catch (error) {
